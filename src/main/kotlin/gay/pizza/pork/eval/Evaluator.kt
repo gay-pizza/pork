@@ -3,19 +3,19 @@ package gay.pizza.pork.eval
 import gay.pizza.pork.ast.*
 import java.util.function.Function
 
-class Evaluator(root: Context) : Visitor<Any> {
-  private var currentContext: Context = root
+class Evaluator(root: Scope) : Visitor<Any> {
+  private var currentScope: Scope = root
 
   override fun visitDefine(node: Define): Any {
     val value = visit(node.value)
-    currentContext.define(node.symbol.id, value)
+    currentScope.define(node.symbol.id, value)
     return value
   }
 
-  override fun visitFunctionCall(node: FunctionCall): Any = currentContext.call(node.symbol.id)
+  override fun visitFunctionCall(node: FunctionCall): Any = currentScope.call(node.symbol.id)
 
   override fun visitReference(node: SymbolReference): Any =
-    currentContext.value(node.symbol.id)
+    currentScope.value(node.symbol.id)
 
   override fun visitSymbol(node: Symbol): Any {
     return Unit
@@ -23,7 +23,7 @@ class Evaluator(root: Context) : Visitor<Any> {
 
   override fun visitLambda(node: Lambda): Function<Any, Any> {
     return Function { _ ->
-      currentContext = currentContext.fork()
+      currentScope = currentScope.fork()
       try {
         var value: Any? = null
         for (expression in node.expressions) {
@@ -31,7 +31,7 @@ class Evaluator(root: Context) : Visitor<Any> {
         }
         value ?: Unit
       } finally {
-        currentContext = currentContext.leave()
+        currentScope = currentScope.leave()
       }
     }
   }

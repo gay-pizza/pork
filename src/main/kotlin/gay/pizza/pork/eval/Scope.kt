@@ -2,7 +2,7 @@ package gay.pizza.pork.eval
 
 import java.util.function.Function
 
-class Context(val parent: Context? = null) {
+class Scope(val parent: Scope? = null) {
   private val variables = mutableMapOf<String, Any>()
 
   fun define(name: String, value: Any) {
@@ -33,11 +33,11 @@ class Context(val parent: Context? = null) {
     return casted.apply(argument)
   }
 
-  fun fork(): Context {
-    return Context(this)
+  fun fork(): Scope {
+    return Scope(this)
   }
 
-  fun leave(): Context {
+  fun leave(): Scope {
     if (parent == null) {
       throw RuntimeException("Parent context not found.")
     }
