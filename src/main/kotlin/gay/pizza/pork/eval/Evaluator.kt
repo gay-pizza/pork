@@ -1,7 +1,6 @@
 package gay.pizza.pork.eval
 
 import gay.pizza.pork.ast.*
-import java.util.function.Function
 
 class Evaluator(root: Scope) : Visitor<Any> {
   private var currentScope: Scope = root
@@ -21,8 +20,8 @@ class Evaluator(root: Scope) : Visitor<Any> {
     return Unit
   }
 
-  override fun visitLambda(node: Lambda): Function<Any, Any> {
-    return Function { _ ->
+  override fun visitLambda(node: Lambda): CallableFunction {
+    return CallableFunction { _ ->
       currentScope = currentScope.fork()
       try {
         var value: Any? = null

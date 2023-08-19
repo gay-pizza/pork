@@ -1,7 +1,5 @@
 package gay.pizza.pork.eval
 
-import java.util.function.Function
-
 class Scope(val parent: Scope? = null) {
   private val variables = mutableMapOf<String, Any>()
 
@@ -25,12 +23,11 @@ class Scope(val parent: Scope? = null) {
 
   fun call(name: String, argument: Any = Unit): Any {
     val value = value(name)
-    if (value !is Function<*, *>) {
+    if (value !is CallableFunction) {
       throw RuntimeException("$value is not callable.")
     }
-    @Suppress("UNCHECKED_CAST")
-    val casted = value as Function<Any, Any>
-    return casted.apply(argument)
+    val function = value as CallableFunction
+    return function.call(argument)
   }
 
   fun fork(): Scope {
