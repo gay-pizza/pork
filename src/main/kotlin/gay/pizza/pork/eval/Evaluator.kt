@@ -1,0 +1,71 @@
+package gay.pizza.pork.eval
+
+import gay.pizza.pork.ast.*
+import java.util.function.Function
+
+class Evaluator(root: Context) : Visitor<Any> {
+  private var currentContext: Context = root
+
+  override fun visitDefine(node: Define): Any {
+    val value = visit(node.value)
+    currentContext.define(node.symbol.id, value)
+    return value
+  }
+
+  override fun visitFunctionCall(node: FunctionCall): Any = currentContext.call(node.symbol.id)
+
+  override fun visitReference(node: SymbolReference): Any =
+    currentContext.value(node.symbol.id)
+
+  override fun visitSymbol(node: Symbol): Any {
+    return Unit
+  }
+
+  override fun visitLambda(node: Lambda): Function<Any, Any> {
+    return Function { _ ->
+      currentContext = currentContext.fork()
+      try {
+        var value: Any? = null
+        for (expression in node.expressions) {
+          value = visit(expression)
+        }
+        value ?: Unit
+      } finally {
+        currentContext = currentContext.leave()
+      }
+    }
+  }
+
+  override fun visitIntLiteral(node: IntLiteral): Any = node.value
+  override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
+  override fun visitListLiteral(node: ListLiteral): Any = node.items.map { visit(it) }
+
+  override fun visitParentheses(node: Parentheses): Any = visit(node.expression)
+
+  override fun visitInfixOperation(node: InfixOperation): Any {
+    val left = visit(node.left)
+    val right = visit(node.right)
+
+    if (left !is Number || right !is Number) {
+      throw RuntimeException("Failed to evaluate infix operation, bad types.")
+    }
+
+    val leftInt = left.toInt()
+    val rightInt = right.toInt()
+
+    return when (node.op) {
+      InfixOperator.Plus -> leftInt + rightInt
+      InfixOperator.Minus -> leftInt - rightInt
+      InfixOperator.Multiply -> leftInt * rightInt
+      InfixOperator.Divide -> leftInt / rightInt
+    }
+  }
+
+  override fun visitProgram(node: Program): Any {
+    var value: Any? = null
+    for (expression in node.expressions) {
+      value = visit(expression)
+    }
+    return value ?: Unit
+  }
+}
