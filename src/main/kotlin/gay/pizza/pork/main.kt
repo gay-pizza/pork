@@ -1,6 +1,7 @@
 package gay.pizza.pork
 
 import gay.pizza.pork.ast.*
+import gay.pizza.pork.compiler.KotlinCompiler
 import gay.pizza.pork.eval.Arguments
 import gay.pizza.pork.eval.Scope
 import gay.pizza.pork.eval.PorkEvaluator
@@ -23,4 +24,7 @@ fun main(args: Array<String>) {
   val parser = PorkParser(TokenStreamSource(stream))
   val program = parser.readProgram()
   eval(program)
+  val kotlinCompiler = KotlinCompiler()
+  val kotlinCode =  kotlinCompiler.visit(program)
+  println(kotlinCode)
 }
