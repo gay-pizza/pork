@@ -15,7 +15,8 @@ enum class NodeType(val parent: NodeType? = null, vararg traits: NodeTypeTrait) 
   Lambda(Expression),
   InfixOperation(Expression),
   SymbolReference(Expression),
-  FunctionCall(Expression);
+  FunctionCall(Expression),
+  If(Expression);
 
   val parents: Set<NodeType>
 

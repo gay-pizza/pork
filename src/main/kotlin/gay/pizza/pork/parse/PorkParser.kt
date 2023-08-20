@@ -13,14 +13,29 @@ class PorkParser(val source: PeekableSource<Token>) {
     return Symbol(token.text)
   }
 
+  private fun readIf(): If {
+    expect(TokenType.If)
+    val condition = readExpression()
+    expect(TokenType.Then)
+    val thenExpression = readExpression()
+    expect(TokenType.Else)
+    val elseExpression = readExpression()
+    return If(condition, thenExpression, elseExpression)
+  }
+
   private fun readSymbolCases(): Expression {
     val symbol = readSymbol()
     return if (peekType(TokenType.LeftParentheses)) {
       expect(TokenType.LeftParentheses)
+      val arguments = collectExpressions(TokenType.RightParentheses, TokenType.Comma)
       expect(TokenType.RightParentheses)
-      FunctionCall(symbol)
+      FunctionCall(symbol, arguments)
     } else if (peekType(TokenType.Equals)) {
       expect(TokenType.Equals)
+      if (peekType(TokenType.Equals)) {
+        source.back()
+        return SymbolReference(symbol)
+      }
       Define(symbol, readExpression())
     } else {
       SymbolReference(symbol)
@@ -29,9 +44,21 @@ class PorkParser(val source: PeekableSource<Token>) {
 
   fun readLambda(): Lambda {
     expect(TokenType.LeftCurly)
+    val arguments = mutableListOf<Symbol>()
+    while (!peekType(TokenType.In)) {
+      val symbol = readSymbol()
+      arguments.add(symbol)
+      if (peekType(TokenType.Comma)) {
+        expect(TokenType.Comma)
+        continue
+      } else {
+        break
+      }
+    }
+    expect(TokenType.In)
     val items = collectExpressions(TokenType.RightCurly)
     expect(TokenType.RightCurly)
-    return Lambda(items)
+    return Lambda(arguments, items)
   }
 
   fun readExpression(): Expression {
@@ -40,31 +67,42 @@ class PorkParser(val source: PeekableSource<Token>) {
       TokenType.IntLiteral -> {
         readIntLiteral()
       }
+
       TokenType.LeftBracket -> {
         readListLiteral()
       }
+
       TokenType.Symbol -> {
         readSymbolCases()
       }
+
       TokenType.LeftCurly -> {
         readLambda()
       }
+
       TokenType.LeftParentheses -> {
         expect(TokenType.LeftParentheses)
         val expression = readExpression()
         expect(TokenType.RightParentheses)
         Parentheses(expression)
       }
+
       TokenType.True -> {
         expect(TokenType.True)
         return BooleanLiteral(true)
       }
+
       TokenType.False -> {
         expect(TokenType.False)
         return BooleanLiteral(false)
       }
+
+      TokenType.If -> {
+        return readIf()
+      }
+
       else -> {
-        throw RuntimeException("Failed to parse token: ${token.type} '${token.text}' as expression.")
+        throw RuntimeException("Failed to parse token: ${token.type} '${token.text}' as expression")
       }
     }
 
@@ -73,6 +111,13 @@ class PorkParser(val source: PeekableSource<Token>) {
       val infixOperator = convertInfixOperator(infixToken)
       return InfixOperation(expression, infixOperator, readExpression())
     }
+
+    if (peekType(TokenType.Equals)) {
+      val twoWideInfix = source.next()
+      val secondToken = expect(twoWideInfix.type)
+      return InfixOperation(expression, convertWideInfixOperator(twoWideInfix, secondToken), readExpression())
+    }
+
     return expression
   }
 
@@ -82,6 +127,12 @@ class PorkParser(val source: PeekableSource<Token>) {
       TokenType.Minus -> InfixOperator.Minus
       TokenType.Multiply -> InfixOperator.Multiply
       TokenType.Divide -> InfixOperator.Divide
+      else -> throw RuntimeException("Unknown Infix Operator")
+    }
+
+  private fun convertWideInfixOperator(firstToken: Token, secondToken: Token): InfixOperator =
+    when (firstToken.type to secondToken.type) {
+      TokenType.Equals to TokenType.Equals -> InfixOperator.Equals
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 

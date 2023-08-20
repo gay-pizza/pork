@@ -1,14 +1,18 @@
-main = {
+main = { in
   three = 3
   two = 2
-  calculateSimple = {
+  calculateSimple = { in
     (50 + three) * two
   }
-  calculateComplex = {
+  calculateComplex = { in
     three + two + 50
+  }
+  multiply = { a, b in
+    a * b
   }
   calculateSimpleResult = calculateSimple()
   calculateComplexResult = calculateComplex()
+  multiplyResult = multiply(50, 50)
 
   list = [10, 20, 30]
   trueValue = true
@@ -17,6 +21,7 @@ main = {
   [
     calculateSimpleResult,
     calculateComplexResult,
+    multiplyResult,
     list,
     trueValue,
     falseValue

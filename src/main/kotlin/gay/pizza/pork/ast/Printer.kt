@@ -25,11 +25,27 @@ class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
 
   override fun visitFunctionCall(node: FunctionCall) {
     visit(node.symbol)
-    append("()")
+    append("(")
+    for ((index, argument) in node.arguments.withIndex()) {
+      visit(argument)
+      if (index + 1 != node.arguments.size) {
+        append(", ")
+      }
+    }
+    append(")")
   }
 
   override fun visitReference(node: SymbolReference) {
     visit(node.symbol)
+  }
+
+  override fun visitIf(node: If) {
+    append("if ")
+    visit(node.condition)
+    append(" then ")
+    visit(node.thenExpression)
+    append(" else ")
+    visit(node.elseExpression)
   }
 
   override fun visitSymbol(node: Symbol) {
@@ -38,6 +54,17 @@ class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
 
   override fun visitLambda(node: Lambda) {
     append("{")
+    if (node.arguments.isNotEmpty()) {
+      append(" ")
+      for ((index, argument) in node.arguments.withIndex()) {
+        visit(argument)
+        if (index + 1 != node.arguments.size) {
+          append(",")
+        }
+        append(" ")
+      }
+    }
+    append("in")
     indent++
     for (expression in node.expressions) {
       appendLine()

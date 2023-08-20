@@ -18,6 +18,9 @@ enum class TokenType(val char: Char? = null, val keyword: String? = null) {
   False(keyword = "false"),
   True(keyword = "true"),
   In(keyword = "in"),
+  If(keyword = "if"),
+  Then(keyword = "then"),
+  Else(keyword = "else"),
   EndOfFile;
 
   companion object {

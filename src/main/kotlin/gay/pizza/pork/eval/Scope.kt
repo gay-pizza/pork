@@ -21,13 +21,12 @@ class Scope(val parent: Scope? = null) {
     return value
   }
 
-  fun call(name: String, argument: Any = Unit): Any {
+  fun call(name: String, arguments: Arguments): Any {
     val value = value(name)
     if (value !is CallableFunction) {
       throw RuntimeException("$value is not callable.")
     }
-    val function = value as CallableFunction
-    return function.call(argument)
+    return value.call(arguments)
   }
 
   fun fork(): Scope {

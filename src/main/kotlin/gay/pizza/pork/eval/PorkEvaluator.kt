@@ -11,18 +11,33 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
     return value
   }
 
-  override fun visitFunctionCall(node: FunctionCall): Any = currentScope.call(node.symbol.id)
+  override fun visitFunctionCall(node: FunctionCall): Any {
+    val arguments = node.arguments.map { visit(it) }
+    return currentScope.call(node.symbol.id, Arguments(arguments))
+  }
 
   override fun visitReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
+
+  override fun visitIf(node: If): Any {
+    val condition = visit(node.condition)
+    return if (condition == true) {
+      visit(node.thenExpression)
+    } else {
+      visit(node.elseExpression)
+    }
+  }
 
   override fun visitSymbol(node: Symbol): Any {
     return Unit
   }
 
   override fun visitLambda(node: Lambda): CallableFunction {
-    return CallableFunction { _ ->
+    return CallableFunction { arguments ->
       currentScope = currentScope.fork()
+      for ((index, argumentSymbol) in node.arguments.withIndex()) {
+        currentScope.define(argumentSymbol.id, arguments.values[index])
+      }
       try {
         var value: Any? = null
         for (expression in node.expressions) {
@@ -45,6 +60,13 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
     val left = visit(node.left)
     val right = visit(node.right)
 
+    when (node.op) {
+      InfixOperator.Equals -> {
+        return left == right
+      }
+      else -> {}
+    }
+
     if (left !is Number || right !is Number) {
       throw RuntimeException("Failed to evaluate infix operation, bad types.")
     }
@@ -57,6 +79,7 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
       InfixOperator.Minus -> leftInt - rightInt
       InfixOperator.Multiply -> leftInt * rightInt
       InfixOperator.Divide -> leftInt / rightInt
+      else -> throw RuntimeException("Unable to handle operation ${node.op}")
     }
   }
 

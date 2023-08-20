@@ -4,6 +4,7 @@ interface Visitor<T> {
   fun visitDefine(node: Define): T
   fun visitFunctionCall(node: FunctionCall): T
   fun visitReference(node: SymbolReference): T
+  fun visitIf(node: If): T
   fun visitSymbol(node: Symbol): T
   fun visitLambda(node: Lambda): T
 
@@ -26,6 +27,7 @@ interface Visitor<T> {
     is Lambda -> visitLambda(node)
     is FunctionCall -> visitFunctionCall(node)
     is SymbolReference -> visitReference(node)
+    is If -> visitIf(node)
     else -> throw RuntimeException("Unknown Expression")
   }
 
@@ -35,4 +37,10 @@ interface Visitor<T> {
     is Program -> visitProgram(node)
     else -> throw RuntimeException("Unknown Node")
   }
+
+  fun visitNodes(vararg nodes: Node): List<T> =
+    nodes.map { visit(it) }
+
+  fun visitAll(vararg nodeLists: List<Node>): List<T> =
+    nodeLists.asSequence().flatten().map { visit(it) }.toList()
 }

@@ -1,6 +1,7 @@
 package gay.pizza.pork
 
 import gay.pizza.pork.ast.*
+import gay.pizza.pork.eval.Arguments
 import gay.pizza.pork.eval.Scope
 import gay.pizza.pork.eval.PorkEvaluator
 import gay.pizza.pork.parse.*
@@ -12,7 +13,7 @@ fun main(args: Array<String>) {
     val scope = Scope()
     val evaluator = PorkEvaluator(scope)
     evaluator.visit(ast)
-    println("> ${scope.call("main")}")
+    println("> ${scope.call("main", Arguments.Zero)}")
   }
 
   val code = Path(args[0]).readText()
