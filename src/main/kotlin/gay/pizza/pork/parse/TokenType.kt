@@ -1,9 +1,10 @@
 package gay.pizza.pork.parse
 
-enum class TokenType(val char: Char? = null, val keyword: String? = null) {
+enum class TokenType(val char: Char? = null, val keyword: String? = null, val promotions: List<TokenPromotion> = emptyList()) {
   Symbol,
   IntLiteral,
-  Equals(char = '='),
+  Equality,
+  Equals(char = '=', promotions = listOf(TokenPromotion('=', Equality))),
   Plus(char = '+'),
   Minus(char = '-'),
   Multiply(char = '*'),

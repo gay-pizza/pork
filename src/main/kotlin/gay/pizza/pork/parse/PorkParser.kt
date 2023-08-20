@@ -109,16 +109,10 @@ class PorkParser(val source: PeekableSource<Token>) {
       }
     }
 
-    if (peekType(TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide)) {
+    if (peekType(TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide, TokenType.Equality)) {
       val infixToken = source.next()
       val infixOperator = convertInfixOperator(infixToken)
       return InfixOperation(expression, infixOperator, readExpression())
-    }
-
-    if (peekType(TokenType.Equals)) {
-      val twoWideInfix = source.next()
-      val secondToken = expect(twoWideInfix.type)
-      return InfixOperation(expression, convertWideInfixOperator(twoWideInfix, secondToken), readExpression())
     }
 
     return expression
@@ -130,12 +124,7 @@ class PorkParser(val source: PeekableSource<Token>) {
       TokenType.Minus -> InfixOperator.Minus
       TokenType.Multiply -> InfixOperator.Multiply
       TokenType.Divide -> InfixOperator.Divide
-      else -> throw RuntimeException("Unknown Infix Operator")
-    }
-
-  private fun convertWideInfixOperator(firstToken: Token, secondToken: Token): InfixOperator =
-    when (firstToken.type to secondToken.type) {
-      TokenType.Equals to TokenType.Equals -> InfixOperator.Equals
+      TokenType.Equality -> InfixOperator.Equals
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 

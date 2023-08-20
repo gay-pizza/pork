@@ -54,10 +54,23 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
     while (source.peek() != CharSource.NullChar) {
       tokenStart = source.currentIndex
       val char = source.next()
+
       for (item in TokenType.SingleChars) {
-        if (item.char == char) {
-          return Token(item, char.toString())
+        if (item.char != char) {
+          continue
         }
+
+        var type = item
+        var text = item.char.toString()
+        for (promotion in item.promotions) {
+          if (source.peek() != promotion.nextChar) {
+            continue
+          }
+          val nextChar = source.next()
+          type = promotion.type
+          text += nextChar
+        }
+        return Token(type, text)
       }
 
       if (isWhitespace(char)) {

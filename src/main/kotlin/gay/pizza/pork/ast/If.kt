@@ -4,6 +4,6 @@ class If(
   val condition: Expression,
   val thenExpression: Expression,
   val elseExpression: Expression? = null
-) : Expression {
+) : Expression() {
   override val type: NodeType = NodeType.If
 }

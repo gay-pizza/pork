@@ -1,3 +1,3 @@
 package gay.pizza.pork.ast
 
-interface Expression : Node
+abstract class Expression : Node()
