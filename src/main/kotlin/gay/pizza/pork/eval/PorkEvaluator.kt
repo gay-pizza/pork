@@ -24,12 +24,16 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
     return if (condition == true) {
       visit(node.thenExpression)
     } else {
-      visit(node.elseExpression)
+      if (node.elseExpression != null) {
+        visit(node.elseExpression)
+      } else {
+        None
+      }
     }
   }
 
   override fun visitSymbol(node: Symbol): Any {
-    return Unit
+    return None
   }
 
   override fun visitLambda(node: Lambda): CallableFunction {
@@ -43,7 +47,7 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
         for (expression in node.expressions) {
           value = visit(expression)
         }
-        value ?: Unit
+        value ?: None
       } finally {
         currentScope = currentScope.leave()
       }
@@ -88,6 +92,6 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
     for (expression in node.expressions) {
       value = visit(expression)
     }
-    return value ?: Unit
+    return value ?: None
   }
 }

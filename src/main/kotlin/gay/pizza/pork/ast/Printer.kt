@@ -44,8 +44,10 @@ class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
     visit(node.condition)
     append(" then ")
     visit(node.thenExpression)
-    append(" else ")
-    visit(node.elseExpression)
+    if (node.elseExpression != null) {
+      append(" else ")
+      visit(node.elseExpression)
+    }
   }
 
   override fun visitSymbol(node: Symbol) {

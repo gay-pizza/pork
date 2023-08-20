@@ -18,8 +18,11 @@ class PorkParser(val source: PeekableSource<Token>) {
     val condition = readExpression()
     expect(TokenType.Then)
     val thenExpression = readExpression()
-    expect(TokenType.Else)
-    val elseExpression = readExpression()
+    var elseExpression: Expression? = null
+    if (peekType(TokenType.Else)) {
+      expect(TokenType.Else)
+      elseExpression = readExpression()
+    }
     return If(condition, thenExpression, elseExpression)
   }
 

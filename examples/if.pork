@@ -1,0 +1,7 @@
+check = { value in
+  if value then 50
+}
+
+main = { in
+  value = check(100)
+}

@@ -5,4 +5,5 @@ fib = { n in
     then 1
   else fib(n - 1) + fib(n - 2)
 }
+
 main = { in fib(20) }

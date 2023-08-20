@@ -18,12 +18,17 @@ main = { in
   trueValue = true
   falseValue = false
 
+  check = { in
+    if true then false else true
+  }
+
   [
     calculateSimpleResult,
     calculateComplexResult,
     multiplyResult,
     list,
     trueValue,
-    falseValue
+    falseValue,
+    check()
   ]
 }
