@@ -2,7 +2,7 @@ package gay.pizza.pork.eval
 
 import gay.pizza.pork.ast.*
 
-class Evaluator(root: Scope) : Visitor<Any> {
+class PorkEvaluator(root: Scope) : Visitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitDefine(node: Define): Any {

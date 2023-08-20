@@ -51,7 +51,7 @@ class PorkTokenizer(val source: CharSource) {
       tokenStart = source.currentIndex
       val char = source.next()
       for (item in TokenType.SingleChars) {
-        if (item.singleChar == char) {
+        if (item.char == char) {
           return Token(item, char.toString())
         }
       }

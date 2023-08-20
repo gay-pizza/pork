@@ -1,26 +1,27 @@
 package gay.pizza.pork.parse
 
-enum class TokenType(val singleChar: Char? = null, val keyword: String? = null) {
+enum class TokenType(val char: Char? = null, val keyword: String? = null) {
   Symbol,
   IntLiteral,
-  Equals(singleChar = '='),
-  Plus(singleChar = '+'),
-  Minus(singleChar = '-'),
-  Multiply(singleChar = '*'),
-  Divide(singleChar = '/'),
-  LeftCurly(singleChar = '{'),
-  RightCurly(singleChar = '}'),
-  LeftBracket(singleChar = '['),
-  RightBracket(singleChar = ']'),
-  LeftParentheses(singleChar = '('),
-  RightParentheses(singleChar = ')'),
-  Comma(singleChar = ','),
+  Equals(char = '='),
+  Plus(char = '+'),
+  Minus(char = '-'),
+  Multiply(char = '*'),
+  Divide(char = '/'),
+  LeftCurly(char = '{'),
+  RightCurly(char = '}'),
+  LeftBracket(char = '['),
+  RightBracket(char = ']'),
+  LeftParentheses(char = '('),
+  RightParentheses(char = ')'),
+  Comma(char = ','),
   False(keyword = "false"),
   True(keyword = "true"),
+  In(keyword = "in"),
   EndOfFile;
 
   companion object {
     val Keywords = entries.filter { it.keyword != null }
-    val SingleChars = entries.filter { it.singleChar != null }
+    val SingleChars = entries.filter { it.char != null }
   }
 }
