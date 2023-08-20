@@ -35,10 +35,6 @@ class PorkParser(val source: PeekableSource<Token>) {
       FunctionCall(symbol, arguments)
     } else if (peekType(TokenType.Equals)) {
       expect(TokenType.Equals)
-      if (peekType(TokenType.Equals)) {
-        source.back()
-        return SymbolReference(symbol)
-      }
       Define(symbol, readExpression())
     } else {
       SymbolReference(symbol)

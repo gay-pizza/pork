@@ -40,8 +40,9 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
     return Token(TokenType.IntLiteral, number)
   }
 
-  private fun readWhitespace(): Token {
+  private fun readWhitespace(firstChar: Char): Token {
     val whitespace = buildString {
+      append(firstChar)
       while (isWhitespace(source.peek())) {
         val char = source.next()
         append(char)
@@ -74,7 +75,7 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
       }
 
       if (isWhitespace(char)) {
-        val whitespace = readWhitespace()
+        val whitespace = readWhitespace(char)
         if (preserveWhitespace) {
           return whitespace
         }
