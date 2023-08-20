@@ -21,6 +21,7 @@ enum class TokenType(val char: Char? = null, val keyword: String? = null) {
   If(keyword = "if"),
   Then(keyword = "then"),
   Else(keyword = "else"),
+  Whitespace,
   EndOfFile;
 
   companion object {

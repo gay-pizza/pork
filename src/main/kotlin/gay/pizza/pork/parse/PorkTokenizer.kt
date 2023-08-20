@@ -1,6 +1,6 @@
 package gay.pizza.pork.parse
 
-class PorkTokenizer(val source: CharSource) {
+class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = false) {
   private var tokenStart: Int = 0
 
   private fun isSymbol(c: Char): Boolean =
@@ -40,10 +40,14 @@ class PorkTokenizer(val source: CharSource) {
     return Token(TokenType.IntLiteral, number)
   }
 
-  private fun skipWhitespace() {
-    while (isWhitespace(source.peek())) {
-      source.next()
+  private fun readWhitespace(): Token {
+    val whitespace = buildString {
+      while (isWhitespace(source.peek())) {
+        val char = source.next()
+        append(char)
+      }
     }
+    return Token(TokenType.Whitespace, whitespace)
   }
 
   fun next(): Token {
@@ -57,7 +61,10 @@ class PorkTokenizer(val source: CharSource) {
       }
 
       if (isWhitespace(char)) {
-        skipWhitespace()
+        val whitespace = readWhitespace()
+        if (preserveWhitespace) {
+          return whitespace
+        }
         continue
       }
 
