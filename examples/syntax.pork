@@ -2,12 +2,15 @@
 main = { in
   three = 3
   two = 2
+
   calculateSimple = { in
     (50 + three) * two
   }
+
   calculateComplex = { in
     three + two + 50
   }
+
   multiply = { a, b in
     a * b
   }
@@ -25,6 +28,14 @@ main = { in
     !value
   }
 
+  notEqual = { a, b in
+    a != b
+  }
+
+  equal = { a, b in
+    a == b
+  }
+
   [
     calculateSimpleResult,
     calculateComplexResult,
@@ -33,6 +44,10 @@ main = { in
     trueValue,
     falseValue,
     invert(true),
-    invert(false)
+    invert(false),
+    equal(5, 5),
+    equal(5, 6),
+    notEqual(5, 5),
+    notEqual(5, 6)
   ]
 }

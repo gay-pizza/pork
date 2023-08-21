@@ -5,5 +5,6 @@ enum class InfixOperator(val token: String) {
   Minus("-"),
   Multiply("*"),
   Divide("/"),
-  Equals("==")
+  Equals("=="),
+  NotEquals("!=")
 }

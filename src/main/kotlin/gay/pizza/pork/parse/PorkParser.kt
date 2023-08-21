@@ -117,7 +117,8 @@ class PorkParser(source: PeekableSource<Token>) {
         TokenType.Minus,
         TokenType.Multiply,
         TokenType.Divide,
-        TokenType.Equality)) {
+        TokenType.Equality,
+        TokenType.Inequality)) {
       val infixToken = next()
       val infixOperator = convertInfixOperator(infixToken)
       return InfixOperation(expression, infixOperator, readExpression())
@@ -133,6 +134,7 @@ class PorkParser(source: PeekableSource<Token>) {
       TokenType.Multiply -> InfixOperator.Multiply
       TokenType.Divide -> InfixOperator.Divide
       TokenType.Equality -> InfixOperator.Equals
+      TokenType.Inequality -> InfixOperator.NotEquals
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 

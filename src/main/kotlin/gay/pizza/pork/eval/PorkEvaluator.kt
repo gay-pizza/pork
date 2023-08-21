@@ -81,6 +81,9 @@ class PorkEvaluator(root: Scope) : NodeVisitor<Any> {
       InfixOperator.Equals -> {
         return left == right
       }
+      InfixOperator.NotEquals -> {
+        return left != right
+      }
       else -> {}
     }
 
