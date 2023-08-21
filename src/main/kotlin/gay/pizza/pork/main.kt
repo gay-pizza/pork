@@ -1,6 +1,7 @@
 package gay.pizza.pork
 
-import gay.pizza.pork.ast.Program
+import gay.pizza.pork.ast.Printer
+import gay.pizza.pork.ast.nodes.Program
 import gay.pizza.pork.eval.Arguments
 import gay.pizza.pork.eval.PorkEvaluator
 import gay.pizza.pork.eval.Scope
@@ -39,9 +40,14 @@ fun main(args: Array<String>) {
   eval(program)
 
   val exactCode = stream.tokens.joinToString("") { it.text }
-  println(exactCode)
-  println(code == exactCode)
   validateTokenSoundness(code, stream)
+  if (exactCode != code) {
+    throw RuntimeException("Token reconstruction didn't succeed.")
+  }
+
+  val generated = buildString { Printer(this).visit(program) }
+  parse(tokenize(generated))
+  println(generated)
 }
 
 fun tokenize(input: String): TokenStream =

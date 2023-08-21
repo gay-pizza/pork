@@ -1,6 +1,8 @@
 package gay.pizza.pork.ast
 
-interface Visitor<T> {
+import gay.pizza.pork.ast.nodes.*
+
+interface NodeVisitor<T> {
   fun visitDefine(node: Define): T
   fun visitFunctionCall(node: FunctionCall): T
   fun visitReference(node: SymbolReference): T

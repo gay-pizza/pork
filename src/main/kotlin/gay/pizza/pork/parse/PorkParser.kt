@@ -1,6 +1,6 @@
 package gay.pizza.pork.parse
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.nodes.*
 
 class PorkParser(source: PeekableSource<Token>) {
   private val whitespaceIncludedSource = source

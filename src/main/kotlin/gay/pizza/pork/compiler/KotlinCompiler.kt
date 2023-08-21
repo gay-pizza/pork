@@ -1,8 +1,9 @@
 package gay.pizza.pork.compiler
 
 import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.nodes.*
 
-class KotlinCompiler : Visitor<String> {
+class KotlinCompiler : NodeVisitor<String> {
   override fun visitDefine(node: Define): String =
     "val ${visit(node.symbol)} = ${visit(node.value)}"
 

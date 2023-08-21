@@ -1,6 +1,8 @@
 package gay.pizza.pork.ast
 
-class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
+import gay.pizza.pork.ast.nodes.*
+
+class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
   private var indent = 0
 
   private fun append(text: String) {
@@ -65,6 +67,8 @@ class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
         }
         append(" ")
       }
+    } else {
+      append(" ")
     }
     append("in")
     indent++

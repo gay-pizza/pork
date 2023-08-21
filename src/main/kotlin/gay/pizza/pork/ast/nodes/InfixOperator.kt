@@ -1,4 +1,4 @@
-package gay.pizza.pork.ast
+package gay.pizza.pork.ast.nodes
 
 enum class InfixOperator(val token: String) {
   Plus("+"),
