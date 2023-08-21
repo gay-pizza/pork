@@ -60,6 +60,18 @@ class PorkEvaluator(root: Scope) : Visitor<Any> {
 
   override fun visitParentheses(node: Parentheses): Any = visit(node.expression)
 
+  override fun visitPrefixOperation(node: PrefixOperation): Any {
+    val value = visit(node.expression)
+    return when (node.op) {
+      PrefixOperator.Negate -> {
+        if (value !is Boolean) {
+          throw RuntimeException("Cannot negate a value which is not a boolean.")
+        }
+        !value
+      }
+    }
+  }
+
   override fun visitInfixOperation(node: InfixOperation): Any {
     val left = visit(node.left)
     val right = visit(node.right)

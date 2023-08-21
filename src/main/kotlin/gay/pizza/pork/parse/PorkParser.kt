@@ -96,6 +96,11 @@ class PorkParser(val source: PeekableSource<Token>) {
         return BooleanLiteral(false)
       }
 
+      TokenType.Negation -> {
+        expect(TokenType.Negation)
+        return PrefixOperation(PrefixOperator.Negate, readExpression())
+      }
+
       TokenType.If -> {
         return readIf()
       }

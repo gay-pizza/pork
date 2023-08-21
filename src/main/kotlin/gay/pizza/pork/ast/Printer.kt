@@ -111,6 +111,11 @@ class Printer(private val buffer: StringBuilder) : Visitor<Unit> {
     append(")")
   }
 
+  override fun visitPrefixOperation(node: PrefixOperation) {
+    append(node.op.token)
+    visit(node.expression)
+  }
+
   override fun visitInfixOperation(node: InfixOperation) {
     visit(node.left)
     append(" ")

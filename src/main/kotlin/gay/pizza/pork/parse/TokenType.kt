@@ -15,6 +15,7 @@ enum class TokenType(val char: Char? = null, val keyword: String? = null, val pr
   RightBracket(char = ']'),
   LeftParentheses(char = '('),
   RightParentheses(char = ')'),
+  Negation(char = '!'),
   Comma(char = ','),
   False(keyword = "false"),
   True(keyword = "true"),

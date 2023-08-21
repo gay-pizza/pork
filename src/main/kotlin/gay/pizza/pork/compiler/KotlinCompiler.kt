@@ -57,6 +57,9 @@ class KotlinCompiler : Visitor<String> {
   override fun visitParentheses(node: Parentheses): String =
     "(${visit(node.expression)})"
 
+  override fun visitPrefixOperation(node: PrefixOperation): String =
+    "${node.op.token}${visit(node.expression)}"
+
   override fun visitInfixOperation(node: InfixOperation): String =
     "${visit(node.left)} ${node.op.token} ${visit(node.right)}"
 

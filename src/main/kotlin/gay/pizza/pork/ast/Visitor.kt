@@ -13,6 +13,7 @@ interface Visitor<T> {
   fun visitListLiteral(node: ListLiteral): T
 
   fun visitParentheses(node: Parentheses): T
+  fun visitPrefixOperation(node: PrefixOperation): T
   fun visitInfixOperation(node: InfixOperation): T
 
   fun visitProgram(node: Program): T
@@ -23,6 +24,7 @@ interface Visitor<T> {
     is ListLiteral -> visitListLiteral(node)
     is Parentheses -> visitParentheses(node)
     is InfixOperation -> visitInfixOperation(node)
+    is PrefixOperation -> visitPrefixOperation(node)
     is Define -> visitDefine(node)
     is Lambda -> visitLambda(node)
     is FunctionCall -> visitFunctionCall(node)

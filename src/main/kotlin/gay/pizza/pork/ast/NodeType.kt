@@ -13,7 +13,8 @@ enum class NodeType(val parent: NodeType? = null, vararg traits: NodeTypeTrait) 
   Parentheses(Expression),
   Define(Expression),
   Lambda(Expression),
-  InfixOperation(Expression),
+  PrefixOperation(Expression, Operation),
+  InfixOperation(Expression, Operation),
   SymbolReference(Expression),
   FunctionCall(Expression),
   If(Expression);

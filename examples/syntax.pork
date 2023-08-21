@@ -19,7 +19,7 @@ main = { in
   falseValue = false
 
   invert = { value in
-    if value then false else true
+    !value
   }
 
   [
