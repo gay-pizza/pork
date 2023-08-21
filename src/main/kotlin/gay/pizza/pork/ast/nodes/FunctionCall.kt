@@ -8,4 +8,9 @@ class FunctionCall(val symbol: Symbol, val arguments: List<Expression>) : Expres
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitAll(listOf(symbol), arguments)
+
+  override fun equals(other: Any?): Boolean {
+    if (other !is FunctionCall) return false
+    return other.symbol == symbol && other.arguments == arguments
+  }
 }

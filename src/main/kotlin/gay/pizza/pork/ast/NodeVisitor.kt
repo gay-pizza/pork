@@ -42,8 +42,8 @@ interface NodeVisitor<T> {
     else -> throw RuntimeException("Unknown Node")
   }
 
-  fun visitNodes(vararg nodes: Node): List<T> =
-    nodes.map { visit(it) }
+  fun visitNodes(vararg nodes: Node?): List<T> =
+    nodes.filterNotNull().map { visit(it) }
 
   fun visitAll(vararg nodeLists: List<Node>): List<T> =
     nodeLists.asSequence().flatten().map { visit(it) }.toList()
