@@ -46,8 +46,13 @@ fun main(args: Array<String>) {
   }
 
   val generated = buildString { Printer(this).visit(program) }
+  val parsedAst = parse(tokenize(generated))
   parse(tokenize(generated))
   println(generated)
+
+  if (program != parsedAst) {
+    throw RuntimeException("Equality of parsed AST from printer was not proven.")
+  }
 }
 
 fun tokenize(input: String): TokenStream =
