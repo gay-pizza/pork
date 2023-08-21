@@ -1,33 +1,39 @@
 package gay.pizza.pork.parse
 
-enum class TokenType(val char: Char? = null, val keyword: String? = null, val promotions: List<TokenPromotion> = emptyList()) {
+import gay.pizza.pork.parse.TokenTypeProperty.*
+
+enum class TokenType(vararg properties: TokenTypeProperty) {
   Symbol,
   IntLiteral,
   Equality,
-  Equals(char = '=', promotions = listOf(TokenPromotion('=', Equality))),
-  Plus(char = '+'),
-  Minus(char = '-'),
-  Multiply(char = '*'),
-  Divide(char = '/'),
-  LeftCurly(char = '{'),
-  RightCurly(char = '}'),
-  LeftBracket(char = '['),
-  RightBracket(char = ']'),
-  LeftParentheses(char = '('),
-  RightParentheses(char = ')'),
-  Negation(char = '!'),
-  Comma(char = ','),
-  False(keyword = "false"),
-  True(keyword = "true"),
-  In(keyword = "in"),
-  If(keyword = "if"),
-  Then(keyword = "then"),
-  Else(keyword = "else"),
+  Equals(SingleChar('='), Promotion('=', Equality)),
+  Plus(SingleChar('+')),
+  Minus(SingleChar('-')),
+  Multiply(SingleChar('*')),
+  Divide(SingleChar('/')),
+  LeftCurly(SingleChar('{')),
+  RightCurly(SingleChar('}')),
+  LeftBracket(SingleChar('[')),
+  RightBracket(SingleChar(']')),
+  LeftParentheses(SingleChar('(')),
+  RightParentheses(SingleChar(')')),
+  Negation(SingleChar('!')),
+  Comma(SingleChar(',')),
+  False(Keyword("false")),
+  True(Keyword("true")),
+  In(Keyword("in")),
+  If(Keyword("if")),
+  Then(Keyword("then")),
+  Else(Keyword("else")),
   Whitespace,
   EndOfFile;
 
+  val promotions: List<Promotion> = properties.filterIsInstance<Promotion>()
+  val keyword: Keyword? = properties.filterIsInstance<Keyword>().singleOrNull()
+  val singleChar: SingleChar? = properties.filterIsInstance<SingleChar>().singleOrNull()
+
   companion object {
-    val Keywords = entries.filter { it.keyword != null }
-    val SingleChars = entries.filter { it.char != null }
+    val Keywords = entries.filter { item -> item.keyword != null }
+    val SingleChars = entries.filter { item -> item.singleChar != null }
   }
 }

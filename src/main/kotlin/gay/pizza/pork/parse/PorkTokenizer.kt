@@ -1,6 +1,6 @@
 package gay.pizza.pork.parse
 
-class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = false) {
+class PorkTokenizer(val source: CharSource) {
   private var tokenStart: Int = 0
 
   private fun isSymbol(c: Char): Boolean =
@@ -22,12 +22,12 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
 
     var type = TokenType.Symbol
     for (keyword in TokenType.Keywords) {
-      if (symbol == keyword.keyword) {
+      if (symbol == keyword.keyword?.text) {
         type = keyword
       }
     }
 
-    return Token(type, symbol)
+    return Token(type, tokenStart, symbol)
   }
 
   private fun readIntLiteral(firstChar: Char): Token {
@@ -37,7 +37,7 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
         append(source.next())
       }
     }
-    return Token(TokenType.IntLiteral, number)
+    return Token(TokenType.IntLiteral, tokenStart, number)
   }
 
   private fun readWhitespace(firstChar: Char): Token {
@@ -48,7 +48,7 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
         append(char)
       }
     }
-    return Token(TokenType.Whitespace, whitespace)
+    return Token(TokenType.Whitespace, tokenStart, whitespace)
   }
 
   fun next(): Token {
@@ -57,12 +57,13 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
       val char = source.next()
 
       for (item in TokenType.SingleChars) {
-        if (item.char != char) {
+        val itemChar = item.singleChar!!.char
+        if (itemChar != char) {
           continue
         }
 
         var type = item
-        var text = item.char.toString()
+        var text = itemChar.toString()
         for (promotion in item.promotions) {
           if (source.peek() != promotion.nextChar) {
             continue
@@ -71,15 +72,11 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
           type = promotion.type
           text += nextChar
         }
-        return Token(type, text)
+        return Token(type, tokenStart, text)
       }
 
       if (isWhitespace(char)) {
-        val whitespace = readWhitespace(char)
-        if (preserveWhitespace) {
-          return whitespace
-        }
-        continue
+        return readWhitespace(char)
       }
 
       if (isDigit(char)) {
@@ -91,7 +88,7 @@ class PorkTokenizer(val source: CharSource, val preserveWhitespace: Boolean = fa
       }
       throw RuntimeException("Failed to parse: (${char}) next ${source.peek()}")
     }
-    return TokenSource.EndOfFile
+    return Token.endOfFile(source.currentIndex)
   }
 
   fun tokenize(): TokenStream {

@@ -2,7 +2,9 @@ package gay.pizza.pork.parse
 
 import gay.pizza.pork.ast.*
 
-class PorkParser(val source: PeekableSource<Token>) {
+class PorkParser(source: PeekableSource<Token>) {
+  private val whitespaceIncludedSource = source
+
   private fun readIntLiteral(): IntLiteral {
     val token = expect(TokenType.IntLiteral)
     return IntLiteral(token.text.toInt())
@@ -61,7 +63,7 @@ class PorkParser(val source: PeekableSource<Token>) {
   }
 
   fun readExpression(): Expression {
-    val token = source.peek()
+    val token = peek()
     val expression = when (token.type) {
       TokenType.IntLiteral -> {
         readIntLiteral()
@@ -110,8 +112,13 @@ class PorkParser(val source: PeekableSource<Token>) {
       }
     }
 
-    if (peekType(TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide, TokenType.Equality)) {
-      val infixToken = source.next()
+    if (peekType(
+        TokenType.Plus,
+        TokenType.Minus,
+        TokenType.Multiply,
+        TokenType.Divide,
+        TokenType.Equality)) {
+      val infixToken = next()
       val infixOperator = convertInfixOperator(infixToken)
       return InfixOperation(expression, infixOperator, readExpression())
     }
@@ -155,15 +162,36 @@ class PorkParser(val source: PeekableSource<Token>) {
   }
 
   private fun peekType(vararg types: TokenType): Boolean {
-    val token = source.peek()
+    val token = peek()
     return types.contains(token.type)
   }
 
   private fun expect(type: TokenType): Token {
-    val token = source.next()
+    val token = next()
     if (token.type != type) {
       throw RuntimeException("Expected token type '${type}' but got type ${token.type} '${token.text}'")
     }
     return token
+  }
+
+  private fun next(): Token {
+    while (true) {
+      val token = whitespaceIncludedSource.next()
+      if (token.type == TokenType.Whitespace) {
+        continue
+      }
+      return token
+    }
+  }
+
+  private fun peek(): Token {
+    while (true) {
+      val token = whitespaceIncludedSource.peek()
+      if (token.type == TokenType.Whitespace) {
+        whitespaceIncludedSource.next()
+        continue
+      }
+      return token
+    }
   }
 }
