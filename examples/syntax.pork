@@ -1,3 +1,4 @@
+/* main function */
 main = { in
   three = 3
   two = 2

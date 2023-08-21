@@ -3,7 +3,7 @@ package gay.pizza.pork.parse
 import gay.pizza.pork.ast.nodes.*
 
 class PorkParser(source: PeekableSource<Token>) {
-  private val whitespaceIncludedSource = source
+  private val unsanitizedSource = source
 
   private fun readIntLiteral(): IntLiteral {
     val token = expect(TokenType.IntLiteral)
@@ -176,8 +176,8 @@ class PorkParser(source: PeekableSource<Token>) {
 
   private fun next(): Token {
     while (true) {
-      val token = whitespaceIncludedSource.next()
-      if (token.type == TokenType.Whitespace) {
+      val token = unsanitizedSource.next()
+      if (ignoredByParser(token.type)) {
         continue
       }
       return token
@@ -186,12 +186,18 @@ class PorkParser(source: PeekableSource<Token>) {
 
   private fun peek(): Token {
     while (true) {
-      val token = whitespaceIncludedSource.peek()
-      if (token.type == TokenType.Whitespace) {
-        whitespaceIncludedSource.next()
+      val token = unsanitizedSource.peek()
+      if (ignoredByParser(token.type)) {
+        unsanitizedSource.next()
         continue
       }
       return token
     }
+  }
+
+  private fun ignoredByParser(type: TokenType): Boolean = when (type) {
+    TokenType.BlockComment -> true
+    TokenType.Whitespace -> true
+    else -> false
   }
 }

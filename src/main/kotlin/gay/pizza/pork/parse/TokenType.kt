@@ -26,6 +26,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Then(Keyword("then")),
   Else(Keyword("else")),
   Whitespace,
+  BlockComment,
   EndOfFile;
 
   val promotions: List<Promotion> = properties.filterIsInstance<Promotion>()
