@@ -15,17 +15,33 @@ fun eval(ast: Program) {
   println("> ${scope.call("main", Arguments.Zero)}")
 }
 
+fun validateTokenSoundness(input: String, stream: TokenStream) {
+  var expectedIndex = 0
+  for (token in stream.tokens) {
+    if (token.start != expectedIndex) {
+      throw RuntimeException("Expected token to be at index $expectedIndex but was ${token.start}")
+    }
+    val slice = input.slice(token.start until token.start + token.text.length)
+    if (slice != token.text) {
+      throw RuntimeException(
+        "Expected index ${token.start} for length ${token.text.length} to" +
+        " equal '${token.text}' but was '$slice'")
+    }
+    expectedIndex += token.text.length
+  }
+}
+
 fun main(args: Array<String>) {
   val code = Path(args[0]).readText()
-  val stream = tokenize(code).excludeAllWhitespace()
+  val stream = tokenize(code)
   println(stream.tokens.joinToString("\n"))
   val program = parse(stream)
   eval(program)
 
-  val exactStream = tokenize(code)
-  val exactCode = exactStream.tokens.joinToString("") { it.text }
+  val exactCode = stream.tokens.joinToString("") { it.text }
   println(exactCode)
   println(code == exactCode)
+  validateTokenSoundness(code, stream)
 }
 
 fun tokenize(input: String): TokenStream =
