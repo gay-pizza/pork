@@ -197,6 +197,7 @@ class PorkParser(source: PeekableSource<Token>) {
 
   private fun ignoredByParser(type: TokenType): Boolean = when (type) {
     TokenType.BlockComment -> true
+    TokenType.LineComment -> true
     TokenType.Whitespace -> true
     else -> false
   }

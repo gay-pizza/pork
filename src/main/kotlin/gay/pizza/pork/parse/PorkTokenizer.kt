@@ -75,6 +75,20 @@ class PorkTokenizer(val source: CharSource) {
     return Token(TokenType.BlockComment, tokenStart, comment)
   }
 
+  private fun readLineComment(firstChar: Char): Token {
+    val comment = buildString {
+      append(firstChar)
+      while (true) {
+        val char = source.peek()
+        if (char == CharSource.NullChar || char == '\n') {
+          break
+        }
+        append(source.next())
+      }
+    }
+    return Token(TokenType.LineComment, tokenStart, comment)
+  }
+
   fun next(): Token {
     while (source.peek() != CharSource.NullChar) {
       tokenStart = source.currentIndex
@@ -82,6 +96,10 @@ class PorkTokenizer(val source: CharSource) {
 
       if (char == '/' && source.peek() == '*') {
         return readBlockComment(char)
+      }
+
+      if (char == '/' && source.peek() == '/') {
+        return readLineComment(char)
       }
 
       for (item in TokenType.SingleChars) {

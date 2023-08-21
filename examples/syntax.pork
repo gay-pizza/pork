@@ -11,6 +11,8 @@ main = { in
   multiply = { a, b in
     a * b
   }
+
+  // calculates the result
   calculateSimpleResult = calculateSimple()
   calculateComplexResult = calculateComplex()
   multiplyResult = multiply(50, 50)
