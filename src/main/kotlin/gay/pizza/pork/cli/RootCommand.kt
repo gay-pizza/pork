@@ -12,6 +12,7 @@ class RootCommand : CliktCommand(
       RunCommand(),
       HighlightCommand(),
       TokenizeCommand(),
+      ReprintCommand(),
       GenerateKotlinCommand()
     )
   }
