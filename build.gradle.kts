@@ -24,6 +24,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-bom")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("com.github.ajalt.clikt:clikt:4.2.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0-RC")
 }
 
 tasks.withType<KotlinCompile> {

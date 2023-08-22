@@ -2,7 +2,11 @@ package gay.pizza.pork.ast.nodes
 
 import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.ast.NodeVisitor
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+@SerialName("infixOperation")
 class InfixOperation(
   val left: Expression,
   val op: InfixOperator,

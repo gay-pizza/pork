@@ -1,7 +1,11 @@
 package gay.pizza.pork.ast.nodes
 
 import gay.pizza.pork.ast.NodeType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+@SerialName("symbol")
 class Symbol(val id: String) : Node() {
   override val type: NodeType = NodeType.Symbol
 

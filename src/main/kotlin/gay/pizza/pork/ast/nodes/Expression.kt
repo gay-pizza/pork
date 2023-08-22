@@ -1,3 +1,6 @@
 package gay.pizza.pork.ast.nodes
 
-abstract class Expression : Node()
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class Expression : Node()

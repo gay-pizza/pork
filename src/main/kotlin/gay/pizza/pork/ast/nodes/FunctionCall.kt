@@ -2,7 +2,11 @@ package gay.pizza.pork.ast.nodes
 
 import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.ast.NodeVisitor
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+@SerialName("functionCall")
 class FunctionCall(val symbol: Symbol, val arguments: List<Expression>) : Expression() {
   override val type: NodeType = NodeType.FunctionCall
 
@@ -12,5 +16,12 @@ class FunctionCall(val symbol: Symbol, val arguments: List<Expression>) : Expres
   override fun equals(other: Any?): Boolean {
     if (other !is FunctionCall) return false
     return other.symbol == symbol && other.arguments == arguments
+  }
+
+  override fun hashCode(): Int {
+    var result = symbol.hashCode()
+    result = 31 * result + arguments.hashCode()
+    result = 31 * result + type.hashCode()
+    return result
   }
 }

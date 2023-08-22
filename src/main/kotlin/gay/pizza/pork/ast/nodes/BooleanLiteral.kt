@@ -1,7 +1,11 @@
 package gay.pizza.pork.ast.nodes
 
 import gay.pizza.pork.ast.NodeType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+@SerialName("booleanLiteral")
 class BooleanLiteral(val value: Boolean) : Expression() {
   override val type: NodeType = NodeType.BooleanLiteral
 

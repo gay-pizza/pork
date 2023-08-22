@@ -3,8 +3,10 @@ package gay.pizza.pork.ast.nodes
 import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.ast.Printer
 import gay.pizza.pork.ast.NodeVisitor
+import kotlinx.serialization.Serializable
 
-abstract class Node {
+@Serializable
+sealed class Node {
   abstract val type: NodeType
   open fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> = emptyList()
 
