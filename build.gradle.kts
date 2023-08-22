@@ -23,6 +23,7 @@ java {
 dependencies {
   implementation("org.jetbrains.kotlin:kotlin-bom")
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+  implementation("com.github.ajalt.clikt:clikt:4.2.0")
 }
 
 tasks.withType<KotlinCompile> {
@@ -34,15 +35,17 @@ tasks.withType<Wrapper> {
 }
 
 application {
-  mainClass.set("gay.pizza.pork.MainKt")
+  mainClass.set("gay.pizza.pork.cli.MainKt")
 }
 
 graalvmNative {
   binaries {
     named("main") {
       imageName.set("pork")
-      mainClass.set("gay.pizza.pork.MainKt")
+      mainClass.set("gay.pizza.pork.cli.MainKt")
       sharedLibrary.set(false)
     }
   }
 }
+
+tasks.run.get().outputs.upToDateWhen { false }

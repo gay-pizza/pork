@@ -7,4 +7,5 @@ fib = { n in
   else fib(n - 1) + fib(n - 2)
 }
 
-main = { in fib(20) }
+result = fib(20)
+println(result)

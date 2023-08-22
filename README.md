@@ -5,28 +5,21 @@ A small BBQ language.
 Very WIP. Like VERY.
 
 ```pork
-main = {
-  three = 3
-  two = 2
-  calculateSimple = {
-    (50 + three) * two
-  }
-  calculateComplex = {
-    three + two + 50
-  }
-  calculateSimpleResult = calculateSimple()
-  calculateComplexResult = calculateComplex()
-
-  list = [10, 20, 30]
-  trueValue = true
-  falseValue = false
-
-  [
-    calculateSimpleResult,
-    calculateComplexResult,
-    list,
-    trueValue,
-    falseValue
-  ]
+/* fibonacci sequence */
+fib = { n in
+  if n == 0
+    then 0
+  else if n == 1
+    then 1
+  else fib(n - 1) + fib(n - 2)
 }
+
+result = fib(20)
+println(result)
+```
+
+## Usage
+
+```
+./gradlew -q run --args 'run examples/fib.pork'
 ```

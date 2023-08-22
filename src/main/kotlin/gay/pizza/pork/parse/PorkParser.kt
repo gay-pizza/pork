@@ -108,7 +108,9 @@ class PorkParser(source: PeekableSource<Token>) {
       }
 
       else -> {
-        throw RuntimeException("Failed to parse token: ${token.type} '${token.text}' as expression")
+        throw RuntimeException(
+          "Failed to parse token: ${token.type} '${token.text}' as expression" +
+          " (index ${unsanitizedSource.currentIndex})")
       }
     }
 
