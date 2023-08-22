@@ -53,6 +53,9 @@ fun main(args: Array<String>) {
   if (program != parsedAst) {
     throw RuntimeException("Equality of parsed AST from printer was not proven.")
   }
+
+  val highlighter = Highlighter(AnsiHighlightScheme())
+  println(highlighter.highlight(stream).joinToString(""))
 }
 
 fun tokenize(input: String): TokenStream =
