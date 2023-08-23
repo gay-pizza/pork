@@ -2,7 +2,7 @@ package gay.pizza.pork.parse
 
 import gay.pizza.pork.ast.nodes.*
 
-class PorkParser(source: PeekableSource<Token>) {
+class Parser(source: PeekableSource<Token>) {
   private val unsanitizedSource = source
 
   private fun readIntLiteral(): IntLiteral {

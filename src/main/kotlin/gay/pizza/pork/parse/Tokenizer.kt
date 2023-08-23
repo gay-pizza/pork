@@ -1,6 +1,6 @@
 package gay.pizza.pork.parse
 
-class PorkTokenizer(val source: CharSource) {
+class Tokenizer(val source: CharSource) {
   private var tokenStart: Int = 0
 
   private fun isSymbol(c: Char): Boolean =
