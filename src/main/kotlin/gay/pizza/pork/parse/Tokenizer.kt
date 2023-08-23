@@ -89,6 +89,23 @@ class Tokenizer(val source: CharSource) {
     return Token(TokenType.LineComment, tokenStart, comment)
   }
 
+  private fun readStringLiteral(firstChar: Char): Token {
+    val string = buildString {
+      append(firstChar)
+      while (true) {
+        val char = source.peek()
+        if (char == CharSource.NullChar) {
+          throw RuntimeException("Unterminated string.")
+        }
+        append(source.next())
+        if (char == '"') {
+          break
+        }
+      }
+    }
+    return Token(TokenType.StringLiteral, tokenStart, string)
+  }
+
   fun next(): Token {
     while (source.peek() != CharSource.NullChar) {
       tokenStart = source.currentIndex
@@ -132,6 +149,11 @@ class Tokenizer(val source: CharSource) {
       if (isSymbol(char)) {
         return readSymbolOrKeyword(char)
       }
+
+      if (char == '"') {
+        return readStringLiteral(char)
+      }
+
       throw RuntimeException("Failed to parse: (${char}) next ${source.peek()}")
     }
     return Token.endOfFile(source.currentIndex)

@@ -12,6 +12,7 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitIntLiteral(node: IntLiteral) = handler(node)
   override fun visitBooleanLiteral(node: BooleanLiteral) = handler(node)
   override fun visitListLiteral(node: ListLiteral) = handler(node)
+  override fun visitStringLiteral(node: StringLiteral) = handler(node)
   override fun visitParentheses(node: Parentheses) = handler(node)
   override fun visitPrefixOperation(node: PrefixOperation) = handler(node)
   override fun visitInfixOperation(node: InfixOperation) = handler(node)

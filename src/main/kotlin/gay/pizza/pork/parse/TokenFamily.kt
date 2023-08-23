@@ -5,6 +5,7 @@ enum class TokenFamily : TokenTypeProperty {
   KeywordFamily,
   SymbolFamily,
   NumericLiteralFamily,
+  StringLiteralFamily,
   CommentFamily,
   OtherFamily
 }

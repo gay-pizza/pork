@@ -6,6 +6,7 @@ import gay.pizza.pork.parse.TokenFamily.*
 enum class TokenType(vararg properties: TokenTypeProperty) {
   Symbol(SymbolFamily),
   IntLiteral(NumericLiteralFamily),
+  StringLiteral(StringLiteralFamily),
   Equality(OperatorFamily),
   Inequality(OperatorFamily),
   Equals(SingleChar('='), Promotion('=', Equality)),

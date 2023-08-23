@@ -1,20 +1,19 @@
 package gay.pizza.pork.ast
 
-import gay.pizza.pork.ast.NodeTypeTrait.*
-
-enum class NodeType(val parent: NodeType? = null, vararg traits: NodeTypeTrait) {
+enum class NodeType(val parent: NodeType? = null) {
   Node,
   Symbol(Node),
-  Expression(Node, Intermediate),
+  Expression(Node),
   Program(Node),
-  IntLiteral(Expression, Literal),
-  BooleanLiteral(Expression, Literal),
-  ListLiteral(Expression, Literal),
+  IntLiteral(Expression),
+  BooleanLiteral(Expression),
+  ListLiteral(Expression),
+  StringLiteral(Expression),
   Parentheses(Expression),
   Define(Expression),
   Lambda(Expression),
-  PrefixOperation(Expression, Operation),
-  InfixOperation(Expression, Operation),
+  PrefixOperation(Expression),
+  InfixOperation(Expression),
   SymbolReference(Expression),
   FunctionCall(Expression),
   If(Expression);

@@ -1,6 +1,7 @@
 package gay.pizza.pork.ast
 
 import gay.pizza.pork.ast.nodes.*
+import gay.pizza.pork.util.StringEscape
 
 class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
   private var indent = 0
@@ -107,6 +108,12 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
       }
     }
     append("]")
+  }
+
+  override fun visitStringLiteral(node: StringLiteral) {
+    append("\"")
+    append(StringEscape.escape(node.text))
+    append("\"")
   }
 
   override fun visitParentheses(node: Parentheses) {

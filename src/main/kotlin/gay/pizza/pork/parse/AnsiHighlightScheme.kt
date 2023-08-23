@@ -3,6 +3,7 @@ package gay.pizza.pork.parse
 open class AnsiHighlightScheme : HighlightScheme {
   override fun highlight(token: Token): Highlight {
     val attributes = when (token.type.family) {
+      TokenFamily.StringLiteralFamily -> string()
       TokenFamily.OperatorFamily -> operator()
       TokenFamily.KeywordFamily -> keyword()
       TokenFamily.SymbolFamily -> symbol()
@@ -15,8 +16,9 @@ open class AnsiHighlightScheme : HighlightScheme {
     } else Highlight(token)
   }
 
-  open fun operator(): AnsiAttributes = AnsiAttributes("32m")
+  open fun string(): AnsiAttributes = AnsiAttributes("32m")
   open fun symbol(): AnsiAttributes = AnsiAttributes("33m")
+  open fun operator(): AnsiAttributes = AnsiAttributes("34m")
   open fun keyword(): AnsiAttributes = AnsiAttributes("35m")
   open fun comment(): AnsiAttributes = AnsiAttributes("37m")
 

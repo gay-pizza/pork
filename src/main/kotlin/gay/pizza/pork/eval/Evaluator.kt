@@ -58,6 +58,7 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
   override fun visitListLiteral(node: ListLiteral): Any = node.items.map { visit(it) }
+  override fun visitStringLiteral(node: StringLiteral): Any = node.text
 
   override fun visitParentheses(node: Parentheses): Any = visit(node.expression)
 

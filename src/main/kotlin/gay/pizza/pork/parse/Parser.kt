@@ -1,6 +1,7 @@
 package gay.pizza.pork.parse
 
 import gay.pizza.pork.ast.nodes.*
+import gay.pizza.pork.util.StringEscape
 
 class Parser(source: PeekableSource<Token>) {
   private val unsanitizedSource = source
@@ -65,6 +66,11 @@ class Parser(source: PeekableSource<Token>) {
   fun readExpression(): Expression {
     val token = peek()
     val expression = when (token.type) {
+      TokenType.StringLiteral -> {
+        expect(TokenType.StringLiteral)
+        return StringLiteral(StringEscape.unescape(StringEscape.unquote(token.text)))
+      }
+
       TokenType.IntLiteral -> {
         readIntLiteral()
       }

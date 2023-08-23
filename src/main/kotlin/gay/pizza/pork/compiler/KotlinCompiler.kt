@@ -2,6 +2,7 @@ package gay.pizza.pork.compiler
 
 import gay.pizza.pork.ast.*
 import gay.pizza.pork.ast.nodes.*
+import gay.pizza.pork.util.StringEscape
 
 class KotlinCompiler : NodeVisitor<String> {
   override fun visitDefine(node: Define): String =
@@ -54,6 +55,9 @@ class KotlinCompiler : NodeVisitor<String> {
     }
     append(")")
   }
+
+  override fun visitStringLiteral(node: StringLiteral): String =
+    "\"" + StringEscape.escape(node.text) + "\""
 
   override fun visitParentheses(node: Parentheses): String =
     "(${visit(node.expression)})"

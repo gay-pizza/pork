@@ -49,4 +49,5 @@ results = [
   notEqual(5, 6)
 ]
 
+println("results:")
 println(results)
