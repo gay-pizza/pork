@@ -5,7 +5,7 @@ class Scope(val parent: Scope? = null) {
 
   fun define(name: String, value: Any) {
     if (variables.containsKey(name)) {
-      throw RuntimeException("Variable '${name}' is already defined.")
+      throw RuntimeException("Variable '${name}' is already defined")
     }
     variables[name] = value
   }
@@ -24,7 +24,7 @@ class Scope(val parent: Scope? = null) {
   fun call(name: String, arguments: Arguments): Any {
     val value = value(name)
     if (value !is CallableFunction) {
-      throw RuntimeException("$value is not callable.")
+      throw RuntimeException("$value is not callable")
     }
     return value.call(arguments)
   }
@@ -35,7 +35,7 @@ class Scope(val parent: Scope? = null) {
 
   fun leave(): Scope {
     if (parent == null) {
-      throw RuntimeException("Parent context not found.")
+      throw RuntimeException("Parent context not found")
     }
     return parent
   }
