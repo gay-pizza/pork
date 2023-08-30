@@ -13,8 +13,8 @@ abstract class Frontend {
   fun tokenize(): TokenStream =
     Tokenizer(createCharSource()).tokenize()
 
-  fun parse(): Program =
-    Parser(TokenStreamSource(tokenize())).readProgram()
+  fun parse(attribution: NodeAttribution = DiscardNodeAttribution): Program =
+    Parser(TokenStreamSource(tokenize()), attribution).readProgram()
 
   fun highlight(scheme: HighlightScheme): List<Highlight> =
     Highlighter(scheme).highlight(tokenize())

@@ -1,7 +1,11 @@
 package gay.pizza.pork.ast.nodes
 
 import gay.pizza.pork.ast.NodeType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+@SerialName("stringLiteral")
 class StringLiteral(val text: String) : Expression() {
   override val type: NodeType = NodeType.StringLiteral
 
