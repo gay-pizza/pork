@@ -6,36 +6,26 @@ import gay.pizza.pork.ast.nodes.*
 class Evaluator(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
-  override fun visitDefine(node: Define): Any {
-    val value = visit(node.value)
-    currentScope.define(node.symbol.id, value)
-    return value
-  }
+  override fun visitIntLiteral(node: IntLiteral): Any = node.value
+  override fun visitStringLiteral(node: StringLiteral): Any = node.text
+  override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
+  override fun visitListLiteral(node: ListLiteral): Any = node.items.map { visit(it) }
+
+  override fun visitSymbol(node: Symbol): Any = None
 
   override fun visitFunctionCall(node: FunctionCall): Any {
     val arguments = node.arguments.map { visit(it) }
     return currentScope.call(node.symbol.id, Arguments(arguments))
   }
 
-  override fun visitReference(node: SymbolReference): Any =
+  override fun visitDefine(node: Define): Any {
+    val value = visit(node.value)
+    currentScope.define(node.symbol.id, value)
+    return value
+  }
+
+  override fun visitSymbolReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
-
-  override fun visitIf(node: If): Any {
-    val condition = visit(node.condition)
-    return if (condition == true) {
-      visit(node.thenExpression)
-    } else {
-      if (node.elseExpression != null) {
-        visit(node.elseExpression)
-      } else {
-        None
-      }
-    }
-  }
-
-  override fun visitSymbol(node: Symbol): Any {
-    return None
-  }
 
   override fun visitLambda(node: Lambda): CallableFunction {
     return CallableFunction { arguments ->
@@ -55,11 +45,6 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitIntLiteral(node: IntLiteral): Any = node.value
-  override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
-  override fun visitListLiteral(node: ListLiteral): Any = node.items.map { visit(it) }
-  override fun visitStringLiteral(node: StringLiteral): Any = node.text
-
   override fun visitParentheses(node: Parentheses): Any = visit(node.expression)
 
   override fun visitPrefixOperation(node: PrefixOperation): Any {
@@ -70,6 +55,19 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
           throw RuntimeException("Cannot negate a value which is not a boolean.")
         }
         !value
+      }
+    }
+  }
+
+  override fun visitIf(node: If): Any {
+    val condition = visit(node.condition)
+    return if (condition == true) {
+      visit(node.thenExpression)
+    } else {
+      if (node.elseExpression != null) {
+        visit(node.elseExpression)
+      } else {
+        None
       }
     }
   }

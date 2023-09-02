@@ -77,7 +77,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     Parentheses(expression)
   }
 
-  private fun readNegation(): PrefixOperation = within {
+  private fun readPrefixOperation(): PrefixOperation = within {
     expect(TokenType.Negation) {
       PrefixOperation(PrefixOperator.Negate, readExpression())
     }
@@ -127,7 +127,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       }
 
       TokenType.Negation -> {
-        readNegation()
+        readPrefixOperation()
       }
 
       TokenType.If -> {

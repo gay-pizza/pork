@@ -20,10 +20,37 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
     }
   }
 
-  override fun visitDefine(node: Define) {
-    visit(node.symbol)
-    append(" = ")
-    visit(node.value)
+  override fun visitIntLiteral(node: IntLiteral) {
+    append(node.value.toString())
+  }
+
+  override fun visitStringLiteral(node: StringLiteral) {
+    append("\"")
+    append(StringEscape.escape(node.text))
+    append("\"")
+  }
+
+  override fun visitBooleanLiteral(node: BooleanLiteral) {
+    if (node.value) {
+      append("true")
+    } else {
+      append("false")
+    }
+  }
+
+  override fun visitListLiteral(node: ListLiteral) {
+    append("[")
+    for ((index, item) in node.items.withIndex()) {
+      visit(item)
+      if (index != node.items.size - 1) {
+        append(", ")
+      }
+    }
+    append("]")
+  }
+
+  override fun visitSymbol(node: Symbol) {
+    append(node.id)
   }
 
   override fun visitFunctionCall(node: FunctionCall) {
@@ -38,24 +65,16 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
     append(")")
   }
 
-  override fun visitReference(node: SymbolReference) {
+  override fun visitDefine(node: Define) {
+    visit(node.symbol)
+    append(" = ")
+    visit(node.value)
+  }
+
+  override fun visitSymbolReference(node: SymbolReference) {
     visit(node.symbol)
   }
 
-  override fun visitIf(node: If) {
-    append("if ")
-    visit(node.condition)
-    append(" then ")
-    visit(node.thenExpression)
-    if (node.elseExpression != null) {
-      append(" else ")
-      visit(node.elseExpression)
-    }
-  }
-
-  override fun visitSymbol(node: Symbol) {
-    append(node.id)
-  }
 
   override fun visitLambda(node: Lambda) {
     append("{")
@@ -87,35 +106,6 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
     append("}")
   }
 
-  override fun visitIntLiteral(node: IntLiteral) {
-    append(node.value.toString())
-  }
-
-  override fun visitBooleanLiteral(node: BooleanLiteral) {
-    if (node.value) {
-      append("true")
-    } else {
-      append("false")
-    }
-  }
-
-  override fun visitListLiteral(node: ListLiteral) {
-    append("[")
-    for ((index, item) in node.items.withIndex()) {
-      visit(item)
-      if (index != node.items.size - 1) {
-        append(", ")
-      }
-    }
-    append("]")
-  }
-
-  override fun visitStringLiteral(node: StringLiteral) {
-    append("\"")
-    append(StringEscape.escape(node.text))
-    append("\"")
-  }
-
   override fun visitParentheses(node: Parentheses) {
     append("(")
     visit(node.expression)
@@ -125,6 +115,17 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
   override fun visitPrefixOperation(node: PrefixOperation) {
     append(node.op.token)
     visit(node.expression)
+  }
+
+  override fun visitIf(node: If) {
+    append("if ")
+    visit(node.condition)
+    append(" then ")
+    visit(node.thenExpression)
+    if (node.elseExpression != null) {
+      append(" else ")
+      visit(node.elseExpression)
+    }
   }
 
   override fun visitInfixOperation(node: InfixOperation) {

@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   application
 
-  kotlin("jvm") version "1.9.0"
-  kotlin("plugin.serialization") version "1.9.0"
+  kotlin("jvm") version "1.9.10"
+  kotlin("plugin.serialization") version "1.9.10"
 
   id("com.github.johnrengelman.shadow") version "8.1.1"
-  id("org.graalvm.buildtools.native") version "0.9.23"
+  id("org.graalvm.buildtools.native") version "0.9.25"
 }
 
 repositories {
@@ -22,9 +22,8 @@ java {
 
 dependencies {
   implementation("org.jetbrains.kotlin:kotlin-bom")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
   implementation("com.github.ajalt.clikt:clikt:4.2.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0-RC")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 tasks.withType<KotlinCompile> {
