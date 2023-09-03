@@ -1,4 +1,4 @@
-package gay.pizza.pork.frontend
+package gay.pizza.pork.cli
 
 import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.Printer
@@ -8,7 +8,7 @@ import gay.pizza.pork.eval.ImportLoader
 import gay.pizza.pork.eval.Scope
 import gay.pizza.pork.parse.*
 
-abstract class Frontend {
+abstract class Tool {
   abstract fun createCharSource(): CharSource
   abstract fun resolveImportSource(path: String): CharSource
 
@@ -28,7 +28,7 @@ abstract class Frontend {
 
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
-  private class FrontendImportLoader(val frontend: Frontend) : ImportLoader {
+  private class FrontendImportLoader(val frontend: Tool) : ImportLoader {
     override fun load(path: String): CompilationUnit {
       val tokenStream = Tokenizer(frontend.resolveImportSource(path)).tokenize()
       return Parser(TokenStreamSource(tokenStream), DiscardNodeAttribution).readCompilationUnit()

@@ -4,7 +4,6 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
 import gay.pizza.pork.ast.nodes.Node
-import gay.pizza.pork.frontend.FileFrontend
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
@@ -19,7 +18,7 @@ class AstCommand : CliktCommand(help = "Print AST", name = "ast") {
   }
 
   override fun run() {
-    val frontend = FileFrontend(path)
-    println(json.encodeToString(Node.serializer(), frontend.parse()))
+    val tool = FileTool(path)
+    println(json.encodeToString(Node.serializer(), tool.parse()))
   }
 }

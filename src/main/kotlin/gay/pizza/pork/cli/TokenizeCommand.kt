@@ -3,14 +3,13 @@ package gay.pizza.pork.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
-import gay.pizza.pork.frontend.FileFrontend
 
 class TokenizeCommand : CliktCommand(help = "Tokenize Compilation Unit", name = "tokenize") {
   val path by argument("file").path(mustExist = true, canBeDir = false)
 
   override fun run() {
-    val frontend = FileFrontend(path)
-    val tokenStream = frontend.tokenize()
+    val tool = FileTool(path)
+    val tokenStream = tool.tokenize()
     for (token in tokenStream.tokens) {
       println("${token.start} ${token.type.name} '${sanitize(token.text)}'")
     }
