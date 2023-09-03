@@ -8,12 +8,18 @@ class EvaluationContext(
   val evaluationContextProvider: EvaluationContextProvider,
   rootScope: Scope
 ) {
+  private var isAlreadySetup = false
+
   val internalScope = rootScope.fork()
   val externalScope = rootScope.fork()
 
   private val evaluationVisitor = EvaluationVisitor(internalScope)
 
   fun setup() {
+    if (isAlreadySetup) {
+      return
+    }
+    isAlreadySetup = true
     val imports = compilationUnit.declarations.filterIsInstance<ImportDeclaration>()
     for (import in imports) {
       val evaluationContext = evaluationContextProvider.provideEvaluationContext(import.path.text)

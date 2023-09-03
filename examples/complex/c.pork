@@ -1,0 +1,6 @@
+import "a.pork"
+
+export func c() {
+  a()
+  println("C")
+}

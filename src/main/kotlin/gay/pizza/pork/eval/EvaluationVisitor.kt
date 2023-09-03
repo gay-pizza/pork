@@ -3,7 +3,7 @@ package gay.pizza.pork.eval
 import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.nodes.*
 
-class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
+class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitIntLiteral(node: IntLiteral): Any = node.value

@@ -1,0 +1,5 @@
+import "d.pork"
+
+export func main() {
+  d()
+}
