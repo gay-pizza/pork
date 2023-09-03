@@ -6,7 +6,7 @@ Very WIP. Like VERY.
 
 ```pork
 /* fibonacci sequence */
-fib = { n in
+fn fib(n) {
   if n == 0
     then 0
   else if n == 1
@@ -14,8 +14,10 @@ fib = { n in
   else fib(n - 1) + fib(n - 2)
 }
 
-result = fib(20)
-println(result)
+fn main() {
+  result = fib(20)
+  println(result)
+}
 ```
 
 ## Usage

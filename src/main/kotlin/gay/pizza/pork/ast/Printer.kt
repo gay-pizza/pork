@@ -82,7 +82,6 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
   }
 
-
   override fun visitLambda(node: Lambda) {
     append("{")
     if (node.arguments.isNotEmpty()) {
@@ -148,10 +147,37 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.right)
   }
 
-  override fun visitProgram(node: Program) {
-    for (expression in node.expressions) {
-      out.emitIndent()
-      visit(expression)
+  override fun visitFunctionDeclaration(node: FunctionDeclaration) {
+    append("fn ")
+    visit(node.symbol)
+    append("(")
+    for ((index, argument) in node.arguments.withIndex()) {
+      visit(argument)
+      if (index + 1 != node.arguments.size) {
+        append(", ")
+      }
+    }
+    append(") ")
+    visit(node.block)
+  }
+
+  override fun visitBlock(node: Block) {
+    append("{")
+    if (node.expressions.isNotEmpty()) {
+      out.increaseIndent()
+      for (expression in node.expressions) {
+        appendLine()
+        visit(expression)
+      }
+      out.decreaseIndent()
+      appendLine()
+    }
+    append("}")
+  }
+
+  override fun visitCompilationUnit(node: CompilationUnit) {
+    for (declaration in node.declarations) {
+      visit(declaration)
       appendLine()
     }
   }

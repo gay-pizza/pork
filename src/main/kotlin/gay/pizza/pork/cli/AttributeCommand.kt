@@ -13,7 +13,7 @@ class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute"
   override fun run() {
     val frontend = FileFrontend(path)
     val attribution = TokenNodeAttribution()
-    val program = frontend.parse(attribution)
+    val compilationUnit = frontend.parse(attribution)
 
     val coalescer = NodeCoalescer { node ->
       val tokens = attribution.assembleTokens(node)
@@ -22,6 +22,6 @@ class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute"
         println("token $token")
       }
     }
-    coalescer.visit(program)
+    coalescer.visit(compilationUnit)
   }
 }

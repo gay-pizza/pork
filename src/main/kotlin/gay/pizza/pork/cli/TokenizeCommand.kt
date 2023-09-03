@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
 import gay.pizza.pork.frontend.FileFrontend
 
-class TokenizeCommand : CliktCommand(help = "Tokenize Program", name = "tokenize") {
+class TokenizeCommand : CliktCommand(help = "Tokenize Compilation Unit", name = "tokenize") {
   val path by argument("file").path(mustExist = true, canBeDir = false)
 
   override fun run() {

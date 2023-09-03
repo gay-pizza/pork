@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
 import gay.pizza.pork.frontend.FileFrontend
 
-class ReprintCommand : CliktCommand(help = "Reprint Parsed Program", name = "reprint") {
+class ReprintCommand : CliktCommand(help = "Reprint Parsed Compilation Unit", name = "reprint") {
   val path by argument("file").path(mustExist = true, canBeDir = false)
 
   override fun run() {

@@ -2,7 +2,7 @@ package gay.pizza.pork.frontend
 
 import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.Printer
-import gay.pizza.pork.ast.nodes.Program
+import gay.pizza.pork.ast.nodes.CompilationUnit
 import gay.pizza.pork.eval.Evaluator
 import gay.pizza.pork.eval.Scope
 import gay.pizza.pork.parse.*
@@ -13,8 +13,8 @@ abstract class Frontend {
   fun tokenize(): TokenStream =
     Tokenizer(createCharSource()).tokenize()
 
-  fun parse(attribution: NodeAttribution = DiscardNodeAttribution): Program =
-    Parser(TokenStreamSource(tokenize()), attribution).readProgram()
+  fun parse(attribution: NodeAttribution = DiscardNodeAttribution): CompilationUnit =
+    Parser(TokenStreamSource(tokenize()), attribution).readCompilationUnit()
 
   fun highlight(scheme: HighlightScheme): List<Highlight> =
     Highlighter(scheme).highlight(tokenize())

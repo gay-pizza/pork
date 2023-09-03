@@ -16,7 +16,10 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitPrefixOperation(node: PrefixOperation): Unit = handle(node)
   override fun visitIf(node: If): Unit = handle(node)
   override fun visitInfixOperation(node: InfixOperation): Unit = handle(node)
-  override fun visitProgram(node: Program): Unit = handle(node)
+  override fun visitFunctionDeclaration(node: FunctionDeclaration): Unit = handle(node)
+  override fun visitBlock(node: Block): Unit = handle(node)
+
+  override fun visitCompilationUnit(node: CompilationUnit): Unit = handle(node)
 
   private fun handle(node: Node) {
     handler(node)

@@ -1,53 +1,55 @@
-three = 3
-two = 2
+fn main() {
+  three = 3
+  two = 2
 
-calculateSimple = { in
-  (50 + three) * two
+  calculateSimple = { in
+    (50 + three) * two
+  }
+
+  calculateComplex = { in
+    three + two + 50
+  }
+
+  multiply = { a, b in
+    a * b
+  }
+
+  // calculates the result
+  calculateSimpleResult = calculateSimple()
+  calculateComplexResult = calculateComplex()
+  multiplyResult = multiply(50, 50)
+
+  list = [10, 20, 30]
+  trueValue = true
+  falseValue = false
+
+  invert = { value in
+    !value
+  }
+
+  notEqual = { a, b in
+    a != b
+  }
+
+  equal = { a, b in
+    a == b
+  }
+
+  results = [
+    calculateSimpleResult,
+    calculateComplexResult,
+    multiplyResult,
+    list,
+    trueValue,
+    falseValue,
+    invert(true),
+    invert(false),
+    equal(5, 5),
+    equal(5, 6),
+    notEqual(5, 5),
+    notEqual(5, 6)
+  ]
+
+  println("results:")
+  println(results)
 }
-
-calculateComplex = { in
-  three + two + 50
-}
-
-multiply = { a, b in
-  a * b
-}
-
-// calculates the result
-calculateSimpleResult = calculateSimple()
-calculateComplexResult = calculateComplex()
-multiplyResult = multiply(50, 50)
-
-list = [10, 20, 30]
-trueValue = true
-falseValue = false
-
-invert = { value in
-  !value
-}
-
-notEqual = { a, b in
-  a != b
-}
-
-equal = { a, b in
-  a == b
-}
-
-results = [
-  calculateSimpleResult,
-  calculateComplexResult,
-  multiplyResult,
-  list,
-  trueValue,
-  falseValue,
-  invert(true),
-  invert(false),
-  equal(5, 5),
-  equal(5, 6),
-  notEqual(5, 5),
-  notEqual(5, 6)
-]
-
-println("results:")
-println(results)

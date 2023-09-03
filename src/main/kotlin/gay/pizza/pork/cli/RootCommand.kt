@@ -14,9 +14,7 @@ class RootCommand : CliktCommand(
       TokenizeCommand(),
       ReprintCommand(),
       AstCommand(),
-      AttributeCommand(),
-      GenerateKotlinCommand(),
-      GenerateDartCommand()
+      AttributeCommand()
     )
   }
 

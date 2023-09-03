@@ -1,6 +1,6 @@
 package gay.pizza.pork.eval
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.nodes.*
 
 class Evaluator(root: Scope) : NodeVisitor<Any> {
@@ -102,11 +102,35 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitProgram(node: Program): Any {
+  override fun visitFunctionDeclaration(node: FunctionDeclaration): Any {
+    val blockFunction = visitBlock(node.block) as BlockFunction
+    val function = CallableFunction { arguments ->
+      currentScope = currentScope.fork()
+      for ((index, argumentSymbol) in node.arguments.withIndex()) {
+        currentScope.define(argumentSymbol.id, arguments.values[index])
+      }
+      try {
+        return@CallableFunction blockFunction.call()
+      } finally {
+        currentScope = currentScope.leave()
+      }
+    }
+    currentScope.define(node.symbol.id, function)
+    return None
+  }
+
+  override fun visitBlock(node: Block): Any = BlockFunction {
     var value: Any? = null
     for (expression in node.expressions) {
       value = visit(expression)
     }
-    return value ?: None
+    value ?: None
+  }
+
+  override fun visitCompilationUnit(node: CompilationUnit): Any {
+    for (declaration in node.declarations) {
+      visit(declaration)
+    }
+    return None
   }
 }

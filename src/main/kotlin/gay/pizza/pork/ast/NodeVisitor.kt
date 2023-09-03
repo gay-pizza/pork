@@ -16,7 +16,10 @@ interface NodeVisitor<T> {
   fun visitPrefixOperation(node: PrefixOperation): T
   fun visitIf(node: If): T
   fun visitInfixOperation(node: InfixOperation): T
-  fun visitProgram(node: Program): T
+  fun visitFunctionDeclaration(node: FunctionDeclaration): T
+  fun visitBlock(node: Block): T
+
+  fun visitCompilationUnit(node: CompilationUnit): T
 
   fun visitExpression(node: Expression): T = when (node) {
     is IntLiteral -> visitIntLiteral(node)
@@ -33,10 +36,16 @@ interface NodeVisitor<T> {
     is InfixOperation -> visitInfixOperation(node)
   }
 
+  fun visitDeclaration(node: Declaration): T = when (node) {
+    is FunctionDeclaration -> visitFunctionDeclaration(node)
+  }
+
   fun visit(node: Node): T = when (node) {
     is Symbol -> visitSymbol(node)
     is Expression -> visitExpression(node)
-    is Program -> visitProgram(node)
+    is CompilationUnit -> visitCompilationUnit(node)
+    is Block -> visitBlock(node)
+    is Declaration -> visitDeclaration(node)
   }
 
   fun visitNodes(vararg nodes: Node?): List<T> =

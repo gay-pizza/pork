@@ -160,6 +160,35 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     } else expression
   }
 
+  private fun readBlock(): Block = within {
+    expect(TokenType.LeftCurly)
+    val items = collect(TokenType.RightCurly) {
+      readExpression()
+    }
+    expect(TokenType.RightCurly)
+    Block(items)
+  }
+
+  private fun readFunctionDeclaration(): FunctionDeclaration = within {
+    expect(TokenType.Fn)
+    val name = readSymbolRaw()
+    expect(TokenType.LeftParentheses)
+    val arguments = collect(TokenType.RightParentheses, TokenType.Comma) { readSymbolRaw() }
+    expect(TokenType.RightParentheses)
+    FunctionDeclaration(name, arguments, readBlock())
+  }
+
+  fun readDeclaration(): Declaration {
+    val token = peek()
+    return when (token.type) {
+      TokenType.Fn -> readFunctionDeclaration()
+      else -> throw RuntimeException(
+        "Failed to parse token: ${token.type} '${token.text}' as" +
+          " declaration (index ${unsanitizedSource.currentIndex})"
+      )
+    }
+  }
+
   private fun convertInfixOperator(token: Token): InfixOperator =
     when (token.type) {
       TokenType.Plus -> InfixOperator.Plus
@@ -171,10 +200,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 
-  fun readProgram(): Program = within {
-    val items = collect(TokenType.EndOfFile) { readExpression() }
+  fun readCompilationUnit(): CompilationUnit = within {
+    val declarations = collect(TokenType.EndOfFile) { readDeclaration() }
     expect(TokenType.EndOfFile)
-    Program(items)
+    CompilationUnit(declarations)
   }
 
   private fun <T> collect(
@@ -209,7 +238,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     val token = next()
     if (!types.contains(token.type)) {
       throw RuntimeException(
-        "Expected one of ${types.joinToString(", ")} " +
+        "Expected one of ${types.joinToString(", ")}" +
           " but got type ${token.type} '${token.text}'"
       )
     }
