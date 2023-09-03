@@ -1,5 +1,5 @@
 /* fibonacci sequence */
-fn fib(n) {
+func fib(n) {
   if n == 0
     then 0
   else if n == 1
@@ -7,7 +7,7 @@ fn fib(n) {
   else fib(n - 1) + fib(n - 2)
 }
 
-fn main() {
+func main() {
   result = fib(20)
   println(result)
 }

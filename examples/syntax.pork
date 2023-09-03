@@ -1,4 +1,4 @@
-fn main() {
+func main() {
   three = 3
   two = 2
 

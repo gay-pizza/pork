@@ -170,7 +170,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readFunctionDeclaration(): FunctionDeclaration = within {
-    expect(TokenType.Fn)
+    expect(TokenType.Func)
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) { readSymbolRaw() }
@@ -181,7 +181,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   fun readDeclaration(): Declaration {
     val token = peek()
     return when (token.type) {
-      TokenType.Fn -> readFunctionDeclaration()
+      TokenType.Func -> readFunctionDeclaration()
       else -> throw RuntimeException(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${unsanitizedSource.currentIndex})"
