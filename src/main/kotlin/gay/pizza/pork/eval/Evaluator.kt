@@ -3,7 +3,7 @@ package gay.pizza.pork.eval
 import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.nodes.*
 
-class Evaluator(root: Scope) : NodeVisitor<Any> {
+class Evaluator(root: Scope, val importLoader: ImportLoader) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
@@ -18,7 +18,7 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
     return currentScope.call(node.symbol.id, Arguments(arguments))
   }
 
-  override fun visitDefine(node: Define): Any {
+  override fun visitDefine(node: Assignment): Any {
     val value = visit(node.value)
     currentScope.define(node.symbol.id, value)
     return value
@@ -102,7 +102,7 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitFunctionDeclaration(node: FunctionDeclaration): Any {
+  override fun visitFunctionDeclaration(node: FunctionDefinition): Any {
     val blockFunction = visitBlock(node.block) as BlockFunction
     val function = CallableFunction { arguments ->
       currentScope = currentScope.fork()
@@ -127,9 +127,20 @@ class Evaluator(root: Scope) : NodeVisitor<Any> {
     value ?: None
   }
 
+  override fun visitImportDeclaration(node: ImportDeclaration): Any {
+    val importPath = node.path.text
+    val compilationUnit = importLoader.load(importPath)
+    visit(compilationUnit)
+    return None
+  }
+
   override fun visitCompilationUnit(node: CompilationUnit): Any {
     for (declaration in node.declarations) {
       visit(declaration)
+    }
+
+    for (definition in node.definitions) {
+      visit(definition)
     }
     return None
   }

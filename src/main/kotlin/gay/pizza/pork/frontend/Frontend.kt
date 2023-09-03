@@ -4,11 +4,13 @@ import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.Printer
 import gay.pizza.pork.ast.nodes.CompilationUnit
 import gay.pizza.pork.eval.Evaluator
+import gay.pizza.pork.eval.ImportLoader
 import gay.pizza.pork.eval.Scope
 import gay.pizza.pork.parse.*
 
 abstract class Frontend {
   abstract fun createCharSource(): CharSource
+  abstract fun resolveImportSource(path: String): CharSource
 
   fun tokenize(): TokenStream =
     Tokenizer(createCharSource()).tokenize()
@@ -20,9 +22,16 @@ abstract class Frontend {
     Highlighter(scheme).highlight(tokenize())
 
   fun evaluate(scope: Scope = Scope()): Any =
-    visit(Evaluator(scope))
+    visit(Evaluator(scope, FrontendImportLoader(this)))
 
   fun reprint(): String = buildString { visit(Printer(this)) }
 
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
+
+  private class FrontendImportLoader(val frontend: Frontend) : ImportLoader {
+    override fun load(path: String): CompilationUnit {
+      val tokenStream = Tokenizer(frontend.resolveImportSource(path)).tokenize()
+      return Parser(TokenStreamSource(tokenStream), DiscardNodeAttribution).readCompilationUnit()
+    }
+  }
 }

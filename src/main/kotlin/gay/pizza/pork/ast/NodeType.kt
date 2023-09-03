@@ -12,13 +12,14 @@ enum class NodeType(val parent: NodeType? = null) {
   ListLiteral(Expression),
   StringLiteral(Expression),
   Parentheses(Expression),
-  Define(Expression),
+  Assignment(Expression),
   Lambda(Expression),
   PrefixOperation(Expression),
   InfixOperation(Expression),
   SymbolReference(Expression),
   FunctionCall(Expression),
   If(Expression),
+  ImportDeclaration(Declaration),
   FunctionDeclaration(Declaration);
 
   val parents: Set<NodeType>

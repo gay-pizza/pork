@@ -45,7 +45,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       expect(TokenType.RightParentheses)
       FunctionCall(symbol, arguments)
     } else if (next(TokenType.Equals)) {
-      Define(symbol, readExpression())
+      Assignment(symbol, readExpression())
     } else {
       SymbolReference(symbol)
     }
@@ -169,19 +169,44 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     Block(items)
   }
 
-  private fun readFunctionDeclaration(): FunctionDeclaration = within {
+  private fun readImportDeclaration(): ImportDeclaration = within {
+    expect(TokenType.Import)
+    ImportDeclaration(readStringLiteral())
+  }
+
+  private fun readFunctionDeclaration(): FunctionDefinition = within {
     expect(TokenType.Func)
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) { readSymbolRaw() }
     expect(TokenType.RightParentheses)
-    FunctionDeclaration(name, arguments, readBlock())
+    FunctionDefinition(name, arguments, readBlock())
+  }
+
+  private fun maybeReadDefinition(): Definition? {
+    val token = peek()
+    return when (token.type) {
+      TokenType.Func -> readFunctionDeclaration()
+      else -> null
+    }
+  }
+
+  private fun readDefinition(): Definition {
+    val definition = maybeReadDefinition()
+    if (definition != null) {
+      return definition
+    }
+    val token = peek()
+    throw RuntimeException(
+      "Failed to parse token: ${token.type} '${token.text}' as" +
+        " definition (index ${unsanitizedSource.currentIndex})"
+    )
   }
 
   fun readDeclaration(): Declaration {
     val token = peek()
     return when (token.type) {
-      TokenType.Func -> readFunctionDeclaration()
+      TokenType.Import -> readImportDeclaration()
       else -> throw RuntimeException(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${unsanitizedSource.currentIndex})"
@@ -201,9 +226,25 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     }
 
   fun readCompilationUnit(): CompilationUnit = within {
-    val declarations = collect(TokenType.EndOfFile) { readDeclaration() }
-    expect(TokenType.EndOfFile)
-    CompilationUnit(declarations)
+    val declarations = mutableListOf<Declaration>()
+    val definitions = mutableListOf<Definition>()
+    var declarationAccepted = true
+
+    while (!peek(TokenType.EndOfFile)) {
+      if (declarationAccepted) {
+        val definition = maybeReadDefinition()
+        if (definition != null) {
+          declarationAccepted = false
+          definitions.add(definition)
+          continue
+        }
+        declarations.add(readDeclaration())
+      } else {
+        definitions.add(readDefinition())
+      }
+    }
+
+    CompilationUnit(declarations, definitions)
   }
 
   private fun <T> collect(

@@ -72,7 +72,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append(")")
   }
 
-  override fun visitDefine(node: Define) {
+  override fun visitDefine(node: Assignment) {
     visit(node.symbol)
     append(" = ")
     visit(node.value)
@@ -147,7 +147,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.right)
   }
 
-  override fun visitFunctionDeclaration(node: FunctionDeclaration) {
+  override fun visitFunctionDeclaration(node: FunctionDefinition) {
     append("fn ")
     visit(node.symbol)
     append("(")
@@ -175,9 +175,23 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append("}")
   }
 
+  override fun visitImportDeclaration(node: ImportDeclaration) {
+    append("import ")
+    visit(node.path)
+  }
+
   override fun visitCompilationUnit(node: CompilationUnit) {
     for (declaration in node.declarations) {
       visit(declaration)
+      appendLine()
+    }
+
+    if (node.declarations.isNotEmpty()) {
+      appendLine()
+    }
+
+    for (definition in node.definitions) {
+      visit(definition)
       appendLine()
     }
   }

@@ -9,16 +9,17 @@ interface NodeVisitor<T> {
   fun visitListLiteral(node: ListLiteral): T
   fun visitSymbol(node: Symbol): T
   fun visitFunctionCall(node: FunctionCall): T
-  fun visitDefine(node: Define): T
+  fun visitDefine(node: Assignment): T
   fun visitSymbolReference(node: SymbolReference): T
   fun visitLambda(node: Lambda): T
   fun visitParentheses(node: Parentheses): T
   fun visitPrefixOperation(node: PrefixOperation): T
   fun visitIf(node: If): T
   fun visitInfixOperation(node: InfixOperation): T
-  fun visitFunctionDeclaration(node: FunctionDeclaration): T
+  fun visitFunctionDeclaration(node: FunctionDefinition): T
   fun visitBlock(node: Block): T
 
+  fun visitImportDeclaration(node: ImportDeclaration): T
   fun visitCompilationUnit(node: CompilationUnit): T
 
   fun visitExpression(node: Expression): T = when (node) {
@@ -27,7 +28,7 @@ interface NodeVisitor<T> {
     is BooleanLiteral -> visitBooleanLiteral(node)
     is ListLiteral -> visitListLiteral(node)
     is FunctionCall -> visitFunctionCall(node)
-    is Define -> visitDefine(node)
+    is Assignment -> visitDefine(node)
     is SymbolReference -> visitSymbolReference(node)
     is Lambda -> visitLambda(node)
     is Parentheses -> visitParentheses(node)
@@ -37,7 +38,11 @@ interface NodeVisitor<T> {
   }
 
   fun visitDeclaration(node: Declaration): T = when (node) {
-    is FunctionDeclaration -> visitFunctionDeclaration(node)
+    is ImportDeclaration -> visitImportDeclaration(node)
+  }
+
+  fun visitDefinition(node: Definition): T = when (node) {
+    is FunctionDefinition -> visitFunctionDeclaration(node)
   }
 
   fun visit(node: Node): T = when (node) {
@@ -46,6 +51,7 @@ interface NodeVisitor<T> {
     is CompilationUnit -> visitCompilationUnit(node)
     is Block -> visitBlock(node)
     is Declaration -> visitDeclaration(node)
+    is Definition -> visitDefinition(node)
   }
 
   fun visitNodes(vararg nodes: Node?): List<T> =

@@ -1,0 +1,5 @@
+import "module.pork"
+
+func main() {
+  hello()
+}

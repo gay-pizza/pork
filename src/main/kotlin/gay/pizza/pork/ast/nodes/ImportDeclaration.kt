@@ -6,20 +6,20 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("compilationUnit")
-class CompilationUnit(val declarations: List<Declaration>, val definitions: List<Definition>) : Node() {
-  override val type: NodeType = NodeType.CompilationUnit
+@SerialName("importDeclaration")
+class ImportDeclaration(val path: StringLiteral) : Declaration() {
+  override val type: NodeType = NodeType.FunctionDeclaration
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
-    visitor.visitAll(declarations)
+    visitor.visitNodes(path)
 
   override fun equals(other: Any?): Boolean {
-    if (other !is CompilationUnit) return false
-    return other.declarations == declarations
+    if (other !is ImportDeclaration) return false
+    return other.path == path
   }
 
   override fun hashCode(): Int {
-    var result = declarations.hashCode()
+    var result = path.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }
