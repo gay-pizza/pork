@@ -5,7 +5,7 @@ import gay.pizza.pork.ast.nodes.Node
 import java.util.IdentityHashMap
 
 class TokenNodeAttribution : NodeAttribution {
-  private val map: MutableMap<Node, List<Token>> = IdentityHashMap()
+  val nodes: MutableMap<Node, List<Token>> = IdentityHashMap()
 
   private val stack = mutableListOf<MutableList<Token>>()
   private var current: MutableList<Token>? = null
@@ -23,11 +23,12 @@ class TokenNodeAttribution : NodeAttribution {
 
   override fun <T: Node> exit(node: T): T {
     val store = stack.removeLast()
-    map[node] = store
+    nodes[node] = store
+    current = stack.lastOrNull()
     return node
   }
 
-  fun tokensOf(node: Node): List<Token>? = map[node]
+  fun tokensOf(node: Node): List<Token>? = nodes[node]
 
   fun assembleTokens(node: Node): List<Token> {
     val allTokens = mutableListOf<Token>()
@@ -38,6 +39,6 @@ class TokenNodeAttribution : NodeAttribution {
       }
     }
     coalescer.visit(node)
-    return allTokens
+    return allTokens.asSequence().distinct().sortedBy { it.start }.toList()
   }
 }

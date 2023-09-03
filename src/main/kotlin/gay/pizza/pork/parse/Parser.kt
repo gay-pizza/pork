@@ -32,8 +32,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     ListLiteral(items)
   }
 
-  private fun readSymbolRaw(): Symbol =
+  private fun readSymbolRaw(): Symbol = within {
     expect(TokenType.Symbol) { Symbol(it.text) }
+  }
 
   private fun readSymbolCases(): Expression = within {
     val symbol = readSymbolRaw()
@@ -142,7 +143,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       }
     }
 
-    if (peek(
+    return if (peek(
         TokenType.Plus,
         TokenType.Minus,
         TokenType.Multiply,
@@ -151,12 +152,12 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Inequality
       )
     ) {
-      val infixToken = next()
-      val infixOperator = convertInfixOperator(infixToken)
-      return InfixOperation(expression, infixOperator, readExpression())
-    }
-
-    return expression
+      within {
+        val infixToken = next()
+        val infixOperator = convertInfixOperator(infixToken)
+        InfixOperation(expression, infixOperator, readExpression())
+      }
+    } else expression
   }
 
   private fun convertInfixOperator(token: Token): InfixOperator =
@@ -170,10 +171,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 
-  fun readProgram(): Program {
+  fun readProgram(): Program = within {
     val items = collect(TokenType.EndOfFile) { readExpression() }
     expect(TokenType.EndOfFile)
-    return Program(items)
+    Program(items)
   }
 
   private fun <T> collect(
@@ -233,6 +234,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     while (true) {
       val token = unsanitizedSource.peek()
       if (ignoredByParser(token.type)) {
+        attribution.push(token)
         unsanitizedSource.next()
         continue
       }

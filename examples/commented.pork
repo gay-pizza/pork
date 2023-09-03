@@ -1,0 +1,17 @@
+/* fibonacci sequence */
+/**
+ * fib(n): calculate the fibonacci sequence.
+ * @input n the number to calculate fibonacci for
+ * @result the value of the fibonacci sequence for the number
+ */
+fib = { n in
+  if n == 0 // if n is zero, return zero
+    then 0
+  else if n == 1 // if n is one, return one
+    then 1
+  else fib(n - 1) + fib(n - 2)
+}
+
+// result of fib(20)
+result = fib(20)
+println(result)
