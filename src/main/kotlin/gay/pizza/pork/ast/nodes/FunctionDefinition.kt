@@ -7,7 +7,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("functionDefinition")
-class FunctionDefinition(val symbol: Symbol, val arguments: List<Symbol>, val block: Block) : Definition() {
+class FunctionDefinition(
+  override val modifiers: DefinitionModifiers,
+  override val symbol: Symbol,
+  val arguments: List<Symbol>,
+  val block: Block
+) : Definition() {
   override val type: NodeType = NodeType.FunctionDeclaration
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =

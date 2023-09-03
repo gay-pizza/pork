@@ -7,7 +7,7 @@ func fib(n) {
   else fib(n - 1) + fib(n - 2)
 }
 
-func main() {
+export func main() {
   result = fib(20)
   println(result)
 }

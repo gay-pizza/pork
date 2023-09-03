@@ -3,7 +3,6 @@ package gay.pizza.pork.cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.types.path
-import gay.pizza.pork.eval.Arguments
 import gay.pizza.pork.eval.CallableFunction
 import gay.pizza.pork.eval.Scope
 
@@ -19,6 +18,5 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
       }
     })
     tool.evaluate(scope)
-    scope.call("main", Arguments(emptyList()))
   }
 }

@@ -175,17 +175,29 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readFunctionDeclaration(): FunctionDefinition = within {
+    val modifiers = DefinitionModifiers(export = false)
+    while (true) {
+      val token = peek()
+      when (token.type) {
+        TokenType.Export -> {
+          expect(TokenType.Export)
+          modifiers.export = true
+        }
+        else -> break
+      }
+    }
     expect(TokenType.Func)
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) { readSymbolRaw() }
     expect(TokenType.RightParentheses)
-    FunctionDefinition(name, arguments, readBlock())
+    FunctionDefinition(modifiers, name, arguments, readBlock())
   }
 
   private fun maybeReadDefinition(): Definition? {
     val token = peek()
     return when (token.type) {
+      TokenType.Export,
       TokenType.Func -> readFunctionDeclaration()
       else -> null
     }

@@ -1,7 +1,13 @@
 package gay.pizza.pork.eval
 
-class Scope(val parent: Scope? = null) {
+class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
+  private val inherited = inherits.toMutableList()
   private val variables = mutableMapOf<String, Any>()
+
+  fun has(name: String): Boolean =
+    variables.containsKey(name) ||
+      (parent?.has(name) ?: false) ||
+      inherited.any { inherit -> inherit.has(name) }
 
   fun define(name: String, value: Any) {
     if (variables.containsKey(name)) {
@@ -14,7 +20,15 @@ class Scope(val parent: Scope? = null) {
     val value = variables[name]
     if (value == null) {
       if (parent != null) {
-        return parent.value(name)
+        if (parent.has(name)) {
+          return parent.value(name)
+        }
+      }
+
+      for (inherit in inherited) {
+        if (inherit.has(name)) {
+          return inherit.value(name)
+        }
       }
       throw RuntimeException("Variable '${name}' not defined.")
     }
@@ -38,5 +52,9 @@ class Scope(val parent: Scope? = null) {
       throw RuntimeException("Parent context not found")
     }
     return parent
+  }
+
+  internal fun inherit(scope: Scope) {
+    inherited.add(scope)
   }
 }
