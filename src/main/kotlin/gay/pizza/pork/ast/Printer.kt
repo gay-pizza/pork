@@ -1,23 +1,24 @@
 package gay.pizza.pork.ast
 
 import gay.pizza.pork.ast.nodes.*
+import gay.pizza.pork.util.IndentPrinter
 import gay.pizza.pork.util.StringEscape
 
-class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
-  private var indent = 0
+class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
+  private val out = IndentPrinter(buffer)
+  private var autoIndentState = false
 
   private fun append(text: String) {
-    buffer.append(text)
+    if (autoIndentState) {
+      out.emitIndent()
+      autoIndentState = false
+    }
+    out.append(text)
   }
 
   private fun appendLine() {
-    buffer.appendLine()
-  }
-
-  private fun indent() {
-    repeat(indent) {
-      append("  ")
-    }
+    out.appendLine()
+    autoIndentState = true
   }
 
   override fun visitIntLiteral(node: IntLiteral) {
@@ -40,11 +41,17 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
 
   override fun visitListLiteral(node: ListLiteral) {
     append("[")
-    for ((index, item) in node.items.withIndex()) {
-      visit(item)
-      if (index != node.items.size - 1) {
-        append(", ")
+    if (node.items.isNotEmpty()) {
+      out.increaseIndent()
+      appendLine()
+      for ((index, item) in node.items.withIndex()) {
+        visit(item)
+        if (index != node.items.size - 1) {
+          append(",")
+        }
+        appendLine()
       }
+      out.decreaseIndent()
     }
     append("]")
   }
@@ -91,18 +98,16 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
       append(" ")
     }
     append("in")
-    indent++
+    out.increaseIndent()
     for (expression in node.expressions) {
       appendLine()
-      indent()
       visit(expression)
     }
 
     if (node.expressions.isNotEmpty()) {
       appendLine()
     }
-    indent--
-    indent()
+    out.decreaseIndent()
     append("}")
   }
 
@@ -120,11 +125,18 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
   override fun visitIf(node: If) {
     append("if ")
     visit(node.condition)
-    append(" then ")
+    append(" then")
+    out.increaseIndent()
+    appendLine()
     visit(node.thenExpression)
+    out.decreaseIndent()
     if (node.elseExpression != null) {
-      append(" else ")
+      appendLine()
+      append("else")
+      out.increaseIndent()
+      appendLine()
       visit(node.elseExpression)
+      out.decreaseIndent()
     }
   }
 
@@ -138,7 +150,7 @@ class Printer(private val buffer: StringBuilder) : NodeVisitor<Unit> {
 
   override fun visitProgram(node: Program) {
     for (expression in node.expressions) {
-      indent()
+      out.emitIndent()
       visit(expression)
       appendLine()
     }
