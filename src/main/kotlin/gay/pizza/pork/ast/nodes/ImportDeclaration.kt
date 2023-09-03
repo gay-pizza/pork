@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("importDeclaration")
 class ImportDeclaration(val path: StringLiteral) : Declaration() {
-  override val type: NodeType = NodeType.FunctionDeclaration
+  override val type: NodeType = NodeType.ImportDeclaration
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(path)
