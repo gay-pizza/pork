@@ -37,6 +37,4 @@ class World(val contentSource: ContentSource) {
     resolveAllImports(unit)
     return unit
   }
-
-  fun units(path: String): Set<CompilationUnit> = resolveAllImports(loadOneUnit(path))
 }

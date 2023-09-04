@@ -11,7 +11,7 @@ class FunctionDefinition(
   val arguments: List<Symbol>,
   val block: Block
 ) : Definition() {
-  override val type: NodeType = NodeType.FunctionDeclaration
+  override val type: NodeType = NodeType.FunctionDefinition
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(symbol)

@@ -5,6 +5,7 @@ enum class NodeType(val parent: NodeType? = null) {
   Symbol(Node),
   Expression(Node),
   Declaration(Node),
+  Definition(Node),
   Block(Node),
   CompilationUnit(Node),
   IntLiteral(Expression),
@@ -20,7 +21,7 @@ enum class NodeType(val parent: NodeType? = null) {
   FunctionCall(Expression),
   If(Expression),
   ImportDeclaration(Declaration),
-  FunctionDeclaration(Declaration);
+  FunctionDefinition(Definition);
 
   val parents: Set<NodeType>
 
@@ -37,6 +38,4 @@ enum class NodeType(val parent: NodeType? = null) {
     }
     parents = calculatedParents.toSet()
   }
-
-  fun isa(type: NodeType): Boolean = this == type || parents.contains(type)
 }
