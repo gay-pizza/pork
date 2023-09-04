@@ -23,5 +23,5 @@ fn main() {
 ## Usage
 
 ```
-./gradlew -q run --args 'run examples/fib.pork'
+./gradlew -q core:run --args 'run ../examples/fib.pork'
 ```

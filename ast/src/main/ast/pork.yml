@@ -1,0 +1,38 @@
+root: Node
+types:
+  Expression:
+    parent: Node
+  Symbol:
+    parent: Node
+  Declaration:
+    parent: Node
+  Definition:
+    parent: Node
+    values:
+    - name: symbol
+      type: Symbol
+    - name: modifiers
+      type: DefinitionModifiers
+  DefinitionModifiers:
+    values:
+    - name: export
+      type: Boolean
+  Block:
+    parent: Node
+    values:
+    - name: expressions
+      type: List<Expression>
+  CompilationUnit:
+    parent: Node
+    values:
+    - name: declarations
+      type: List<Declaration>
+    - name: definitions
+      type: List<Declaration>
+  Assignment:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol
+    - name: value
+      type: Expression
