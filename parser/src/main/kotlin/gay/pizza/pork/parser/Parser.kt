@@ -198,7 +198,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     expect(TokenType.Func)
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
-    val arguments = collect(TokenType.RightParentheses, TokenType.Comma) { readSymbolRaw() }
+    val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
+      readSymbolRaw()
+    }
     expect(TokenType.RightParentheses)
     FunctionDefinition(modifiers, name, arguments, readBlock())
   }

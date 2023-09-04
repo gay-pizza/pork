@@ -1,12 +1,13 @@
 package gay.pizza.pork.frontend
 
+import gay.pizza.pork.parser.CharSource
 import gay.pizza.pork.parser.StringCharSource
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readText
 
 class FsContentSource(val root: Path) : ContentSource {
-  override fun loadAsCharSource(path: String): gay.pizza.pork.parser.CharSource =
+  override fun loadAsCharSource(path: String): CharSource =
     StringCharSource(asFsPath(path).readText())
 
   override fun stableContentIdentity(path: String): String =

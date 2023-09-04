@@ -2,6 +2,7 @@ package gay.pizza.pork.frontend
 
 import gay.pizza.pork.ast.CompilationUnit
 import gay.pizza.pork.ast.ImportDeclaration
+import gay.pizza.pork.parser.DiscardNodeAttribution
 import gay.pizza.pork.parser.Parser
 import gay.pizza.pork.parser.TokenStreamSource
 import gay.pizza.pork.parser.Tokenizer
@@ -18,7 +19,7 @@ class World(val contentSource: ContentSource) {
     val charSource = contentSource.loadAsCharSource(path)
     val tokenizer = Tokenizer(charSource)
     val tokenStream = tokenizer.tokenize()
-    val parser = Parser(TokenStreamSource(tokenStream), gay.pizza.pork.parser.DiscardNodeAttribution)
+    val parser = Parser(TokenStreamSource(tokenStream), DiscardNodeAttribution)
     return parser.readCompilationUnit()
   }
 
