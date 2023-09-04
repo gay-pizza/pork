@@ -1,8 +1,6 @@
 # pork
 
-A small BBQ language.
-
-Very WIP. Like VERY.
+A work-in-progress programming language.
 
 ```pork
 /* fibonacci sequence */
@@ -15,7 +13,7 @@ fn fib(n) {
 }
 
 fn main() {
-  result = fib(20)
+  let result = fib(20)
   println(result)
 }
 ```
