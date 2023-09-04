@@ -7,7 +7,7 @@ interface NodeVisitor<T> {
   fun visitListLiteral(node: ListLiteral): T
   fun visitSymbol(node: Symbol): T
   fun visitFunctionCall(node: FunctionCall): T
-  fun visitDefine(node: Assignment): T
+  fun visitLetAssignment(node: LetAssignment): T
   fun visitSymbolReference(node: SymbolReference): T
   fun visitLambda(node: Lambda): T
   fun visitParentheses(node: Parentheses): T
@@ -26,7 +26,7 @@ interface NodeVisitor<T> {
     is BooleanLiteral -> visitBooleanLiteral(node)
     is ListLiteral -> visitListLiteral(node)
     is FunctionCall -> visitFunctionCall(node)
-    is Assignment -> visitDefine(node)
+    is LetAssignment -> visitLetAssignment(node)
     is SymbolReference -> visitSymbolReference(node)
     is Lambda -> visitLambda(node)
     is Parentheses -> visitParentheses(node)

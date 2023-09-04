@@ -71,7 +71,8 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append(")")
   }
 
-  override fun visitDefine(node: Assignment) {
+  override fun visitLetAssignment(node: LetAssignment) {
+    append("let ")
     visit(node.symbol)
     append(" = ")
     visit(node.value)

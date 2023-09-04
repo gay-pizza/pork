@@ -17,7 +17,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     return currentScope.call(node.symbol.id, Arguments(arguments))
   }
 
-  override fun visitDefine(node: Assignment): Any {
+  override fun visitLetAssignment(node: LetAssignment): Any {
     val value = visit(node.value)
     currentScope.define(node.symbol.id, value)
     return value

@@ -31,6 +31,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Import(Keyword("import"), KeywordFamily),
   Export(Keyword("export"), KeywordFamily),
   Func(Keyword("func"), KeywordFamily),
+  Let(Keyword("let"), KeywordFamily),
   Whitespace(CharConsumer { it == ' ' || it == '\r' || it == '\n' || it == '\t' }),
   BlockComment(CommentFamily),
   LineComment(CommentFamily),

@@ -31,6 +31,14 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     ListLiteral(items)
   }
 
+  private fun readLetAssignment(): LetAssignment = within {
+    expect(TokenType.Let)
+    val symbol = readSymbolRaw()
+    expect(TokenType.Equals)
+    val value = readExpression()
+    LetAssignment(symbol, value)
+  }
+
   private fun readSymbolRaw(): Symbol = within {
     expect(TokenType.Symbol) { Symbol(it.text) }
   }
@@ -43,8 +51,6 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       }
       expect(TokenType.RightParentheses)
       FunctionCall(symbol, arguments)
-    } else if (next(TokenType.Equals)) {
-      Assignment(symbol, readExpression())
     } else {
       SymbolReference(symbol)
     }
@@ -112,6 +118,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
       TokenType.LeftBracket -> {
         readListLiteral()
+      }
+
+      TokenType.Let -> {
+        readLetAssignment()
       }
 
       TokenType.Symbol -> {

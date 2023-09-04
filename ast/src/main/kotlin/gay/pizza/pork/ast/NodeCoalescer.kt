@@ -7,7 +7,7 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitListLiteral(node: ListLiteral): Unit = handle(node)
   override fun visitSymbol(node: Symbol): Unit = handle(node)
   override fun visitFunctionCall(node: FunctionCall): Unit = handle(node)
-  override fun visitDefine(node: Assignment): Unit = handle(node)
+  override fun visitLetAssignment(node: LetAssignment): Unit = handle(node)
   override fun visitSymbolReference(node: SymbolReference): Unit = handle(node)
   override fun visitLambda(node: Lambda): Unit = handle(node)
   override fun visitParentheses(node: Parentheses): Unit = handle(node)

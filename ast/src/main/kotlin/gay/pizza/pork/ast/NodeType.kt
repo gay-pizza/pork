@@ -12,7 +12,7 @@ enum class NodeType(val parent: NodeType? = null) {
   ListLiteral(Expression),
   StringLiteral(Expression),
   Parentheses(Expression),
-  Assignment(Expression),
+  LetAssignment(Expression),
   Lambda(Expression),
   PrefixOperation(Expression),
   InfixOperation(Expression),

@@ -1,41 +1,41 @@
 export func main() {
-  three = 3
-  two = 2
+  let three = 3
+  let two = 2
 
-  calculateSimple = { in
+  let calculateSimple = { in
     (50 + three) * two
   }
 
-  calculateComplex = { in
+  let calculateComplex = { in
     three + two + 50
   }
 
-  multiply = { a, b in
+  let multiply = { a, b in
     a * b
   }
 
   // calculates the result
-  calculateSimpleResult = calculateSimple()
-  calculateComplexResult = calculateComplex()
-  multiplyResult = multiply(50, 50)
+  let calculateSimpleResult = calculateSimple()
+  let calculateComplexResult = calculateComplex()
+  let multiplyResult = multiply(50, 50)
 
-  list = [10, 20, 30]
-  trueValue = true
-  falseValue = false
+  let list = [10, 20, 30]
+  let trueValue = true
+  let falseValue = false
 
-  invert = { value in
+  let invert = { value in
     !value
   }
 
-  notEqual = { a, b in
+  let notEqual = { a, b in
     a != b
   }
 
-  equal = { a, b in
+  let equal = { a, b in
     a == b
   }
 
-  results = [
+  let results = [
     calculateSimpleResult,
     calculateComplexResult,
     multiplyResult,
