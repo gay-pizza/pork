@@ -4,7 +4,7 @@ A work-in-progress programming language.
 
 ```pork
 /* fibonacci sequence */
-fn fib(n) {
+func fib(n) {
   if n == 0
     then 0
   else if n == 1
@@ -12,7 +12,7 @@ fn fib(n) {
   else fib(n - 1) + fib(n - 2)
 }
 
-fn main() {
+func main() {
   let result = fib(20)
   println(result)
 }
