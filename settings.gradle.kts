@@ -1,8 +1,12 @@
 rootProject.name = "pork"
 
 include(
+  ":common",
   ":ast",
-  ":core"
+  ":parser",
+  ":frontend",
+  ":evaluator",
+  ":tool"
 )
 
 dependencyResolutionManagement {
