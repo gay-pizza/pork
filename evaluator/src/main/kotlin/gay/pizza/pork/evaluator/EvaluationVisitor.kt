@@ -102,18 +102,14 @@ class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
   }
 
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
-    val blockFunction = visitBlock(node.block) as BlockFunction
     val function = CallableFunction { arguments ->
-      val formerScope = currentScope
       currentScope = root.fork()
       for ((index, argumentSymbol) in node.arguments.withIndex()) {
         currentScope.define(argumentSymbol.id, arguments.values[index])
       }
-      try {
-        return@CallableFunction blockFunction.call()
-      } finally {
-        currentScope = formerScope
-      }
+      val visitor = EvaluationVisitor(currentScope)
+      val blockFunction = visitor.visitBlock(node.block) as BlockFunction
+      return@CallableFunction blockFunction.call()
     }
     currentScope.define(node.symbol.id, function)
     return None

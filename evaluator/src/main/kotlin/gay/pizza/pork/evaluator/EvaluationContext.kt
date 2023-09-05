@@ -8,18 +8,16 @@ class EvaluationContext(
   val evaluationContextProvider: EvaluationContextProvider,
   rootScope: Scope
 ) {
-  private var isAlreadySetup = false
-
   val internalRootScope = rootScope.fork()
   val externalRootScope = rootScope.fork()
 
-  private val evaluationVisitor = EvaluationVisitor(internalRootScope)
+  private var initialized = false
 
-  fun setup() {
-    if (isAlreadySetup) {
+  fun init() {
+    if (initialized) {
       return
     }
-    isAlreadySetup = true
+    initialized = true
     val imports = compilationUnit.declarations.filterIsInstance<ImportDeclaration>()
     for (import in imports) {
       val evaluationContext = evaluationContextProvider.provideEvaluationContext(import.path.text)
@@ -27,10 +25,13 @@ class EvaluationContext(
     }
 
     for (definition in compilationUnit.definitions) {
+      val evaluationVisitor = EvaluationVisitor(internalRootScope)
       evaluationVisitor.visit(definition)
-      if (definition.modifiers.export) {
-        externalRootScope.define(definition.symbol.id, internalRootScope.value(definition.symbol.id))
+      if (!definition.modifiers.export) {
+        continue
       }
+      val internalValue = internalRootScope.value(definition.symbol.id)
+      externalRootScope.define(definition.symbol.id, internalValue)
     }
   }
 }

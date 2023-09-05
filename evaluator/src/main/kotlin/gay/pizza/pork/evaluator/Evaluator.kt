@@ -16,7 +16,7 @@ class Evaluator(val world: World, val scope: Scope) : EvaluationContextProvider 
     val context = contexts.computeIfAbsent(identity) {
       EvaluationContext(unit, this, scope)
     }
-    context.setup()
+    context.init()
     return context
   }
 }
