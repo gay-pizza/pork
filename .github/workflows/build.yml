@@ -15,3 +15,13 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
+      - name: Archive Pork Bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: pork-bundle
+          path: tool/build/distributions/pork.zip
+      - name: Archive Pork Jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: pork-jar
+          path: tool/build/distributions/pork-all.jar

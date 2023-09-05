@@ -14,7 +14,7 @@ class IntLiteral(val value: Int) : Expression() {
   }
 
   override fun hashCode(): Int {
-    var result = value
+    var result = value.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }

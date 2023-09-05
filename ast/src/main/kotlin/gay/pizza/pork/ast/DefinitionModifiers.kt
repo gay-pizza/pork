@@ -1,8 +1,8 @@
 package gay.pizza.pork.ast
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DefinitionModifiers(
-  var export: Boolean
-)
+@SerialName("definitionModifiers")
+class DefinitionModifiers(var export: Boolean)

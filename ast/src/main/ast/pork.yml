@@ -33,7 +33,7 @@ types:
     - name: declarations
       type: List<Declaration>
     - name: definitions
-      type: List<Declaration>
+      type: List<Definition>
   LetAssignment:
     parent: Expression
     values:

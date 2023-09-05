@@ -147,7 +147,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.right)
   }
 
-  override fun visitFunctionDeclaration(node: FunctionDefinition) {
+  override fun visitFunctionDefinition(node: FunctionDefinition) {
     append("fn ")
     visit(node.symbol)
     append("(")

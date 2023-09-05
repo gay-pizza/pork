@@ -1,5 +1,7 @@
 rootProject.name = "pork"
 
+includeBuild("buildext")
+
 include(
   ":common",
   ":ast",

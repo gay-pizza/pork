@@ -9,15 +9,16 @@ class CompilationUnit(val declarations: List<Declaration>, val definitions: List
   override val type: NodeType = NodeType.CompilationUnit
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
-    visitor.visitAll(declarations)
+    visitor.visitAll(declarations, definitions)
 
   override fun equals(other: Any?): Boolean {
     if (other !is CompilationUnit) return false
-    return other.declarations == declarations
+    return other.declarations == declarations && other.definitions == definitions
   }
 
   override fun hashCode(): Int {
     var result = declarations.hashCode()
+    result = 31 * result + definitions.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }

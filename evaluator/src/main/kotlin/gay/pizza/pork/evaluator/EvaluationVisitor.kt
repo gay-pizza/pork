@@ -101,7 +101,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitFunctionDeclaration(node: FunctionDefinition): Any {
+  override fun visitFunctionDefinition(node: FunctionDefinition): Any {
     val blockFunction = visitBlock(node.block) as BlockFunction
     val function = CallableFunction { arguments ->
       currentScope = currentScope.fork()

@@ -5,11 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("infixOperation")
-class InfixOperation(
-  val left: Expression,
-  val op: InfixOperator,
-  val right: Expression
-) : Expression() {
+class InfixOperation(val left: Expression, val op: InfixOperator, val right: Expression) : Expression() {
   override val type: NodeType = NodeType.InfixOperation
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
@@ -17,9 +13,7 @@ class InfixOperation(
 
   override fun equals(other: Any?): Boolean {
     if (other !is InfixOperation) return false
-    return other.op == op &&
-      other.left == left &&
-      other.right == right
+    return other.left == left && other.op == op && other.right == right
   }
 
   override fun hashCode(): Int {
