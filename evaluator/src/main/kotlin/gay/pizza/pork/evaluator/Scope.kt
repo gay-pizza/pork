@@ -5,10 +5,11 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
   private val variables = mutableMapOf<String, Any>()
 
   fun define(name: String, value: Any) {
-    if (variables.containsKey(name)) {
+    val previous = variables.put(name, value)
+    if (previous != null) {
+      variables[name] = previous
       throw RuntimeException("Variable '${name}' is already defined")
     }
-    variables[name] = value
   }
 
   fun value(name: String): Any {
