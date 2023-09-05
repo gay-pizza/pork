@@ -16,7 +16,7 @@ class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute"
 
     val coalescer = NodeCoalescer { node ->
       val tokens = attribution.assembleTokens(node)
-      println("node ${node.toString().replace("\n", "^")}")
+      println("node ${node.type.name}")
       for (token in tokens) {
         println("token $token")
       }
