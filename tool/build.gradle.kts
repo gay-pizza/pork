@@ -34,6 +34,7 @@ graalvmNative {
       imageName.set("pork")
       mainClass.set("gay.pizza.pork.tool.MainKt")
       sharedLibrary.set(false)
+      buildArgs("-march=compatibility")
     }
   }
 }

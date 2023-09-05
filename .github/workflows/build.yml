@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pork-jar
-          path: tool/build/distributions/pork-all.jar
+          path: tool/build/libs/pork-all.jar
