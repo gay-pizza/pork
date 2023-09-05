@@ -10,10 +10,10 @@ class EvaluationContext(
 ) {
   private var isAlreadySetup = false
 
-  val internalScope = rootScope.fork()
-  val externalScope = rootScope.fork()
+  val internalRootScope = rootScope.fork()
+  val externalRootScope = rootScope.fork()
 
-  private val evaluationVisitor = EvaluationVisitor(internalScope)
+  private val evaluationVisitor = EvaluationVisitor(internalRootScope)
 
   fun setup() {
     if (isAlreadySetup) {
@@ -23,13 +23,13 @@ class EvaluationContext(
     val imports = compilationUnit.declarations.filterIsInstance<ImportDeclaration>()
     for (import in imports) {
       val evaluationContext = evaluationContextProvider.provideEvaluationContext(import.path.text)
-      internalScope.inherit(evaluationContext.externalScope)
+      internalRootScope.inherit(evaluationContext.externalRootScope)
     }
 
     for (definition in compilationUnit.definitions) {
       evaluationVisitor.visit(definition)
       if (definition.modifiers.export) {
-        externalScope.define(definition.symbol.id, internalScope.value(definition.symbol.id))
+        externalRootScope.define(definition.symbol.id, internalRootScope.value(definition.symbol.id))
       }
     }
   }

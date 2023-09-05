@@ -1,15 +1,10 @@
 package gay.pizza.pork.evaluator
 
-class Scope(
-  val parent: Scope? = null,
-  inherits: List<Scope> = emptyList(),
-  val fastVariableCache: FastVariableCache = FastVariableCache()
-) {
+class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
   private val inherited = inherits.toMutableList()
   private val variables = mutableMapOf<String, Any>()
 
   fun define(name: String, value: Any) {
-    fastVariableCache.invalidate(name)
     if (variables.containsKey(name)) {
       throw RuntimeException("Variable '${name}' is already defined")
     }
@@ -17,11 +12,6 @@ class Scope(
   }
 
   fun value(name: String): Any {
-    val fastCached = fastVariableCache.lookup(name)
-    if (fastCached != FastVariableCache.NotFound) {
-      return fastCached
-    }
-
     val value = valueOrNotFound(name)
     if (value == NotFound) {
       throw RuntimeException("Variable '${name}' not defined.")
@@ -58,10 +48,8 @@ class Scope(
     return value.call(arguments)
   }
 
-  fun fork(inheritFastCache: Boolean = false): Scope {
-    val fastCache = if (inheritFastCache) fastVariableCache else FastVariableCache()
-    return Scope(this, fastVariableCache = fastCache)
-  }
+  fun fork(): Scope =
+    Scope(this)
 
   fun leave(): Scope {
     if (parent == null) {

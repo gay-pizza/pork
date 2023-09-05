@@ -7,7 +7,7 @@ class Evaluator(val world: World, val scope: Scope) : EvaluationContextProvider 
 
   fun evaluate(path: String): Scope {
     val context = provideEvaluationContext(path)
-    return context.externalScope
+    return context.externalRootScope
   }
 
   override fun provideEvaluationContext(path: String): EvaluationContext {

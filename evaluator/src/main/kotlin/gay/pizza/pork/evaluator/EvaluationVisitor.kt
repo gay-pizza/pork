@@ -2,7 +2,7 @@ package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.ast.*
 
-class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
+class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
@@ -104,15 +104,15 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
     val blockFunction = visitBlock(node.block) as BlockFunction
     val function = CallableFunction { arguments ->
-      currentScope = currentScope.fork(inheritFastCache = true)
-      currentScope.fastVariableCache.put(node.symbol.id, currentScope.value(node.symbol.id))
+      val formerScope = currentScope
+      currentScope = root.fork()
       for ((index, argumentSymbol) in node.arguments.withIndex()) {
         currentScope.define(argumentSymbol.id, arguments.values[index])
       }
       try {
         return@CallableFunction blockFunction.call()
       } finally {
-        currentScope = currentScope.leave()
+        currentScope = formerScope
       }
     }
     currentScope.define(node.symbol.id, function)
