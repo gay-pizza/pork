@@ -4,11 +4,6 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
   private val inherited = inherits.toMutableList()
   private val variables = mutableMapOf<String, Any>()
 
-  fun has(name: String): Boolean =
-    variables.containsKey(name) ||
-      (parent?.has(name) ?: false) ||
-      inherited.any { inherit -> inherit.has(name) }
-
   fun define(name: String, value: Any) {
     if (variables.containsKey(name)) {
       throw RuntimeException("Variable '${name}' is already defined")
@@ -17,20 +12,30 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
   }
 
   fun value(name: String): Any {
+    val value = valueOrNotFound(name)
+    if (value == NotFound) {
+      throw RuntimeException("Variable '${name}' not defined.")
+    }
+    return value
+  }
+
+  private fun valueOrNotFound(name: String): Any {
     val value = variables[name]
     if (value == null) {
       if (parent != null) {
-        if (parent.has(name)) {
-          return parent.value(name)
+        val parentMaybeFound = parent.valueOrNotFound(name)
+        if (parentMaybeFound != NotFound) {
+          return parentMaybeFound
         }
       }
 
       for (inherit in inherited) {
-        if (inherit.has(name)) {
-          return inherit.value(name)
+        val inheritMaybeFound = inherit.valueOrNotFound(name)
+        if (inheritMaybeFound != NotFound) {
+          return inheritMaybeFound
         }
       }
-      throw RuntimeException("Variable '${name}' not defined.")
+      return NotFound
     }
     return value
   }
@@ -57,4 +62,6 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
   internal fun inherit(scope: Scope) {
     inherited.add(scope)
   }
+
+  private object NotFound
 }
