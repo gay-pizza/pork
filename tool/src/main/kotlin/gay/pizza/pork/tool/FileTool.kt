@@ -5,10 +5,11 @@ import gay.pizza.pork.frontend.FsContentSource
 import gay.pizza.pork.parser.CharSource
 import gay.pizza.pork.parser.StringCharSource
 import java.nio.file.Path
+import kotlin.io.path.absolute
 import kotlin.io.path.readText
 
 class FileTool(val path: Path) : Tool() {
   override fun createCharSource(): CharSource = StringCharSource(path.readText())
-  override fun createContentSource(): ContentSource = FsContentSource(path.parent)
+  override fun createContentSource(): ContentSource = FsContentSource(path.absolute().parent)
   override fun rootFilePath(): String = path.fileName.toString()
 }
