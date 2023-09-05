@@ -4,6 +4,7 @@ import gay.pizza.pork.ast.*
 
 class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
+  private var insideFastCachePreservation = false
 
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
@@ -28,7 +29,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitLambda(node: Lambda): CallableFunction {
     return CallableFunction { arguments ->
-      currentScope = currentScope.fork()
+      currentScope = currentScope.fork(inheritFastCache = insideFastCachePreservation)
       for ((index, argumentSymbol) in node.arguments.withIndex()) {
         currentScope.define(argumentSymbol.id, arguments.values[index])
       }
@@ -104,7 +105,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
     val blockFunction = visitBlock(node.block) as BlockFunction
     val function = CallableFunction { arguments ->
-      currentScope = currentScope.fork()
+      currentScope = currentScope.fork(inheritFastCache = insideFastCachePreservation)
+      currentScope.fastVariableCache.put(node.symbol.id, currentScope.value(node.symbol.id))
       for ((index, argumentSymbol) in node.arguments.withIndex()) {
         currentScope.define(argumentSymbol.id, arguments.values[index])
       }
