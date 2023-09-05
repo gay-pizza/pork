@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class ImportDeclaration(val path: StringLiteral) : Declaration() {
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(path)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitImportDeclaration(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is ImportDeclaration) return false

@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,4 +11,7 @@ sealed class Node {
 
   open fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     emptyList()
+
+  open fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visit(this)
 }

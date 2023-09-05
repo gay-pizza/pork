@@ -13,6 +13,7 @@ class RootCommand : CliktCommand(
       HighlightCommand(),
       TokenizeCommand(),
       ReprintCommand(),
+      ParseCommand(),
       AstCommand(),
       AttributeCommand()
     )

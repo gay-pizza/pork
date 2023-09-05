@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -7,6 +8,9 @@ import kotlinx.serialization.Serializable
 @SerialName("stringLiteral")
 class StringLiteral(val text: String) : Expression() {
   override val type: NodeType = NodeType.StringLiteral
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitStringLiteral(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is StringLiteral) return false

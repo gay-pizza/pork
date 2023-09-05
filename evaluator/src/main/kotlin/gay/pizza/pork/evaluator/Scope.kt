@@ -14,8 +14,8 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
 
   fun value(name: String): Any {
     val value = valueOrNotFound(name)
-    if (value == NotFound) {
-      throw RuntimeException("Variable '${name}' not defined.")
+    if (value === NotFound) {
+      throw RuntimeException("Variable '${name}' not defined")
     }
     return value
   }
@@ -25,14 +25,14 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
     if (value == null) {
       if (parent != null) {
         val parentMaybeFound = parent.valueOrNotFound(name)
-        if (parentMaybeFound != NotFound) {
+        if (parentMaybeFound !== NotFound) {
           return parentMaybeFound
         }
       }
 
       for (inherit in inherited) {
         val inheritMaybeFound = inherit.valueOrNotFound(name)
-        if (inheritMaybeFound != NotFound) {
+        if (inheritMaybeFound !== NotFound) {
           return inheritMaybeFound
         }
       }

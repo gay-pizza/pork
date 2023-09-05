@@ -3,6 +3,7 @@ package gay.pizza.pork.tool
 import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.parser.Printer
 import gay.pizza.pork.ast.CompilationUnit
+import gay.pizza.pork.ast.visit
 import gay.pizza.pork.evaluator.Arguments
 import gay.pizza.pork.evaluator.Evaluator
 import gay.pizza.pork.evaluator.Scope

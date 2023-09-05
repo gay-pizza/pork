@@ -1,22 +1,22 @@
 package gay.pizza.pork.frontend
 
+import gay.pizza.dough.fs.FsPath
+import gay.pizza.dough.fs.PlatformFsProvider
+import gay.pizza.dough.fs.readString
 import gay.pizza.pork.parser.CharSource
 import gay.pizza.pork.parser.StringCharSource
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.readText
 
-class FsContentSource(val root: Path) : ContentSource {
+class FsContentSource(val root: FsPath) : ContentSource {
   override fun loadAsCharSource(path: String): CharSource =
-    StringCharSource(asFsPath(path).readText())
+    StringCharSource(asFsPath(path).readString())
 
   override fun stableContentIdentity(path: String): String =
-    asFsPath(path).absolutePathString()
+    asFsPath(path).fullPathString
 
-  private fun asFsPath(path: String): Path {
+  private fun asFsPath(path: String): FsPath {
     val fsPath = root.resolve(path)
-    val absoluteRootPath = root.absolutePathString() + root.fileSystem.separator
-    if (!fsPath.absolutePathString().startsWith(absoluteRootPath)) {
+    val rootPathWithSeparator = root.fullPathString + PlatformFsProvider.separator
+    if (!fsPath.fullPathString.startsWith(rootPathWithSeparator)) {
       throw RuntimeException("Unable to load path outside of the root: $fsPath (root is ${root})")
     }
     return fsPath

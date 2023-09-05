@@ -4,10 +4,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class PorkModulePlugin : Plugin<Project> {
@@ -16,6 +13,7 @@ open class PorkModulePlugin : Plugin<Project> {
     target.apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
 
     target.repositories.mavenCentral()
+    target.repositories.maven(url = "https://gitlab.com/api/v4/projects/49101454/packages/maven")
 
     target.extensions.getByType<JavaPluginExtension>().apply {
       val javaVersion = JavaVersion.toVersion(17)
@@ -30,6 +28,8 @@ open class PorkModulePlugin : Plugin<Project> {
     target.dependencies {
       add("implementation", "org.jetbrains.kotlin:kotlin-bom")
       add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+      add("api", "gay.pizza.dough:dough-core:0.1.0-SNAPSHOT")
+      add("api", "gay.pizza.dough:dough-fs:0.1.0-SNAPSHOT")
     }
   }
 }

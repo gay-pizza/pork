@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName

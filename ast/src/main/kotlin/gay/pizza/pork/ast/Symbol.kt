@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -7,6 +8,9 @@ import kotlinx.serialization.Serializable
 @SerialName("symbol")
 class Symbol(val id: String) : Node() {
   override val type: NodeType = NodeType.Symbol
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitSymbol(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is Symbol) return false

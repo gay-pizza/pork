@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class FunctionDefinition(override val modifiers: DefinitionModifiers, override v
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitAll(listOf(symbol), arguments, listOf(block))
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitFunctionDefinition(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is FunctionDefinition) return false

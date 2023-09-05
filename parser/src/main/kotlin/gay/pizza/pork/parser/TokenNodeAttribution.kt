@@ -2,6 +2,7 @@ package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.NodeCoalescer
 import gay.pizza.pork.ast.Node
+import gay.pizza.pork.ast.visit
 import java.util.IdentityHashMap
 
 class TokenNodeAttribution : NodeAttribution {

@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {

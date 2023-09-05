@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class LetAssignment(val symbol: Symbol, val value: Expression) : Expression() {
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(symbol, value)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitLetAssignment(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is LetAssignment) return false

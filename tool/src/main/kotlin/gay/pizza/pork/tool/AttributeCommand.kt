@@ -2,15 +2,16 @@ package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.types.path
+import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.NodeCoalescer
+import gay.pizza.pork.ast.visit
 import gay.pizza.pork.parser.TokenNodeAttribution
 
 class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute") {
-  val path by argument("file").path(mustExist = true, canBeDir = false)
+  val path by argument("file")
 
   override fun run() {
-    val tool = FileTool(path)
+    val tool = FileTool(PlatformFsProvider.resolve(path))
     val attribution = TokenNodeAttribution()
     val compilationUnit = tool.parse(attribution)
 

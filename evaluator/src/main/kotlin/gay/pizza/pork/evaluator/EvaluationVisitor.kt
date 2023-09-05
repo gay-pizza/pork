@@ -2,23 +2,24 @@ package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.ast.*
 
-class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
+class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
-  override fun visitListLiteral(node: ListLiteral): Any = node.items.map { visit(it) }
+  override fun visitListLiteral(node: ListLiteral): Any =
+    node.items.map { it.visit(this) }
 
   override fun visitSymbol(node: Symbol): Any = None
 
   override fun visitFunctionCall(node: FunctionCall): Any {
-    val arguments = node.arguments.map { visit(it) }
+    val arguments = node.arguments.map { it.visit(this) }
     return currentScope.call(node.symbol.id, Arguments(arguments))
   }
 
   override fun visitLetAssignment(node: LetAssignment): Any {
-    val value = visit(node.value)
+    val value = node.value.visit(this)
     currentScope.define(node.symbol.id, value)
     return value
   }
@@ -35,7 +36,7 @@ class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
       try {
         var value: Any? = null
         for (expression in node.expressions) {
-          value = visit(expression)
+          value = expression.visit(this)
         }
         value ?: None
       } finally {
@@ -44,10 +45,11 @@ class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitParentheses(node: Parentheses): Any = visit(node.expression)
+  override fun visitParentheses(node: Parentheses): Any =
+    node.expression.visit(this)
 
   override fun visitPrefixOperation(node: PrefixOperation): Any {
-    val value = visit(node.expression)
+    val value = node.expression.visit(this)
     return when (node.op) {
       PrefixOperator.Negate -> {
         if (value !is Boolean) {
@@ -59,21 +61,18 @@ class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
   }
 
   override fun visitIf(node: If): Any {
-    val condition = visit(node.condition)
+    val condition = node.condition.visit(this)
     return if (condition == true) {
-      visit(node.thenExpression)
+      node.thenExpression.visit(this)
     } else {
-      if (node.elseExpression != null) {
-        visit(node.elseExpression!!)
-      } else {
-        None
-      }
+      val elseExpression = node.elseExpression
+      elseExpression?.visit(this) ?: None
     }
   }
 
   override fun visitInfixOperation(node: InfixOperation): Any {
-    val left = visit(node.left)
-    val right = visit(node.right)
+    val left = node.left.visit(this)
+    val right = node.right.visit(this)
 
     when (node.op) {
       InfixOperator.Equals -> {
@@ -101,26 +100,19 @@ class EvaluationVisitor(val root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitFunctionDefinition(node: FunctionDefinition): Any {
-    val function = CallableFunction { arguments ->
-      currentScope = root.fork()
-      for ((index, argumentSymbol) in node.arguments.withIndex()) {
-        currentScope.define(argumentSymbol.id, arguments.values[index])
-      }
-      val visitor = EvaluationVisitor(currentScope)
-      val blockFunction = visitor.visitBlock(node.block) as BlockFunction
-      return@CallableFunction blockFunction.call()
-    }
-    currentScope.define(node.symbol.id, function)
-    return None
-  }
-
-  override fun visitBlock(node: Block): Any = BlockFunction {
+  override fun visitBlock(node: Block): BlockFunction = BlockFunction {
     var value: Any? = null
     for (expression in node.expressions) {
-      value = visit(expression)
+      value = expression.visit(this)
     }
     value ?: None
+  }
+
+  override fun visitFunctionDefinition(node: FunctionDefinition): Any {
+    throw RuntimeException(
+      "Function declarations cannot be visited in an EvaluationVisitor. " +
+      "Utilize a FunctionContext."
+    )
   }
 
   override fun visitImportDeclaration(node: ImportDeclaration): Any {

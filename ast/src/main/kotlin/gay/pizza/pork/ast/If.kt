@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class If(val condition: Expression, val thenExpression: Expression, val elseExpr
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(condition, thenExpression, elseExpression)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitIf(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is If) return false

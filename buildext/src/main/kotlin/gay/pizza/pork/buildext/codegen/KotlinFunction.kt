@@ -3,6 +3,7 @@ package gay.pizza.pork.buildext.codegen
 class KotlinFunction(
   val name: String,
   var typeParameters: MutableList<String> = mutableListOf(),
+  var extensionOf: String? = null,
   var parameters: MutableList<KotlinParameter> = mutableListOf(),
   var returnType: String? = null,
   var abstract: Boolean = false,

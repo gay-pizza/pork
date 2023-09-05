@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class PrefixOperation(val op: PrefixOperator, val expression: Expression) : Expr
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(expression)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitPrefixOperation(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is PrefixOperation) return false

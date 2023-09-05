@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class CompilationUnit(val declarations: List<Declaration>, val definitions: List
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitAll(declarations, definitions)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitCompilationUnit(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is CompilationUnit) return false

@@ -2,14 +2,14 @@ package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.types.path
+import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.Node
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalSerializationApi::class)
 class AstCommand : CliktCommand(help = "Print AST", name = "ast") {
-  val path by argument("file").path(mustExist = true, canBeDir = false)
+  val path by argument("file")
 
   private val json = Json {
     prettyPrint = true
@@ -18,7 +18,7 @@ class AstCommand : CliktCommand(help = "Print AST", name = "ast") {
   }
 
   override fun run() {
-    val tool = FileTool(path)
+    val tool = FileTool(PlatformFsProvider.resolve(path))
     println(json.encodeToString(Node.serializer(), tool.parse()))
   }
 }

@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -7,6 +8,9 @@ import kotlinx.serialization.Serializable
 @SerialName("booleanLiteral")
 class BooleanLiteral(val value: Boolean) : Expression() {
   override val type: NodeType = NodeType.BooleanLiteral
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitBooleanLiteral(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is BooleanLiteral) return false

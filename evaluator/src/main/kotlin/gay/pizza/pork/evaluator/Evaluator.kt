@@ -2,21 +2,19 @@ package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.frontend.World
 
-class Evaluator(val world: World, val scope: Scope) : EvaluationContextProvider {
-  private val contexts = mutableMapOf<String, EvaluationContext>()
+class Evaluator(val world: World, val scope: Scope) {
+  private val contexts = mutableMapOf<String, CompilationUnitContext>()
 
-  fun evaluate(path: String): Scope {
-    val context = provideEvaluationContext(path)
-    return context.externalRootScope
-  }
+  fun evaluate(path: String): Scope =
+    context(path).externalScope
 
-  override fun provideEvaluationContext(path: String): EvaluationContext {
+  fun context(path: String): CompilationUnitContext {
     val unit = world.load(path)
     val identity = world.contentSource.stableContentIdentity(path)
     val context = contexts.computeIfAbsent(identity) {
-      EvaluationContext(unit, this, scope)
+      CompilationUnitContext(unit, this, scope)
     }
-    context.init()
+    context.initIfNeeded()
     return context
   }
 }

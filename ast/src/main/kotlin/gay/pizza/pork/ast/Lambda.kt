@@ -1,3 +1,4 @@
+// GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast
 
 import kotlinx.serialization.SerialName
@@ -10,6 +11,9 @@ class Lambda(val arguments: List<Symbol>, val expressions: List<Expression>) : E
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitAll(arguments, expressions)
+
+  override fun <T> visit(visitor: NodeVisitor<T>): T =
+    visitor.visitLambda(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is Lambda) return false
