@@ -17,15 +17,22 @@ class AstTypeRef(
         )
       }
 
-      val primitive = AstPrimitive.values().firstOrNull { it.name == input }
+      var form = AstTypeRefForm.Single
+      var typeName: String = input
+      if (input.endsWith("?")) {
+        form = AstTypeRefForm.Nullable
+        typeName = input.substring(0, input.length - 1)
+      }
+
+      val primitive = AstPrimitive.values().firstOrNull { it.name == typeName }
       if (primitive != null) {
         return AstTypeRef(
           primitive = primitive,
-          form = AstTypeRefForm.Single
+          form = form
         )
       }
 
-      return AstTypeRef(type = registry.lookup(input), form = AstTypeRefForm.Single)
+      return AstTypeRef(type = registry.lookup(typeName), form = form)
     }
   }
 }

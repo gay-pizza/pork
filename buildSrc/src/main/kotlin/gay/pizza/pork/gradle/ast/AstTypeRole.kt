@@ -4,5 +4,6 @@ enum class AstTypeRole {
   RootNode,
   HierarchyNode,
   AstNode,
-  ValueHolder
+  ValueHolder,
+  Enum
 }

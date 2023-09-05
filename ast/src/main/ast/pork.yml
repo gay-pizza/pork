@@ -4,6 +4,9 @@ types:
     parent: Node
   Symbol:
     parent: Node
+    values:
+    - name: id
+      type: String
   Declaration:
     parent: Node
   Definition:
@@ -11,8 +14,10 @@ types:
     values:
     - name: symbol
       type: Symbol
+      required: true
     - name: modifiers
       type: DefinitionModifiers
+      required: true
   DefinitionModifiers:
     values:
     - name: export
@@ -29,10 +34,126 @@ types:
       type: List<Declaration>
     - name: definitions
       type: List<Declaration>
-  Assignment:
+  LetAssignment:
     parent: Expression
     values:
     - name: symbol
       type: Symbol
     - name: value
       type: Expression
+  InfixOperator:
+    values:
+    - name: token
+      type: String
+    enums:
+    - name: Plus
+      values:
+        token: "+"
+    - name: Minus
+      values:
+        token: "-"
+    - name: Multiply
+      values:
+        token: "*"
+    - name: Divide
+      values:
+        token: "/"
+    - name: Equals
+      values:
+        token: "=="
+    - name: NotEquals
+      values:
+        token: "!="
+  InfixOperation:
+    parent: Expression
+    values:
+    - name: left
+      type: Expression
+    - name: op
+      type: InfixOperator
+    - name: right
+      type: Expression
+  BooleanLiteral:
+    parent: Expression
+    values:
+    - name: value
+      type: Boolean
+  FunctionCall:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol
+    - name: arguments
+      type: List<Expression>
+  FunctionDefinition:
+    parent: Definition
+    values:
+    - name: modifiers
+      type: DefinitionModifiers
+    - name: symbol
+      type: Symbol
+    - name: arguments
+      type: List<Symbol>
+    - name: block
+      type: Block
+  If:
+    parent: Expression
+    values:
+    - name: condition
+      type: Expression
+    - name: thenExpression
+      type: Expression
+    - name: elseExpression
+      type: Expression?
+  ImportDeclaration:
+    parent: Declaration
+    values:
+    - name: path
+      type: StringLiteral
+  IntLiteral:
+    parent: Expression
+    values:
+    - name: value
+      type: Int
+  Lambda:
+    parent: Expression
+    values:
+    - name: arguments
+      type: List<Symbol>
+    - name: expressions
+      type: List<Expression>
+  ListLiteral:
+    parent: Expression
+    values:
+    - name: items
+      type: List<Expression>
+  Parentheses:
+    parent: Expression
+    values:
+    - name: expression
+      type: Expression
+  PrefixOperator:
+    values:
+    - name: token
+      type: String
+    enums:
+    - name: Negate
+      values:
+        token: "!"
+  PrefixOperation:
+    parent: Expression
+    values:
+    - name: op
+      type: PrefixOperator
+    - name: expression
+      type: Expression
+  StringLiteral:
+    parent: Expression
+    values:
+    - name: text
+      type: String
+  SymbolReference:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol

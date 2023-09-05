@@ -21,21 +21,5 @@ enum class NodeType(val parent: NodeType? = null) {
   FunctionCall(Expression),
   If(Expression),
   ImportDeclaration(Declaration),
-  FunctionDefinition(Definition);
-
-  val parents: Set<NodeType>
-
-  init {
-    val calculatedParents = mutableListOf<NodeType>()
-    var self = this
-    while (true) {
-      calculatedParents.add(self)
-      if (self.parent != null) {
-        self = self.parent!!
-      } else {
-        break
-      }
-    }
-    parents = calculatedParents.toSet()
-  }
+  FunctionDefinition(Definition)
 }

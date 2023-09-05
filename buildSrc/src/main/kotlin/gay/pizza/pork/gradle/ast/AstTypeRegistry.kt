@@ -19,7 +19,9 @@ class AstTypeRegistry {
 
   fun roleOfType(type: AstType): AstTypeRole =
     when {
-      type.parent == null && type.values.isNotEmpty() ->
+      type.enums.isNotEmpty() ->
+        AstTypeRole.Enum
+      type.parent == null && type.values.isEmpty() ->
         AstTypeRole.RootNode
       type.parent != null && type.values.all { it.abstract } ->
         AstTypeRole.HierarchyNode

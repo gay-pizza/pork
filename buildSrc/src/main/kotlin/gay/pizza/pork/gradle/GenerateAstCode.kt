@@ -1,13 +1,11 @@
 package gay.pizza.pork.gradle
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import gay.pizza.pork.gradle.ast.AstDescription
+import gay.pizza.pork.gradle.ast.AstCodegen
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
-import gay.pizza.pork.gradle.ast.AstWorld
+import org.gradle.api.tasks.OutputDirectory
 import java.io.File
 
 open class GenerateAstCode : DefaultTask() {
@@ -16,15 +14,16 @@ open class GenerateAstCode : DefaultTask() {
   }
 
   @get:InputFile
-  val astDescriptionFile: File = project.file("src/main/ast/pork.yml")
+  var astDescriptionFile: File = project.file("src/main/ast/pork.yml")
+
+  @get:Input
+  var codePackage: String = "gay.pizza.pork.gen"
+
+  @get:OutputDirectory
+  var outputDirectory: File = project.file("src/main/kotlin/gay/pizza/pork/gen")
 
   @TaskAction
   fun generate() {
-    val astYamlText = astDescriptionFile.readText()
-    val mapper = ObjectMapper(YAMLFactory())
-    mapper.registerModules(KotlinModule.Builder().build())
-    val astDescription = mapper.readValue(astYamlText, AstDescription::class.java)
-    val world = AstWorld()
-    world.build(astDescription)
+    AstCodegen.run(codePackage, astDescriptionFile.toPath(), outputDirectory.toPath())
   }
 }
