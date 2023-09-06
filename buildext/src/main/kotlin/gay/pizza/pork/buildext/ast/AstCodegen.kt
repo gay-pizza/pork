@@ -1,3 +1,4 @@
+@file:Suppress("ConstPropertyName")
 package gay.pizza.pork.buildext.ast
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -85,6 +86,12 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       ),
       isImmediateExpression = true
     )
+
+    if (enableVisitAnyInline) {
+      visitAnyFunction.inline = true
+      visitAnyFunction.annotations.add("""@Suppress("NOTHING_TO_INLINE")""")
+    }
+
     visitAnyFunction.body.add("when (node) {")
     for (type in world.typeRegistry.types.filter {
       world.typeRegistry.roleOfType(it) == AstTypeRole.AstNode
@@ -391,6 +398,8 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
   }
 
   companion object {
+    private const val enableVisitAnyInline = false
+
     fun run(pkg: String, astDescriptionFile: Path, outputDirectory: Path) {
       if (!outputDirectory.exists()) {
         outputDirectory.createDirectories()

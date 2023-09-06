@@ -143,6 +143,10 @@ class KotlinWriter() {
   }
 
   fun writeFunction(function: KotlinFunction, index: Int = 0, functionCount: Int = 1, indent: String = ""): Unit = buffer.run {
+    for (annotation in function.annotations) {
+      append(indent)
+      appendLine(annotation)
+    }
     append(indent)
 
     if (function.overridden) {
@@ -155,6 +159,10 @@ class KotlinWriter() {
 
     if (function.open) {
       append("open ")
+    }
+
+    if (function.inline) {
+      append("inline ")
     }
 
     append("fun ")
