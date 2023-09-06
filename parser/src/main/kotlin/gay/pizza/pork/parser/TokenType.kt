@@ -24,7 +24,6 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Comma(SingleChar(',')),
   False(Keyword("false"), KeywordFamily),
   True(Keyword("true"), KeywordFamily),
-  In(Keyword("in"), KeywordFamily),
   If(Keyword("if"), KeywordFamily),
   Then(Keyword("then"), KeywordFamily),
   Else(Keyword("else"), KeywordFamily),

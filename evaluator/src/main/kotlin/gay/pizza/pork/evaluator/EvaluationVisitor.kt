@@ -27,24 +27,6 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitSymbolReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
 
-  override fun visitLambda(node: Lambda): CallableFunction {
-    return CallableFunction { arguments ->
-      currentScope = currentScope.fork()
-      for ((index, argumentSymbol) in node.arguments.withIndex()) {
-        currentScope.define(argumentSymbol.id, arguments.values[index])
-      }
-      try {
-        var value: Any? = null
-        for (expression in node.expressions) {
-          value = expression.visit(this)
-        }
-        value ?: None
-      } finally {
-        currentScope = currentScope.leave()
-      }
-    }
-  }
-
   override fun visitParentheses(node: Parentheses): Any =
     node.expression.visit(this)
 

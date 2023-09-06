@@ -15,7 +15,6 @@ enum class NodeType(val parent: NodeType? = null) {
   ImportDeclaration(Declaration),
   InfixOperation(Expression),
   IntLiteral(Expression),
-  Lambda(Expression),
   LetAssignment(Expression),
   ListLiteral(Expression),
   Parentheses(Expression),

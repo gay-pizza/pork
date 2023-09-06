@@ -115,13 +115,6 @@ types:
     values:
     - name: value
       type: Int
-  Lambda:
-    parent: Expression
-    values:
-    - name: arguments
-      type: List<Symbol>
-    - name: expressions
-      type: List<Expression>
   ListLiteral:
     parent: Expression
     values:

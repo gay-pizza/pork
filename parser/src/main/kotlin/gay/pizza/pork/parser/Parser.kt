@@ -56,26 +56,6 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     }
   }
 
-  private fun readLambda(): Lambda = within {
-    expect(TokenType.LeftCurly)
-    val arguments = mutableListOf<Symbol>()
-    while (!peek(TokenType.In)) {
-      val symbol = readSymbolRaw()
-      arguments.add(symbol)
-      if (next(TokenType.Comma)) {
-        continue
-      } else {
-        break
-      }
-    }
-    expect(TokenType.In)
-    val items = collect(TokenType.RightCurly) {
-      readExpression()
-    }
-    expect(TokenType.RightCurly)
-    Lambda(arguments, items)
-  }
-
   private fun readParentheses(): Parentheses = within {
     expect(TokenType.LeftParentheses)
     val expression = readExpression()
@@ -126,10 +106,6 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
       TokenType.Symbol -> {
         readSymbolCases()
-      }
-
-      TokenType.LeftCurly -> {
-        readLambda()
       }
 
       TokenType.LeftParentheses -> {

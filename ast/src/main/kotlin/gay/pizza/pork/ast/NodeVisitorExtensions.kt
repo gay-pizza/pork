@@ -14,7 +14,6 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is If -> visitIf(node)
     is ImportDeclaration -> visitImportDeclaration(node)
     is IntLiteral -> visitIntLiteral(node)
-    is Lambda -> visitLambda(node)
     is ListLiteral -> visitListLiteral(node)
     is Parentheses -> visitParentheses(node)
     is PrefixOperation -> visitPrefixOperation(node)

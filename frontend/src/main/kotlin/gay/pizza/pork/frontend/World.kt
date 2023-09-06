@@ -8,11 +8,14 @@ import gay.pizza.pork.parser.TokenStreamSource
 import gay.pizza.pork.parser.Tokenizer
 
 class World(val contentSource: ContentSource) {
-  private val units = mutableMapOf<String, CompilationUnit>()
+  private val internalUnits = mutableMapOf<String, CompilationUnit>()
+
+  val units: List<CompilationUnit>
+    get() = internalUnits.values.toList()
 
   private fun loadOneUnit(path: String): CompilationUnit {
     val stableIdentity = contentSource.stableContentIdentity(path)
-    val cached = units[stableIdentity]
+    val cached = internalUnits[stableIdentity]
     if (cached != null) {
       return cached
     }

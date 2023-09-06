@@ -82,34 +82,6 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
   }
 
-  override fun visitLambda(node: Lambda) {
-    append("{")
-    if (node.arguments.isNotEmpty()) {
-      append(" ")
-      for ((index, argument) in node.arguments.withIndex()) {
-        visit(argument)
-        if (index + 1 != node.arguments.size) {
-          append(",")
-        }
-        append(" ")
-      }
-    } else {
-      append(" ")
-    }
-    append("in")
-    out.increaseIndent()
-    for (expression in node.expressions) {
-      appendLine()
-      visit(expression)
-    }
-
-    if (node.expressions.isNotEmpty()) {
-      appendLine()
-    }
-    out.decreaseIndent()
-    append("}")
-  }
-
   override fun visitParentheses(node: Parentheses) {
     append("(")
     visit(node.expression)

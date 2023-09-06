@@ -20,8 +20,6 @@ interface NodeVisitor<T> {
 
   fun visitIntLiteral(node: IntLiteral): T
 
-  fun visitLambda(node: Lambda): T
-
   fun visitLetAssignment(node: LetAssignment): T
 
   fun visitListLiteral(node: ListLiteral): T
