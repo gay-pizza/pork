@@ -110,6 +110,8 @@ types:
   ImportDeclaration:
     parent: Declaration
     values:
+    - name: form
+      type: Symbol?
     - name: path
       type: StringLiteral
   IntLiteral:

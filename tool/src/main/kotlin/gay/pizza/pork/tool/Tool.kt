@@ -1,16 +1,17 @@
 package gay.pizza.pork.tool
 
-import gay.pizza.pork.ast.NodeVisitor
-import gay.pizza.pork.parser.Printer
 import gay.pizza.pork.ast.CompilationUnit
+import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.visit
-import gay.pizza.pork.evaluator.Arguments
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.Evaluator
 import gay.pizza.pork.evaluator.Scope
 import gay.pizza.pork.frontend.ContentSource
+import gay.pizza.pork.frontend.ImportLocator
+import gay.pizza.pork.frontend.StandardImportSource
 import gay.pizza.pork.frontend.World
 import gay.pizza.pork.parser.*
+import gay.pizza.pork.stdlib.PorkStdlib
 
 abstract class Tool {
   abstract fun createCharSource(): CharSource
@@ -31,11 +32,13 @@ abstract class Tool {
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
   fun loadMainFunction(scope: Scope, setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
-    val contentSource = createContentSource()
-    val world = World(contentSource)
+    val fileContentSource = createContentSource()
+    val standardImportSource = StandardImportSource(fileContentSource)
+    standardImportSource.addContentSource("std", PorkStdlib)
+    val world = World(standardImportSource)
     val evaluator = Evaluator(world, scope)
     setupEvaluator(evaluator)
-    val resultingScope = evaluator.evaluate(rootFilePath())
+    val resultingScope = evaluator.evaluate(ImportLocator(rootFilePath()))
     return resultingScope.value("main") as CallableFunction
   }
 }

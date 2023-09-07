@@ -1,0 +1,15 @@
+export func add(a, b) {
+  a + b
+}
+
+export func subtract(a, b) {
+  a - b
+}
+
+export func multiply(a, b) {
+  a * b
+}
+
+export func divide(a, b) {
+  a / b
+}

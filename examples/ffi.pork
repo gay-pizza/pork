@@ -1,8 +1,4 @@
-func malloc(size)
-  native ffi "c:malloc:void*"
-
-func free(pointer)
-  native ffi "c:free:void"
+import std "ffi/malloc.pork"
 
 export func main() {
   while true {

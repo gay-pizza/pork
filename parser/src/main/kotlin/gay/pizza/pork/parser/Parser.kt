@@ -183,7 +183,11 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
   private fun readImportDeclaration(): ImportDeclaration = within {
     expect(TokenType.Import)
-    ImportDeclaration(readStringLiteral())
+    var form: Symbol? = null
+    if (peek(TokenType.Symbol)) {
+      form = readSymbolRaw()
+    }
+    ImportDeclaration(form, readStringLiteral())
   }
 
   private fun readFunctionDeclaration(): FunctionDefinition = within {

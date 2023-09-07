@@ -4,6 +4,7 @@ import gay.pizza.pork.ast.CompilationUnit
 import gay.pizza.pork.ast.Definition
 import gay.pizza.pork.ast.FunctionDefinition
 import gay.pizza.pork.ast.ImportDeclaration
+import gay.pizza.pork.frontend.ImportLocator
 
 class CompilationUnitContext(
   val compilationUnit: CompilationUnit,
@@ -50,8 +51,8 @@ class CompilationUnitContext(
   }
 
   private fun processImport(import: ImportDeclaration) {
-    val path = import.path.text
-    val evaluationContext = evaluator.context(path)
+    val importLocator = ImportLocator(import.path.text, import.form?.id)
+    val evaluationContext = evaluator.context(importLocator)
     internalScope.inherit(evaluationContext.externalScope)
   }
 }

@@ -1,0 +1,5 @@
+export func malloc(size)
+  native ffi "c:malloc:void*"
+
+export func free(pointer)
+  native ffi "c:free:void"

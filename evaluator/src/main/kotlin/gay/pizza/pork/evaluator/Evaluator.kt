@@ -1,17 +1,18 @@
 package gay.pizza.pork.evaluator
 
+import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.World
 
 class Evaluator(val world: World, val scope: Scope) {
   private val contexts = mutableMapOf<String, CompilationUnitContext>()
   private val nativeFunctionProviders = mutableMapOf<String, NativeFunctionProvider>()
 
-  fun evaluate(path: String): Scope =
-    context(path).externalScope
+  fun evaluate(locator: ImportLocator): Scope =
+    context(locator).externalScope
 
-  fun context(path: String): CompilationUnitContext {
-    val unit = world.load(path)
-    val identity = world.contentSource.stableContentIdentity(path)
+  fun context(locator: ImportLocator): CompilationUnitContext {
+    val unit = world.load(locator)
+    val identity = world.stableIdentity(locator)
     val context = contexts.computeIfAbsent(identity) {
       CompilationUnitContext(unit, this, scope)
     }

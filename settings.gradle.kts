@@ -8,6 +8,7 @@ include(
   ":parser",
   ":frontend",
   ":evaluator",
+  ":stdlib",
   ":ffi",
   ":tool"
 )
