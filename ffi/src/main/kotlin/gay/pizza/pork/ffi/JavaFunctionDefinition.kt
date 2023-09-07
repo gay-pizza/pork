@@ -20,4 +20,12 @@ class JavaFunctionDefinition(
       return JavaFunctionDefinition(type, kind, symbol, returnType, parameters)
     }
   }
+
+  fun encode(): String = buildString {
+    append("${type}:${kind}:${symbol}:${returnType}")
+    if (parameters.isNotEmpty()) {
+      append(":")
+      append(parameters.joinToString(","))
+    }
+  }
 }

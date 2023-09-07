@@ -1,10 +1,8 @@
-func java_system_err()
-  native java "java.lang.System:static-getter:err:java.io.PrintStream"
+import java java.lang.System
 
-func print_stream_println(stream, line)
-  native java "java.io.PrintStream:virtual:println:void:String"
+func java_io_PrintStream_println(a) native java "java.io.PrintStream:virtual:println:void:String"
 
 export func main() {
-  let error = java_system_err()
-  print_stream_println(error, "Hello World")
+  let stream = java_lang_System_err_get()
+  java_io_PrintStream_println(stream, "Hello World")
 }

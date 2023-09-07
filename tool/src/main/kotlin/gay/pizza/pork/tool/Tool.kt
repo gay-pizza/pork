@@ -6,6 +6,7 @@ import gay.pizza.pork.ast.visit
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.Evaluator
 import gay.pizza.pork.evaluator.Scope
+import gay.pizza.pork.ffi.JavaAutogenContentSource
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.DynamicImportSource
@@ -36,6 +37,7 @@ abstract class Tool {
     val dynamicImportSource = DynamicImportSource()
     dynamicImportSource.addContentSource("std", PorkStdlib)
     dynamicImportSource.addContentSource("local", fileContentSource)
+    dynamicImportSource.addContentSource("java", JavaAutogenContentSource)
     val world = World(dynamicImportSource)
     val evaluator = Evaluator(world, scope)
     setupEvaluator(evaluator)

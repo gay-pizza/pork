@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+  api(project(":frontend"))
   api(project(":evaluator"))
 
   implementation(project(":common"))
