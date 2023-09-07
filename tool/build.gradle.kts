@@ -10,7 +10,8 @@ dependencies {
   api(project(":parser"))
   api(project(":frontend"))
   api(project(":evaluator"))
-  implementation(libs.clikt)
+  api(project(":ffi"))
+  api("com.github.ajalt.clikt:clikt:4.2.0")
   implementation(project(":common"))
 }
 

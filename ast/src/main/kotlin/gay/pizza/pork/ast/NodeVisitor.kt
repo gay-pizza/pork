@@ -6,7 +6,11 @@ interface NodeVisitor<T> {
 
   fun visitBooleanLiteral(node: BooleanLiteral): T
 
+  fun visitBreak(node: Break): T
+
   fun visitCompilationUnit(node: CompilationUnit): T
+
+  fun visitContinue(node: Continue): T
 
   fun visitFunctionCall(node: FunctionCall): T
 
@@ -24,6 +28,8 @@ interface NodeVisitor<T> {
 
   fun visitListLiteral(node: ListLiteral): T
 
+  fun visitNative(node: Native): T
+
   fun visitParentheses(node: Parentheses): T
 
   fun visitPrefixOperation(node: PrefixOperation): T
@@ -33,4 +39,6 @@ interface NodeVisitor<T> {
   fun visitSymbol(node: Symbol): T
 
   fun visitSymbolReference(node: SymbolReference): T
+
+  fun visitWhile(node: While): T
 }

@@ -6,18 +6,18 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("functionDefinition")
-class FunctionDefinition(override val modifiers: DefinitionModifiers, override val symbol: Symbol, val arguments: List<Symbol>, val block: Block) : Definition() {
+class FunctionDefinition(override val modifiers: DefinitionModifiers, override val symbol: Symbol, val arguments: List<Symbol>, val block: Block?, val native: Native?) : Definition() {
   override val type: NodeType = NodeType.FunctionDefinition
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
-    visitor.visitAll(listOf(symbol), arguments, listOf(block))
+    visitor.visitAll(listOf(symbol), arguments, listOf(block), listOf(native))
 
   override fun <T> visit(visitor: NodeVisitor<T>): T =
     visitor.visitFunctionDefinition(this)
 
   override fun equals(other: Any?): Boolean {
     if (other !is FunctionDefinition) return false
-    return other.modifiers == modifiers && other.symbol == symbol && other.arguments == arguments && other.block == block
+    return other.modifiers == modifiers && other.symbol == symbol && other.arguments == arguments && other.block == block && other.native == native
   }
 
   override fun hashCode(): Int {
@@ -25,6 +25,7 @@ class FunctionDefinition(override val modifiers: DefinitionModifiers, override v
     result = 31 * result + symbol.hashCode()
     result = 31 * result + arguments.hashCode()
     result = 31 * result + block.hashCode()
+    result = 31 * result + native.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }

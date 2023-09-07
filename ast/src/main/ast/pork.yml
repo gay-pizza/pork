@@ -95,16 +95,18 @@ types:
     - name: arguments
       type: List<Symbol>
     - name: block
-      type: Block
+      type: Block?
+    - name: native
+      type: Native?
   If:
     parent: Expression
     values:
     - name: condition
       type: Expression
-    - name: thenExpression
-      type: Expression
-    - name: elseExpression
-      type: Expression?
+    - name: thenBlock
+      type: Block
+    - name: elseBlock
+      type: Block?
   ImportDeclaration:
     parent: Declaration
     values:
@@ -150,3 +152,23 @@ types:
     values:
     - name: symbol
       type: Symbol
+  While:
+    parent: Expression
+    values:
+    - name: condition
+      type: Expression
+    - name: block
+      type: Block
+  Break:
+    parent: Expression
+    values: []
+  Continue:
+    parent: Expression
+    values: []
+  Native:
+    parent: Node
+    values:
+    - name: form
+      type: Symbol
+    - name: definition
+      type: StringLiteral

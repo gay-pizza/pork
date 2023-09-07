@@ -38,6 +38,8 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     }
   }
 
+  override fun visitBreak(node: Break): Unit = append("break")
+
   override fun visitListLiteral(node: ListLiteral) {
     append("[")
     if (node.items.isNotEmpty()) {
@@ -53,6 +55,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
       out.decreaseIndent()
     }
     append("]")
+  }
+
+  override fun visitNative(node: Native) {
+    append("native ")
+    visit(node.form)
+    append(" ")
+    visit(node.definition)
   }
 
   override fun visitSymbol(node: Symbol) {
@@ -82,6 +91,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
   }
 
+  override fun visitWhile(node: While) {
+    append("while ")
+    visit(node.condition)
+    append(" ")
+    visit(node.block)
+  }
+
   override fun visitParentheses(node: Parentheses) {
     append("(")
     visit(node.expression)
@@ -96,18 +112,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
   override fun visitIf(node: If) {
     append("if ")
     visit(node.condition)
-    append(" then")
-    out.increaseIndent()
-    appendLine()
-    visit(node.thenExpression)
-    out.decreaseIndent()
-    if (node.elseExpression != null) {
-      appendLine()
+    append(" ")
+    visit(node.thenBlock)
+    if (node.elseBlock != null) {
+      append(" ")
       append("else")
-      out.increaseIndent()
-      appendLine()
-      visit(node.elseExpression!!)
-      out.decreaseIndent()
+      append(" ")
+      visit(node.elseBlock!!)
     }
   }
 
@@ -120,7 +131,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
   }
 
   override fun visitFunctionDefinition(node: FunctionDefinition) {
-    append("fn ")
+    append("func ")
     visit(node.symbol)
     append("(")
     for ((index, argument) in node.arguments.withIndex()) {
@@ -130,7 +141,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
       }
     }
     append(") ")
-    visit(node.block)
+    if (node.block != null) {
+      visit(node.block!!)
+    }
+
+    if (node.native != null) {
+      visit(node.native!!)
+    }
   }
 
   override fun visitBlock(node: Block) {
@@ -167,4 +184,6 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
       appendLine()
     }
   }
+
+  override fun visitContinue(node: Continue): Unit = append("continue")
 }

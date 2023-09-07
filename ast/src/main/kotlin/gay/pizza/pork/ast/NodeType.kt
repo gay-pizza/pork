@@ -6,7 +6,9 @@ enum class NodeType(val parent: NodeType? = null) {
   Block(Node),
   Expression(Node),
   BooleanLiteral(Expression),
+  Break(Expression),
   CompilationUnit(Node),
+  Continue(Expression),
   Declaration(Node),
   Definition(Node),
   FunctionCall(Expression),
@@ -17,9 +19,11 @@ enum class NodeType(val parent: NodeType? = null) {
   IntLiteral(Expression),
   LetAssignment(Expression),
   ListLiteral(Expression),
+  Native(Node),
   Parentheses(Expression),
   PrefixOperation(Expression),
   StringLiteral(Expression),
   Symbol(Node),
-  SymbolReference(Expression)
+  SymbolReference(Expression),
+  While(Expression)
 }

@@ -120,11 +120,12 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       extensionOf = "NodeVisitor<T>",
       returnType = "List<T>",
       parameters = mutableListOf(
-        KotlinParameter("nodeLists", type = "List<Node>", vararg = true)
+        KotlinParameter("nodeLists", type = "List<Node?>", vararg = true)
       ),
       isImmediateExpression = true
     )
-    visitAllFunction.body.add("nodeLists.asSequence().flatten().map { visit(it) }.toList()")
+    visitAllFunction.body.add(
+      "nodeLists.asSequence().flatten().filterNotNull().map { visit(it) }.toList()")
     visitorExtensionSet.functions.add(visitAllFunction)
 
     write("NodeVisitorExtensions.kt", KotlinWriter(visitorExtensionSet))
@@ -239,16 +240,18 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       kotlinClassLike.inherits.add("$parentName()")
     }
 
-    for (value in type.values) {
-      val member = KotlinMember(value.name, toKotlinType(value.typeRef))
-      member.abstract = value.abstract
-      if (type.isParentAbstract(value)) {
-        member.overridden = true
+    if (type.values != null) {
+      for (value in type.values!!) {
+        val member = KotlinMember(value.name, toKotlinType(value.typeRef))
+        member.abstract = value.abstract
+        if (type.isParentAbstract(value)) {
+          member.overridden = true
+        }
+        if (role == AstTypeRole.ValueHolder) {
+          member.mutable = true
+        }
+        kotlinClassLike.members.add(member)
       }
-      if (role == AstTypeRole.ValueHolder) {
-        member.mutable = true
-      }
-      kotlinClassLike.members.add(member)
     }
 
     if (role == AstTypeRole.Enum) {
@@ -279,25 +282,26 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
         ),
         isImmediateExpression = true
       )
-      val anyListMembers = type.values.any { it.typeRef.form == AstTypeRefForm.List }
+      val anyListMembers = type.values?.any { it.typeRef.form == AstTypeRefForm.List } ?: false
       val elideVisitChildren: Boolean
       if (anyListMembers) {
-        val visitParameters = type.values.mapNotNull {
+        val visitParameters = (type.values?.mapNotNull {
           if (it.typeRef.primitive != null) {
             null
           } else if (it.typeRef.type != null &&
             !world.typeRegistry.roleOfType(it.typeRef.type).isNodeInherited()) {
             null
-          } else if (it.typeRef.form == AstTypeRefForm.Single) {
+          } else if (it.typeRef.form == AstTypeRefForm.Single ||
+            it.typeRef.form == AstTypeRefForm.Nullable) {
             "listOf(${it.name})"
           } else {
             it.name
           }
-        }.joinToString(", ")
+        } ?: emptyList()).joinToString(", ")
         elideVisitChildren = visitParameters.isEmpty()
         visitChildrenFunction.body.add("visitor.visitAll(${visitParameters})")
       } else {
-        val visitParameters = type.values.mapNotNull {
+        val visitParameters = (type.values?.mapNotNull {
           if (it.typeRef.primitive != null) {
             null
           } else if (it.typeRef.type != null &&
@@ -306,7 +310,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
           } else {
             it.name
           }
-        }.joinToString(", ")
+        } ?: emptyList()).joinToString(", ")
         elideVisitChildren = visitParameters.isEmpty()
         visitChildrenFunction.body.add("visitor.visitNodes(${visitParameters})")
       }
@@ -341,9 +345,12 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
         "Any?"
       ))
       equalsFunction.body.add("if (other !is ${type.name}) return false")
-      val predicate = equalsAndHashCodeMembers.mapNotNull {
+      var predicate = equalsAndHashCodeMembers.mapNotNull {
         if (it == "type") null else "other.${it} == $it"
       }.joinToString(" && ")
+      if (predicate.isEmpty()) {
+        predicate = "true"
+      }
       equalsFunction.body.add("return $predicate")
       kotlinClassLike.functions.add(equalsFunction)
 

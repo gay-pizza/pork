@@ -39,10 +39,13 @@ class AstWorld {
           type.parent = world.typeRegistry.lookup(typeDescription.parent)
         }
 
-        for (value in typeDescription.values) {
-          val typeRef = AstTypeRef.parse(value.type, world.typeRegistry)
-          val typeValue = AstValue(value.name, typeRef, abstract = value.required)
-          type.addValue(typeValue)
+        if (typeDescription.values != null) {
+          type.markHasValues()
+          for (value in typeDescription.values) {
+            val typeRef = AstTypeRef.parse(value.type, world.typeRegistry)
+            val typeValue = AstValue(value.name, typeRef, abstract = value.required)
+            type.addValue(typeValue)
+          }
         }
 
         for (enum in typeDescription.enums) {

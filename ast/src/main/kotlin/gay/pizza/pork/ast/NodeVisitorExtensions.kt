@@ -19,10 +19,14 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is PrefixOperation -> visitPrefixOperation(node)
     is StringLiteral -> visitStringLiteral(node)
     is SymbolReference -> visitSymbolReference(node)
+    is While -> visitWhile(node)
+    is Break -> visitBreak(node)
+    is Continue -> visitContinue(node)
+    is Native -> visitNative(node)
   }
 
 fun <T> NodeVisitor<T>.visitNodes(vararg nodes: Node?): List<T> =
   nodes.asSequence().filterNotNull().map { visit(it) }.toList()
 
-fun <T> NodeVisitor<T>.visitAll(vararg nodeLists: List<Node>): List<T> =
-  nodeLists.asSequence().flatten().map { visit(it) }.toList()
+fun <T> NodeVisitor<T>.visitAll(vararg nodeLists: List<Node?>): List<T> =
+  nodeLists.asSequence().flatten().filterNotNull().map { visit(it) }.toList()

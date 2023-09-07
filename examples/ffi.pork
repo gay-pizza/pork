@@ -1,0 +1,13 @@
+func malloc(size)
+  native ffi "libc.dylib:malloc:void*"
+
+func free(pointer)
+  native ffi "libc.dylib:free:void"
+
+export func main() {
+  while true {
+    let pointer = malloc(8192)
+    println(pointer)
+    free(pointer)
+  }
+}

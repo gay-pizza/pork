@@ -39,7 +39,7 @@ class CompilationUnitContext(
   }
 
   private fun definitionValue(definition: Definition): Any = when (definition) {
-    is FunctionDefinition -> FunctionContext(definition, internalScope)
+    is FunctionDefinition -> FunctionContext(this, definition)
   }
 
   private fun processAllImports() {

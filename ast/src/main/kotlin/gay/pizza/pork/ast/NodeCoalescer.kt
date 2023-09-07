@@ -8,7 +8,13 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitBooleanLiteral(node: BooleanLiteral): Unit =
     handle(node)
 
+  override fun visitBreak(node: Break): Unit =
+    handle(node)
+
   override fun visitCompilationUnit(node: CompilationUnit): Unit =
+    handle(node)
+
+  override fun visitContinue(node: Continue): Unit =
     handle(node)
 
   override fun visitFunctionCall(node: FunctionCall): Unit =
@@ -35,6 +41,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitListLiteral(node: ListLiteral): Unit =
     handle(node)
 
+  override fun visitNative(node: Native): Unit =
+    handle(node)
+
   override fun visitParentheses(node: Parentheses): Unit =
     handle(node)
 
@@ -48,6 +57,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
     handle(node)
 
   override fun visitSymbolReference(node: SymbolReference): Unit =
+    handle(node)
+
+  override fun visitWhile(node: While): Unit =
     handle(node)
 
   fun handle(node: Node) {

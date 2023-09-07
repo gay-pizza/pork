@@ -72,13 +72,26 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun readIf(): If = within {
     expect(TokenType.If)
     val condition = readExpression()
-    expect(TokenType.Then)
-    val thenExpression = readExpression()
-    var elseExpression: Expression? = null
+    val thenBlock = readBlock()
+    var elseBlock: Block? = null
     if (next(TokenType.Else)) {
-      elseExpression = readExpression()
+      elseBlock = readBlock()
     }
-    If(condition, thenExpression, elseExpression)
+    If(condition, thenBlock, elseBlock)
+  }
+
+  private fun readWhile(): While = within {
+    expect(TokenType.While)
+    val condition = readExpression()
+    val block = readBlock()
+    While(condition, block)
+  }
+
+  private fun readNative(): Native = within {
+    expect(TokenType.Native)
+    val form = readSymbolRaw()
+    val definition = readStringLiteral()
+    Native(form, definition)
   }
 
   fun readExpression(): Expression {
@@ -118,6 +131,20 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
       TokenType.If -> {
         readIf()
+      }
+
+      TokenType.While -> {
+        readWhile()
+      }
+
+      TokenType.Break -> {
+        expect(TokenType.Break)
+        Break()
+      }
+
+      TokenType.Continue -> {
+        expect(TokenType.Continue)
+        Continue()
       }
 
       else -> {
@@ -178,7 +205,15 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       readSymbolRaw()
     }
     expect(TokenType.RightParentheses)
-    FunctionDefinition(modifiers, name, arguments, readBlock())
+
+    var native: Native? = null
+    var block: Block? = null
+    if (peek(TokenType.Native)) {
+      native = readNative()
+    } else {
+      block = readBlock()
+    }
+    FunctionDefinition(modifiers, name, arguments, block, native)
   }
 
   private fun maybeReadDefinition(): Definition? {

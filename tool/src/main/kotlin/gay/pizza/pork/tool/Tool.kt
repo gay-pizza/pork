@@ -5,6 +5,7 @@ import gay.pizza.pork.parser.Printer
 import gay.pizza.pork.ast.CompilationUnit
 import gay.pizza.pork.ast.visit
 import gay.pizza.pork.evaluator.Arguments
+import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.Evaluator
 import gay.pizza.pork.evaluator.Scope
 import gay.pizza.pork.frontend.ContentSource
@@ -29,11 +30,12 @@ abstract class Tool {
 
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
-  fun evaluate(scope: Scope) {
+  fun loadMainFunction(scope: Scope, setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
     val contentSource = createContentSource()
     val world = World(contentSource)
     val evaluator = Evaluator(world, scope)
+    setupEvaluator(evaluator)
     val resultingScope = evaluator.evaluate(rootFilePath())
-    resultingScope.call("main", Arguments(emptyList()))
+    return resultingScope.value("main") as CallableFunction
   }
 }

@@ -21,13 +21,14 @@ class AstTypeRegistry {
     when {
       type.enums.isNotEmpty() ->
         AstTypeRole.Enum
-      type.parent == null && type.values.isEmpty() ->
+      type.parent == null && type.values == null ->
         AstTypeRole.RootNode
-      type.parent != null && type.values.all { it.abstract } ->
+      type.parent != null && (type.values == null ||
+        (type.values!!.isNotEmpty() && type.values!!.all { it.abstract })) ->
         AstTypeRole.HierarchyNode
-      type.parent != null && type.values.none { it.abstract } ->
+      type.parent != null && (type.values != null && type.values!!.none { it.abstract }) ->
         AstTypeRole.AstNode
-      type.parent == null && type.values.isNotEmpty() ->
+      type.parent == null && (type.values != null && type.values!!.isNotEmpty()) ->
         AstTypeRole.ValueHolder
       else -> throw RuntimeException("Unable to determine role of type ${type.name}")
   }

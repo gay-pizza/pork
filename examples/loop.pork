@@ -1,0 +1,6 @@
+export func main() {
+  while true {
+    println("Hello World")
+    break
+  }
+}

@@ -5,25 +5,24 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("if")
-class If(val condition: Expression, val thenBlock: Block, val elseBlock: Block?) : Expression() {
-  override val type: NodeType = NodeType.If
+@SerialName("while")
+class While(val condition: Expression, val block: Block) : Expression() {
+  override val type: NodeType = NodeType.While
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
-    visitor.visitNodes(condition, thenBlock, elseBlock)
+    visitor.visitNodes(condition, block)
 
   override fun <T> visit(visitor: NodeVisitor<T>): T =
-    visitor.visitIf(this)
+    visitor.visitWhile(this)
 
   override fun equals(other: Any?): Boolean {
-    if (other !is If) return false
-    return other.condition == condition && other.thenBlock == thenBlock && other.elseBlock == elseBlock
+    if (other !is While) return false
+    return other.condition == condition && other.block == block
   }
 
   override fun hashCode(): Int {
     var result = condition.hashCode()
-    result = 31 * result + thenBlock.hashCode()
-    result = 31 * result + elseBlock.hashCode()
+    result = 31 * result + block.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }

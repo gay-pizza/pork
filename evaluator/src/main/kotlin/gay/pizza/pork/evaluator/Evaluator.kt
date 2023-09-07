@@ -4,6 +4,7 @@ import gay.pizza.pork.frontend.World
 
 class Evaluator(val world: World, val scope: Scope) {
   private val contexts = mutableMapOf<String, CompilationUnitContext>()
+  private val nativeFunctionProviders = mutableMapOf<String, NativeFunctionProvider>()
 
   fun evaluate(path: String): Scope =
     context(path).externalScope
@@ -16,5 +17,14 @@ class Evaluator(val world: World, val scope: Scope) {
     }
     context.initIfNeeded()
     return context
+  }
+
+  fun nativeFunctionProvider(form: String): NativeFunctionProvider {
+    return nativeFunctionProviders[form] ?:
+      throw RuntimeException("Unknown native function form: $form")
+  }
+
+  fun addNativeFunctionProvider(form: String, nativeFunctionProvider: NativeFunctionProvider) {
+    nativeFunctionProviders[form] = nativeFunctionProvider
   }
 }

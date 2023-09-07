@@ -5,9 +5,11 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import gay.pizza.dough.fs.PlatformFsProvider
+import gay.pizza.pork.evaluator.Arguments
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.None
 import gay.pizza.pork.evaluator.Scope
+import gay.pizza.pork.ffi.JnaNativeProvider
 
 class RunCommand : CliktCommand(help = "Run Program", name = "run") {
   val loop by option("--loop", help = "Loop Program").flag()
@@ -28,8 +30,12 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
       None
     })
 
+    val main = tool.loadMainFunction(scope, setupEvaluator = {
+      addNativeFunctionProvider("ffi", JnaNativeProvider())
+    })
+
     maybeLoopAndMeasure(loop, measure) {
-      tool.evaluate(scope)
+      main.call(Arguments(emptyList()))
     }
   }
 }

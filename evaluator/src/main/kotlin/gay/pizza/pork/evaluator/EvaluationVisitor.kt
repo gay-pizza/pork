@@ -8,6 +8,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitIntLiteral(node: IntLiteral): Any = node.value
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
+
+  override fun visitBreak(node: Break): Any = throw BreakMarker
+
   override fun visitListLiteral(node: ListLiteral): Any =
     node.items.map { it.visit(this) }
 
@@ -15,7 +18,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitFunctionCall(node: FunctionCall): Any {
     val arguments = node.arguments.map { it.visit(this) }
-    return currentScope.call(node.symbol.id, Arguments(arguments))
+    val functionValue = currentScope.value(node.symbol.id) as CallableFunction
+    return functionValue.call(Arguments(arguments))
   }
 
   override fun visitLetAssignment(node: LetAssignment): Any {
@@ -26,6 +30,26 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitSymbolReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
+
+  override fun visitWhile(node: While): Any {
+    val blockFunction = node.block.visit(this) as BlockFunction
+    var result: Any? = null
+    while (true) {
+      val value = node.condition.visit(this)
+      if (value !is Boolean) {
+        throw RuntimeException("While loop attempted on non-boolean value: $value")
+      }
+      if (!value) break
+      try {
+        scoped { result = blockFunction.call() }
+      } catch (_: BreakMarker) {
+        break
+      } catch (_: ContinueMarker) {
+        continue
+      }
+    }
+    return result ?: None
+  }
 
   override fun visitParentheses(node: Parentheses): Any =
     node.expression.visit(this)
@@ -45,11 +69,12 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitIf(node: If): Any {
     val condition = node.condition.visit(this)
     return if (condition == true) {
-      node.thenExpression.visit(this)
-    } else {
-      val elseExpression = node.elseExpression
-      elseExpression?.visit(this) ?: None
-    }
+      val blockFunction = node.thenBlock.visit(this) as BlockFunction
+      scoped { blockFunction.call() }
+    } else if (node.elseBlock != null) {
+      val blockFunction = node.elseBlock!!.visit(this) as BlockFunction
+      scoped { blockFunction.call() }
+    } else None
   }
 
   override fun visitInfixOperation(node: InfixOperation): Any {
@@ -93,21 +118,42 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
     throw RuntimeException(
       "Function declarations cannot be visited in an EvaluationVisitor. " +
-      "Utilize a FunctionContext."
+        "Utilize a FunctionContext."
     )
   }
 
   override fun visitImportDeclaration(node: ImportDeclaration): Any {
     throw RuntimeException(
       "Import declarations cannot be visited in an EvaluationVisitor. " +
-      "Utilize an EvaluationContext."
+        "Utilize an CompilationUnitContext."
     )
   }
 
   override fun visitCompilationUnit(node: CompilationUnit): Any {
     throw RuntimeException(
       "Compilation units cannot be visited in an EvaluationVisitor. " +
-        "Utilize an EvaluationContext."
+        "Utilize an CompilationUnitContext."
     )
   }
+
+  override fun visitNative(node: Native): Any {
+    throw RuntimeException(
+      "Native definition cannot be visited in an EvaluationVisitor. " +
+        "Utilize an FunctionContext."
+    )
+  }
+
+  override fun visitContinue(node: Continue): Any = ContinueMarker
+
+  private inline fun <T> scoped(block: () -> T): T {
+    currentScope = currentScope.fork()
+    try {
+      return block()
+    } finally {
+      currentScope = currentScope.leave()
+    }
+  }
+
+  private object BreakMarker : RuntimeException("Break Marker")
+  private object ContinueMarker: RuntimeException("Continue Marker")
 }
