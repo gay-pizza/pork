@@ -1,8 +1,8 @@
 func malloc(size)
-  native ffi "libc.dylib:malloc:void*"
+  native ffi "c:malloc:void*"
 
 func free(pointer)
-  native ffi "libc.dylib:free:void"
+  native ffi "c:free:void"
 
 export func main() {
   while true {
