@@ -9,6 +9,7 @@ import gay.pizza.pork.evaluator.Arguments
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.None
 import gay.pizza.pork.evaluator.Scope
+import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.ffi.JnaNativeProvider
 
 class RunCommand : CliktCommand(help = "Run Program", name = "run") {
@@ -32,6 +33,7 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
 
     val main = tool.loadMainFunction(scope, setupEvaluator = {
       addNativeFunctionProvider("ffi", JnaNativeProvider())
+      addNativeFunctionProvider("java", JavaNativeProvider())
     })
 
     maybeLoopAndMeasure(loop, measure) {

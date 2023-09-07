@@ -6,11 +6,10 @@ import gay.pizza.pork.evaluator.NativeFunctionProvider
 
 class JnaNativeProvider : NativeFunctionProvider {
   override fun provideNativeFunction(definition: String): CallableFunction {
-    val (libraryName, functionSymbol, returnType, _) =
-      definition.split(":", limit = 3)
-    val function = Function.getFunction(libraryName, functionSymbol)
+    val functionDefinition = FfiFunctionDefinition.parse(definition)
+    val function = Function.getFunction(functionDefinition.library, functionDefinition.function)
     return CallableFunction {
-      return@CallableFunction invoke(function, it.values.toTypedArray(), returnType)
+      return@CallableFunction invoke(function, it.values.toTypedArray(), functionDefinition.returnType)
     }
   }
 
