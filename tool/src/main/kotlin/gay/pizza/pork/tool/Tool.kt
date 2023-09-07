@@ -8,7 +8,7 @@ import gay.pizza.pork.evaluator.Evaluator
 import gay.pizza.pork.evaluator.Scope
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.frontend.ImportLocator
-import gay.pizza.pork.frontend.StandardImportSource
+import gay.pizza.pork.frontend.DynamicImportSource
 import gay.pizza.pork.frontend.World
 import gay.pizza.pork.parser.*
 import gay.pizza.pork.stdlib.PorkStdlib
@@ -33,12 +33,13 @@ abstract class Tool {
 
   fun loadMainFunction(scope: Scope, setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
     val fileContentSource = createContentSource()
-    val standardImportSource = StandardImportSource(fileContentSource)
-    standardImportSource.addContentSource("std", PorkStdlib)
-    val world = World(standardImportSource)
+    val dynamicImportSource = DynamicImportSource()
+    dynamicImportSource.addContentSource("std", PorkStdlib)
+    dynamicImportSource.addContentSource("local", fileContentSource)
+    val world = World(dynamicImportSource)
     val evaluator = Evaluator(world, scope)
     setupEvaluator(evaluator)
-    val resultingScope = evaluator.evaluate(ImportLocator(rootFilePath()))
+    val resultingScope = evaluator.evaluate(ImportLocator("local", rootFilePath()))
     return resultingScope.value("main") as CallableFunction
   }
 }

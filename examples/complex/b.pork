@@ -1,4 +1,4 @@
-import "c.pork"
+import local c
 
 export func b() {
   c()

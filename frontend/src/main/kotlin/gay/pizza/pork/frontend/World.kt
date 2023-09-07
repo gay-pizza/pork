@@ -32,7 +32,8 @@ class World(val importSource: ImportSource) {
   private fun resolveAllImports(unit: CompilationUnit): Set<CompilationUnit> {
     val units = mutableSetOf<CompilationUnit>()
     for (declaration in unit.declarations.filterIsInstance<ImportDeclaration>()) {
-      val importLocator = ImportLocator(declaration.path.text, form = declaration.form?.id)
+      val importPath = declaration.components.joinToString("/") { it.id } + ".pork"
+      val importLocator = ImportLocator(declaration.form.id, importPath)
       val importedUnit = loadOneUnit(importLocator)
       units.add(importedUnit)
     }
@@ -45,18 +46,14 @@ class World(val importSource: ImportSource) {
     return unit
   }
 
-  private fun pickContentSource(form: String? = null): ContentSource {
-    if (form != null) {
-      return importSource.provideContentSource(form)
-    }
-    return importSource.fileContentSource
-  }
+  private fun pickContentSource(form: String): ContentSource =
+    importSource.provideContentSource(form)
 
   fun stableIdentity(
     importLocator: ImportLocator,
     contentSource: ContentSource = pickContentSource(importLocator.form)
   ): String {
-    val formKey = importLocator.form ?: "file"
+    val formKey = importLocator.form
     val stableIdentity = contentSource.stableContentIdentity(importLocator.path)
     return "[${formKey}][${stableIdentity}]"
   }

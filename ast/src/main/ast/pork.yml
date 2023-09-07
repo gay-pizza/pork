@@ -111,9 +111,9 @@ types:
     parent: Declaration
     values:
     - name: form
-      type: Symbol?
-    - name: path
-      type: StringLiteral
+      type: Symbol
+    - name: components
+      type: List<Symbol>
   IntLiteral:
     parent: Expression
     values:

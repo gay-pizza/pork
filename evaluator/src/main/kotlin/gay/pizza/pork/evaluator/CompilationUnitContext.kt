@@ -51,7 +51,8 @@ class CompilationUnitContext(
   }
 
   private fun processImport(import: ImportDeclaration) {
-    val importLocator = ImportLocator(import.path.text, import.form?.id)
+    val importPath = import.components.joinToString("/") { it.id } + ".pork"
+    val importLocator = ImportLocator(import.form.id, importPath)
     val evaluationContext = evaluator.context(importLocator)
     internalScope.inherit(evaluationContext.externalScope)
   }

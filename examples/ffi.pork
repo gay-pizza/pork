@@ -1,4 +1,4 @@
-import std "ffi/malloc.pork"
+import std ffi.malloc
 
 export func main() {
   while true {

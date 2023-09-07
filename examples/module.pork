@@ -1,3 +1,0 @@
-export func hello() {
-  println("Hello World")
-}

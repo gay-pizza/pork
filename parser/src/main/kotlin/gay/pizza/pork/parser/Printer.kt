@@ -166,7 +166,14 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
 
   override fun visitImportDeclaration(node: ImportDeclaration) {
     append("import ")
-    visit(node.path)
+    visit(node.form)
+    append(" ")
+    for ((index, component) in node.components.withIndex()) {
+      visit(component)
+      if (index != node.components.size - 1) {
+        append(".")
+      }
+    }
   }
 
   override fun visitCompilationUnit(node: CompilationUnit) {

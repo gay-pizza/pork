@@ -183,11 +183,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
   private fun readImportDeclaration(): ImportDeclaration = within {
     expect(TokenType.Import)
-    var form: Symbol? = null
-    if (peek(TokenType.Symbol)) {
-      form = readSymbolRaw()
-    }
-    ImportDeclaration(form, readStringLiteral())
+    val form = readSymbolRaw()
+    val components = oneAndContinuedBy(TokenType.Period) { readSymbolRaw() }
+    ImportDeclaration(form, components)
   }
 
   private fun readFunctionDeclaration(): FunctionDefinition = within {
@@ -292,11 +290,21 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   ): List<T> {
     val items = mutableListOf<T>()
     while (!peek(peeking)) {
-      val expression = read()
+      val item = read()
       if (consuming != null) {
         next(consuming)
       }
-      items.add(expression)
+      items.add(item)
+    }
+    return items
+  }
+
+  private fun <T> oneAndContinuedBy(separator: TokenType, read: () -> T): List<T> {
+    val items = mutableListOf<T>()
+    items.add(read())
+    while (peek(separator)) {
+      expect(separator)
+      items.add(read())
     }
     return items
   }

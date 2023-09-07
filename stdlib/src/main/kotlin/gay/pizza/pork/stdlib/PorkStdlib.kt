@@ -8,7 +8,7 @@ object PorkStdlib : ContentSource {
   private val stdlibClass = PorkStdlib::class.java
 
   private fun readManifestFiles(): List<String> {
-    val manifestContent = read("stdlib.manifest")
+    val manifestContent = read("stdlib.manifest", check = false)
     return manifestContent.split("\n").filter { line ->
       val trimmed = line.trim()
       trimmed.isNotEmpty() && !trimmed.startsWith("#")
@@ -17,7 +17,10 @@ object PorkStdlib : ContentSource {
 
   val files: List<String> = readManifestFiles()
 
-  private fun read(path: String): String {
+  private fun read(path: String, check: Boolean = true): String {
+    if (check && !files.contains(path)) {
+      throw RuntimeException("Stdlib does not contain file '${path}'")
+    }
     val stream = stdlibClass.getResourceAsStream("/pork/stdlib/${path}")
       ?: throw RuntimeException("Stdlib does not contain file '${path}'")
     return String(stream.readAllBytes())

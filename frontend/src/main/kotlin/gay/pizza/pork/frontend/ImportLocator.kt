@@ -1,3 +1,3 @@
 package gay.pizza.pork.frontend
 
-data class ImportLocator(val path: String, val form: String? = null)
+data class ImportLocator(val form: String, val path: String)

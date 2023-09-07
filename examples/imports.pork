@@ -1,5 +1,0 @@
-import "module.pork"
-
-export func main() {
-  hello()
-}
