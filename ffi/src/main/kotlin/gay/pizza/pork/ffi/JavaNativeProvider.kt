@@ -13,7 +13,7 @@ class JavaNativeProvider : NativeFunctionProvider {
     val functionDefinition = JavaFunctionDefinition.parse(definition)
     val javaClass = lookupClass(functionDefinition.type)
     val returnTypeClass = lookupClass(functionDefinition.returnType)
-    val parameterClasses = functionDefinition.parameters.map { lookup.findClass(it) }
+    val parameterClasses = functionDefinition.parameters.map { lookupClass(it) }
     val handle = mapKindToHandle(
       functionDefinition.kind,
       functionDefinition.symbol,
@@ -26,6 +26,12 @@ class JavaNativeProvider : NativeFunctionProvider {
 
   private fun lookupClass(name: String): Class<*> = when (name) {
     "void" -> Void.TYPE
+    "String" -> String::class.java
+    "byte" -> Byte::class.java
+    "char" -> Char::class.java
+    "short" -> Short::class.java
+    "int" -> Int::class.java
+    "long" -> Long::class.java
     else -> lookup.findClass(name)
   }
 

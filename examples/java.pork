@@ -2,7 +2,7 @@ func java_system_err()
   native java "java.lang.System:static-getter:err:java.io.PrintStream"
 
 func print_stream_println(stream, line)
-  native java "java.io.PrintStream:virtual:println:void:java.lang.String"
+  native java "java.io.PrintStream:virtual:println:void:String"
 
 export func main() {
   let error = java_system_err()
