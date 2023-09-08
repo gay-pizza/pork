@@ -35,12 +35,21 @@ class JavaNativeProvider : NativeFunctionProvider {
     else -> lookup.findClass(name)
   }
 
-  private fun mapKindToHandle(kind: String, symbol: String, javaClass: Class<*>, returnType: Class<*>, parameterTypes: List<Class<*>>) = when (kind) {
+  private fun mapKindToHandle(
+    kind: String,
+    symbol: String,
+    javaClass: Class<*>,
+    returnType: Class<*>,
+    parameterTypes: List<Class<*>>
+  ) = when (kind) {
     "getter" -> lookup.findGetter(javaClass, symbol, returnType)
     "setter" -> lookup.findSetter(javaClass, symbol, returnType)
-    "constructor" -> lookup.findConstructor(javaClass, MethodType.methodType(returnType, parameterTypes))
-    "static" -> lookup.findStatic(javaClass, symbol, MethodType.methodType(returnType, parameterTypes))
-    "virtual" -> lookup.findVirtual(javaClass, symbol, MethodType.methodType(returnType, parameterTypes))
+    "constructor" ->
+      lookup.findConstructor(javaClass, MethodType.methodType(Void.TYPE, parameterTypes))
+    "static" ->
+      lookup.findStatic(javaClass, symbol, MethodType.methodType(returnType, parameterTypes))
+    "virtual" ->
+      lookup.findVirtual(javaClass, symbol, MethodType.methodType(returnType, parameterTypes))
     "static-getter" -> lookup.findStaticGetter(javaClass, symbol, returnType)
     "static-setter" -> lookup.findStaticSetter(javaClass, symbol, returnType)
     else -> throw RuntimeException("Unknown Handle Kind: $kind")

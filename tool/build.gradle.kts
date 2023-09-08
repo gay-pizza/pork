@@ -37,6 +37,12 @@ graalvmNative {
       mainClass.set("gay.pizza.pork.tool.MainKt")
       sharedLibrary.set(false)
       buildArgs("-march=compatibility")
+      resources {
+        includedPatterns.addAll(listOf(
+          ".*/*.pork$",
+          ".*/*.manifest$"
+        ))
+      }
     }
   }
 }

@@ -1,9 +1,7 @@
 import std ffi.malloc
 
 export func main() {
-  while true {
-    let pointer = malloc(8192)
-    println(pointer)
-    free(pointer)
-  }
+  let pointer = malloc(8192)
+  println(pointer)
+  free(pointer)
 }

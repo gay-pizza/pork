@@ -9,7 +9,7 @@ class JnaNativeProvider : NativeFunctionProvider {
     val functionDefinition = FfiFunctionDefinition.parse(definition)
     val function = Function.getFunction(functionDefinition.library, functionDefinition.function)
     return CallableFunction {
-      return@CallableFunction invoke(function, it.values.toTypedArray(), functionDefinition.returnType)
+      invoke(function, it.values.toTypedArray(), functionDefinition.returnType)
     }
   }
 
