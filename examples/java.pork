@@ -1,13 +1,7 @@
 import java java.lang.System
 import java java.io.PrintStream
-import java java.io.InputStreamReader
-import java java.io.BufferedReader
 
 export func main() {
-  let input = java_lang_System_in_get()
-  let reader = java_io_InputStreamReader_new_inputstream(input)
-  let bufferedReader = java_io_BufferedReader_new_reader(reader)
-  let line = java_io_BufferedReader_readLine(bufferedReader)
   let stream = java_lang_System_err_get()
-  java_io_PrintStream_println_string(stream, line)
+  java_io_PrintStream_println_string(stream, "Hello World")
 }

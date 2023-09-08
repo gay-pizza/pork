@@ -9,10 +9,11 @@ import gay.pizza.pork.frontend.ImportLocator
 class CompilationUnitContext(
   val compilationUnit: CompilationUnit,
   val evaluator: Evaluator,
-  rootScope: Scope
+  rootScope: Scope,
+  name: String = "unknown"
 ) {
-  val internalScope = rootScope.fork()
-  val externalScope = rootScope.fork()
+  val internalScope = rootScope.fork("internal $name")
+  val externalScope = rootScope.fork("external $name")
 
   private var initialized = false
 

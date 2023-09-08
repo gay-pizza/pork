@@ -5,10 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import gay.pizza.dough.fs.PlatformFsProvider
-import gay.pizza.pork.evaluator.Arguments
-import gay.pizza.pork.evaluator.CallableFunction
-import gay.pizza.pork.evaluator.None
-import gay.pizza.pork.evaluator.Scope
+import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.ffi.JnaNativeProvider
 
@@ -16,6 +13,7 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
   val loop by option("--loop", help = "Loop Program").flag()
   val measure by option("--measure", help = "Measure Time").flag()
   val quiet by option("--quiet", help = "Silence Prints").flag()
+  val dumpScope by option("--dump-scope", help = "Dump Scope").flag()
   val path by argument("file")
 
   override fun run() {
@@ -35,6 +33,14 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
       addNativeFunctionProvider("ffi", JnaNativeProvider())
       addNativeFunctionProvider("java", JavaNativeProvider())
     })
+
+    if (dumpScope) {
+      val functionContext = main as FunctionContext
+      val internalScope = functionContext.compilationUnitContext.internalScope
+      internalScope.crawlScopePath { key, path ->
+        println("[scope] $key [${path.joinToString(" -> ")}]")
+      }
+    }
 
     maybeLoopAndMeasure(loop, measure) {
       main.call(Arguments(emptyList()))

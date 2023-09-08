@@ -14,7 +14,7 @@ class Evaluator(val world: World, val scope: Scope) {
     val unit = world.load(locator)
     val identity = world.stableIdentity(locator)
     val context = contexts.computeIfAbsent(identity) {
-      CompilationUnitContext(unit, this, scope)
+      CompilationUnitContext(unit, this, scope, name = "${locator.form} ${locator.path}")
     }
     context.initIfNeeded()
     return context

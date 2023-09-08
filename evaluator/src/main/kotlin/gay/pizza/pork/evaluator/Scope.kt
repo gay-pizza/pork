@@ -1,6 +1,10 @@
 package gay.pizza.pork.evaluator
 
-class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
+class Scope(
+  val parent: Scope? = null,
+  inherits: List<Scope> = emptyList(),
+  val name: String? = null
+) {
   private val inherited = inherits.toMutableList()
   private val variables = mutableMapOf<String, Any>()
 
@@ -41,8 +45,8 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
     return value
   }
 
-  fun fork(): Scope =
-    Scope(this)
+  fun fork(name: String? = null): Scope =
+    Scope(this, name = name)
 
   internal fun inherit(scope: Scope) {
     inherited.add(scope)
@@ -53,6 +57,27 @@ class Scope(val parent: Scope? = null, inherits: List<Scope> = emptyList()) {
       throw RuntimeException("Attempted to leave the root scope!")
     }
     return parent
+  }
+
+  fun crawlScopePath(
+    path: List<String> = mutableListOf(name ?: "unknown"),
+    block: (String, List<String>) -> Unit
+  ) {
+    for (key in variables.keys) {
+      block(key, path)
+    }
+
+    for (inherit in inherited) {
+      val mutablePath = path.toMutableList()
+      mutablePath.add("inherit ${inherit.name ?: "unknown"}")
+      inherit.crawlScopePath(mutablePath, block)
+    }
+
+    if (parent != null) {
+      val mutablePath = path.toMutableList()
+      mutablePath.add("parent ${parent.name ?: "unknown"}")
+      parent.crawlScopePath(mutablePath, block)
+    }
   }
 
   private object NotFound
