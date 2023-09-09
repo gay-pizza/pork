@@ -1,0 +1,10 @@
+import java java.lang.Math
+import java java.lang.System
+import java java.io.PrintStream
+
+export func main() {
+  while true {
+    let pi = java_lang_Math_PI_get()
+    println(pi)
+  }
+}
