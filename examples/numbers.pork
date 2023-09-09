@@ -1,0 +1,4 @@
+export func main() {
+  let pi = 3.141592653589793
+  println(pi)
+}

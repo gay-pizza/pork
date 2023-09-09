@@ -5,15 +5,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("intLiteral")
-class IntLiteral(val value: Int) : Expression() {
-  override val type: NodeType = NodeType.IntLiteral
+@SerialName("integerLiteral")
+class IntegerLiteral(val value: Int) : Expression() {
+  override val type: NodeType = NodeType.IntegerLiteral
 
   override fun <T> visit(visitor: NodeVisitor<T>): T =
-    visitor.visitIntLiteral(this)
+    visitor.visitIntegerLiteral(this)
 
   override fun equals(other: Any?): Boolean {
-    if (other !is IntLiteral) return false
+    if (other !is IntegerLiteral) return false
     return other.value == value
   }
 

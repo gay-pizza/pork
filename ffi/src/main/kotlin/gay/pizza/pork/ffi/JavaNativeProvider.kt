@@ -32,6 +32,8 @@ class JavaNativeProvider : NativeFunctionProvider {
     "short" -> Short::class.java
     "int" -> Int::class.java
     "long" -> Long::class.java
+    "float" -> Float::class.java
+    "double" -> Double::class.java
     else -> lookup.findClass(name)
   }
 

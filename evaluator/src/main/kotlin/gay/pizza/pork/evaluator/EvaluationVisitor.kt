@@ -5,7 +5,8 @@ import gay.pizza.pork.ast.*
 class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
-  override fun visitIntLiteral(node: IntLiteral): Any = node.value
+  override fun visitIntegerLiteral(node: IntegerLiteral): Any = node.value
+  override fun visitDoubleLiteral(node: DoubleLiteral): Any = node.value
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
 
@@ -95,15 +96,77 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       throw RuntimeException("Failed to evaluate infix operation, bad types.")
     }
 
-    val leftInt = left.toInt()
-    val rightInt = right.toInt()
+    if (left is Double || right is Double) {
+      return numericOperation(
+        node.op,
+        left,
+        right,
+        convert = { it.toDouble() },
+        add = { a, b -> a + b },
+        subtract = { a, b -> a - b },
+        multiply = { a, b -> a * b },
+        divide = { a, b -> a / b }
+      )
+    }
 
-    return when (node.op) {
-      InfixOperator.Plus -> leftInt + rightInt
-      InfixOperator.Minus -> leftInt - rightInt
-      InfixOperator.Multiply -> leftInt * rightInt
-      InfixOperator.Divide -> leftInt / rightInt
-      else -> throw RuntimeException("Unable to handle operation ${node.op}")
+    if (left is Float || right is Float) {
+      return numericOperation(
+        node.op,
+        left,
+        right,
+        convert = { it.toFloat() },
+        add = { a, b -> a + b },
+        subtract = { a, b -> a - b },
+        multiply = { a, b -> a * b },
+        divide = { a, b -> a / b }
+      )
+    }
+
+    if (left is Long || right is Long) {
+      return numericOperation(
+        node.op,
+        left,
+        right,
+        convert = { it.toLong() },
+        add = { a, b -> a + b },
+        subtract = { a, b -> a - b },
+        multiply = { a, b -> a * b },
+        divide = { a, b -> a / b }
+      )
+    }
+
+    if (left is Int || right is Int) {
+      return numericOperation(
+        node.op,
+        left,
+        right,
+        convert = { it.toInt() },
+        add = { a, b -> a + b },
+        subtract = { a, b -> a - b },
+        multiply = { a, b -> a * b },
+        divide = { a, b -> a / b }
+      )
+    }
+
+    throw RuntimeException("Unknown numeric type: ${left.javaClass.name}")
+  }
+
+  private inline fun <T: Number> numericOperation(
+    op: InfixOperator,
+    left: Number,
+    right: Number,
+    convert: (Number) -> T,
+    add: (T, T) -> T,
+    subtract: (T, T) -> T,
+    multiply: (T, T) -> T,
+    divide: (T, T) -> T
+  ): T {
+    return when (op) {
+      InfixOperator.Plus -> add(convert(left), convert(right))
+      InfixOperator.Minus -> subtract(convert(left), convert(right))
+      InfixOperator.Multiply -> multiply(convert(left), convert(right))
+      InfixOperator.Divide -> divide(convert(left), convert(right))
+      else -> throw RuntimeException("Unable to handle operation $op")
     }
   }
 

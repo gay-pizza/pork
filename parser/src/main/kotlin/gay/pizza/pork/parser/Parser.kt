@@ -5,8 +5,14 @@ import gay.pizza.pork.ast.*
 class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private val unsanitizedSource = source
 
-  private fun readIntLiteral(): IntLiteral = within {
-    expect(TokenType.IntLiteral) { IntLiteral(it.text.toInt()) }
+  private fun readNumberLiteral(): Expression = within {
+    expect(TokenType.NumberLiteral) {
+      if (it.text.contains(".")) {
+        DoubleLiteral(it.text.toDouble())
+      } else {
+        IntegerLiteral(it.text.toInt())
+      }
+    }
   }
 
   private fun readStringLiteral(): StringLiteral = within {
@@ -97,8 +103,8 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   fun readExpression(): Expression {
     val token = peek()
     val expression = when (token.type) {
-      TokenType.IntLiteral -> {
-        readIntLiteral()
+      TokenType.NumberLiteral -> {
+        readNumberLiteral()
       }
 
       TokenType.StringLiteral -> {

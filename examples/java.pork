@@ -1,7 +1,10 @@
+import java java.lang.Math
 import java java.lang.System
 import java java.io.PrintStream
 
 export func main() {
   let stream = java_lang_System_err_get()
   java_io_PrintStream_println_string(stream, "Hello World")
+  let pi = java_lang_Math_PI_get()
+  println(pi)
 }

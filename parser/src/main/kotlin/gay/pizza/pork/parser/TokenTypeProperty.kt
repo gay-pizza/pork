@@ -5,6 +5,7 @@ interface TokenTypeProperty {
   class Promotion(val nextChar: Char, val type: TokenType) : TokenTypeProperty
   class Keyword(val text: String) : TokenTypeProperty
   class CharConsumer(val isValid: (Char) -> Boolean) : TokenTypeProperty
+  class CharIndexConsumer(val isValid: (Char, Int) -> Boolean) : TokenTypeProperty
   open class TokenUpgrader(val maybeUpgrade: (Token) -> Token?) : TokenTypeProperty
 
   object KeywordUpgrader : TokenUpgrader({ token ->

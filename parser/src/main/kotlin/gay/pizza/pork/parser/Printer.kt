@@ -20,7 +20,11 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     autoIndentState = true
   }
 
-  override fun visitIntLiteral(node: IntLiteral) {
+  override fun visitIntegerLiteral(node: IntegerLiteral) {
+    append(node.value.toString())
+  }
+
+  override fun visitDoubleLiteral(node: DoubleLiteral) {
     append(node.value.toString())
   }
 

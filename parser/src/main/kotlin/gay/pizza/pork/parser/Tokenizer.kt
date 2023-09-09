@@ -90,15 +90,29 @@ class Tokenizer(val source: CharSource) {
         return Token(type, tokenStart, text)
       }
 
+      var index = 0
       for (item in TokenType.CharConsumers) {
-        val consumer = item.charConsumer ?: continue
-        if (!consumer.isValid(char)) {
-          continue
+        if (item.charConsumer != null) {
+          if (!item.charConsumer.isValid(char)) {
+            continue
+          }
+        } else if (item.charIndexConsumer != null) {
+          if (!item.charIndexConsumer.isValid(char, index)) {
+            continue
+          }
+        } else {
+          throw RuntimeException("Unknown Char Consumer")
         }
 
         val text = buildString {
           append(char)
-          while (consumer.isValid(source.peek())) {
+
+          while (
+            if (item.charConsumer != null)
+              item.charConsumer.isValid(source.peek())
+            else
+              item.charIndexConsumer!!.isValid(source.peek(), ++index)
+          ) {
             append(source.next())
           }
         }

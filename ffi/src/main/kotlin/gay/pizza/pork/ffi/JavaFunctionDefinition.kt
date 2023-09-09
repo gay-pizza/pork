@@ -13,7 +13,8 @@ class JavaFunctionDefinition(
       if (!(parts.size == 4 || parts.size == 5) || parts.any { it.trim().isEmpty() }) {
         throw RuntimeException(
           "Java function definition is invalid, " +
-            "excepted format is 'type:kind:symbol:return-type:(optional)parameters' but '${def}' was specified")
+          "accepted format is 'type:kind:symbol:return-type:(optional)parameters' " +
+          "but '${def}' was specified")
       }
       val (type, kind, symbol, returnType) = parts
       val parameters = if (parts.size > 4) parts[4].split(",") else emptyList()

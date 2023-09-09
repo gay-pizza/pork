@@ -114,11 +114,16 @@ types:
       type: Symbol
     - name: components
       type: List<Symbol>
-  IntLiteral:
+  IntegerLiteral:
     parent: Expression
     values:
     - name: value
       type: Int
+  DoubleLiteral:
+    parent: Expression
+    values:
+    - name: value
+      type: Double
   ListLiteral:
     parent: Expression
     values:

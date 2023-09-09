@@ -4,8 +4,13 @@ import gay.pizza.pork.parser.TokenTypeProperty.*
 import gay.pizza.pork.parser.TokenFamily.*
 
 enum class TokenType(vararg properties: TokenTypeProperty) {
-  Symbol(SymbolFamily, CharConsumer { (it in 'a'..'z') || (it in 'A'..'Z') || it == '_' }, KeywordUpgrader),
-  IntLiteral(NumericLiteralFamily, CharConsumer { it in '0'..'9' }),
+  NumberLiteral(NumericLiteralFamily, CharIndexConsumer { it, index ->
+    (it in '0'..'9') || (index > 0 && it == '.') }),
+  Symbol(SymbolFamily, CharConsumer {
+    (it in 'a'..'z') ||
+      (it in 'A'..'Z') ||
+      (it == '_') ||
+      (it in '0' .. '9')}, KeywordUpgrader),
   StringLiteral(StringLiteralFamily),
   Equality(OperatorFamily),
   Inequality(OperatorFamily),
@@ -40,17 +45,24 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   LineComment(CommentFamily),
   EndOfFile;
 
-  val promotions: List<Promotion> = properties.filterIsInstance<Promotion>()
-  val keyword: Keyword? = properties.filterIsInstance<Keyword>().singleOrNull()
-  val singleChar: SingleChar? = properties.filterIsInstance<SingleChar>().singleOrNull()
+  val promotions: List<Promotion> =
+    properties.filterIsInstance<Promotion>()
+  val keyword: Keyword? =
+    properties.filterIsInstance<Keyword>().singleOrNull()
+  val singleChar: SingleChar? =
+    properties.filterIsInstance<SingleChar>().singleOrNull()
   val family: TokenFamily =
     properties.filterIsInstance<TokenFamily>().singleOrNull() ?: OtherFamily
   val charConsumer: CharConsumer? = properties.filterIsInstance<CharConsumer>().singleOrNull()
-  val tokenUpgrader: TokenUpgrader? = properties.filterIsInstance<TokenUpgrader>().singleOrNull()
+  val charIndexConsumer: CharIndexConsumer? =
+    properties.filterIsInstance<CharIndexConsumer>().singleOrNull()
+  val tokenUpgrader: TokenUpgrader? =
+    properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
   companion object {
     val Keywords = entries.filter { item -> item.keyword != null }
     val SingleChars = entries.filter { item -> item.singleChar != null }
-    val CharConsumers = entries.filter { item -> item.charConsumer != null }
+    val CharConsumers = entries.filter { item ->
+      item.charConsumer != null || item.charIndexConsumer != null }
   }
 }

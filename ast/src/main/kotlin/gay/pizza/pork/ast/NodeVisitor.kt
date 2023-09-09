@@ -12,6 +12,8 @@ interface NodeVisitor<T> {
 
   fun visitContinue(node: Continue): T
 
+  fun visitDoubleLiteral(node: DoubleLiteral): T
+
   fun visitFunctionCall(node: FunctionCall): T
 
   fun visitFunctionDefinition(node: FunctionDefinition): T
@@ -22,7 +24,7 @@ interface NodeVisitor<T> {
 
   fun visitInfixOperation(node: InfixOperation): T
 
-  fun visitIntLiteral(node: IntLiteral): T
+  fun visitIntegerLiteral(node: IntegerLiteral): T
 
   fun visitLetAssignment(node: LetAssignment): T
 
