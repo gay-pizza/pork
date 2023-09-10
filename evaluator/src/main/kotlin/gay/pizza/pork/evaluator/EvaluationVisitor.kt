@@ -1,6 +1,7 @@
 package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.ast.*
+import kotlin.math.abs
 
 class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   private var currentScope: Scope = root
@@ -105,7 +106,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         add = { a, b -> a + b },
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
-        divide = { a, b -> a / b }
+        divide = { a, b -> a / b },
+        euclideanModulo = { a, b -> throw RuntimeException("Can't perform integer modulo between floating point types") },
+        remainder = { a, b -> throw RuntimeException("Can't perform integer remainder between floating point types") }
       )
     }
 
@@ -118,7 +121,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         add = { a, b -> a + b },
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
-        divide = { a, b -> a / b }
+        divide = { a, b -> a / b },
+        euclideanModulo = { a, b -> throw RuntimeException("Can't perform integer modulo between floating point types") },
+        remainder = { a, b -> throw RuntimeException("Can't perform integer remainder between floating point types") }
       )
     }
 
@@ -131,7 +136,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         add = { a, b -> a + b },
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
-        divide = { a, b -> a / b }
+        divide = { a, b -> a / b },
+        euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
+        remainder = { x, d -> x % d }
       )
     }
 
@@ -144,7 +151,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         add = { a, b -> a + b },
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
-        divide = { a, b -> a / b }
+        divide = { a, b -> a / b },
+        euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
+        remainder = { x, d -> x % d }
       )
     }
 
@@ -159,13 +168,17 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     add: (T, T) -> T,
     subtract: (T, T) -> T,
     multiply: (T, T) -> T,
-    divide: (T, T) -> T
+    divide: (T, T) -> T,
+    euclideanModulo: (T, T) -> T,
+    remainder: (T, T) -> T
   ): T {
     return when (op) {
       InfixOperator.Plus -> add(convert(left), convert(right))
       InfixOperator.Minus -> subtract(convert(left), convert(right))
       InfixOperator.Multiply -> multiply(convert(left), convert(right))
       InfixOperator.Divide -> divide(convert(left), convert(right))
+      InfixOperator.EuclideanModulo -> euclideanModulo(convert(left), convert(right))
+      InfixOperator.Remainder -> remainder(convert(left), convert(right))
       else -> throw RuntimeException("Unable to handle operation $op")
     }
   }
