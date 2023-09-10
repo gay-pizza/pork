@@ -119,8 +119,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
-        euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") },
+        euclideanModulo = { _, _ -> floatingPointTypeError("integer modulo") },
+        remainder = { _, _ -> floatingPointTypeError("integer remainder") },
         lesser = { a, b -> a < b },
         greater = { a, b -> a > b },
         lesserEqual = { a, b -> a <= b },
@@ -138,8 +138,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
-        euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") },
+        euclideanModulo = { _, _ -> floatingPointTypeError("integer modulo") },
+        remainder = { _, _ -> floatingPointTypeError("integer remainder") },
         lesser = { a, b -> a < b },
         greater = { a, b -> a > b },
         lesserEqual = { a, b -> a <= b },
@@ -228,31 +228,19 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   }
 
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
-    throw RuntimeException(
-      "Function declarations cannot be visited in an EvaluationVisitor. " +
-        "Utilize a FunctionContext."
-    )
+    topLevelUsedError("FunctionDefinition", "FunctionContext")
   }
 
   override fun visitImportDeclaration(node: ImportDeclaration): Any {
-    throw RuntimeException(
-      "Import declarations cannot be visited in an EvaluationVisitor. " +
-        "Utilize an CompilationUnitContext."
-    )
+    topLevelUsedError("ImportDeclaration", "CompilationUnitContext")
   }
 
   override fun visitCompilationUnit(node: CompilationUnit): Any {
-    throw RuntimeException(
-      "Compilation units cannot be visited in an EvaluationVisitor. " +
-        "Utilize an CompilationUnitContext."
-    )
+    topLevelUsedError("CompilationUnit", "CompilationUnitContext")
   }
 
   override fun visitNative(node: Native): Any {
-    throw RuntimeException(
-      "Native definition cannot be visited in an EvaluationVisitor. " +
-        "Utilize an FunctionContext."
-    )
+    topLevelUsedError("Native", "FunctionContext")
   }
 
   override fun visitContinue(node: Continue): Any = ContinueMarker
@@ -264,6 +252,17 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     } finally {
       currentScope = currentScope.leave()
     }
+  }
+
+  private fun floatingPointTypeError(operation: String): Nothing {
+    throw RuntimeException("Can't perform $operation between floating point types")
+  }
+
+  private fun topLevelUsedError(name: String, alternative: String): Nothing {
+    throw RuntimeException(
+      "$name cannot be visited in an EvaluationVisitor. " +
+        "Utilize an $alternative instead."
+    )
   }
 
   private object BreakMarker : RuntimeException("Break Marker")

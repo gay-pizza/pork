@@ -117,6 +117,12 @@ types:
       type: Symbol
     - name: arguments
       type: List<Expression>
+  ArgumentSpec:
+    values:
+    - name: symbol
+      type: Symbol
+    - name: multiple
+      type: Boolean
   FunctionDefinition:
     parent: Definition
     values:
@@ -125,7 +131,7 @@ types:
     - name: symbol
       type: Symbol
     - name: arguments
-      type: List<Symbol>
+      type: List<ArgumentSpec>
     - name: block
       type: Block?
     - name: native

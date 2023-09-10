@@ -2,9 +2,9 @@ package gay.pizza.pork.ffi
 
 import com.sun.jna.Function
 import gay.pizza.pork.evaluator.CallableFunction
-import gay.pizza.pork.evaluator.NativeFunctionProvider
+import gay.pizza.pork.evaluator.NativeProvider
 
-class JnaNativeProvider : NativeFunctionProvider {
+class JnaNativeProvider : NativeProvider {
   override fun provideNativeFunction(definition: String): CallableFunction {
     val functionDefinition = FfiFunctionDefinition.parse(definition)
     val function = Function.getFunction(functionDefinition.library, functionDefinition.function)

@@ -30,23 +30,25 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   LeftParentheses(SingleChar('(')),
   RightParentheses(SingleChar(')')),
   Negation(SingleChar('!'), Promotion('=', Inequality), OperatorFamily),
-  Mod(Keyword("mod"), OperatorFamily),
-  Rem(Keyword("rem"), OperatorFamily),
+  Mod(ManyChars("mod"), OperatorFamily),
+  Rem(ManyChars("rem"), OperatorFamily),
   Comma(SingleChar(',')),
-  Period(SingleChar('.')),
-  False(Keyword("false"), KeywordFamily),
-  True(Keyword("true"), KeywordFamily),
-  If(Keyword("if"), KeywordFamily),
-  Else(Keyword("else"), KeywordFamily),
-  While(Keyword("while"), KeywordFamily),
-  Continue(Keyword("continue"), KeywordFamily),
-  Break(Keyword("break"), KeywordFamily),
-  Import(Keyword("import"), KeywordFamily),
-  Export(Keyword("export"), KeywordFamily),
-  Func(Keyword("func"), KeywordFamily),
-  Native(Keyword("native"), KeywordFamily),
-  Let(Keyword("let"), KeywordFamily),
-  Var(Keyword("var"), KeywordFamily),
+  DotDotDot(ManyChars("...")),
+  DotDot(ManyChars(".."), Promotion('.', DotDotDot)),
+  Dot(SingleChar('.'), Promotion('.', DotDot)),
+  False(ManyChars("false"), KeywordFamily),
+  True(ManyChars("true"), KeywordFamily),
+  If(ManyChars("if"), KeywordFamily),
+  Else(ManyChars("else"), KeywordFamily),
+  While(ManyChars("while"), KeywordFamily),
+  Continue(ManyChars("continue"), KeywordFamily),
+  Break(ManyChars("break"), KeywordFamily),
+  Import(ManyChars("import"), KeywordFamily),
+  Export(ManyChars("export"), KeywordFamily),
+  Func(ManyChars("func"), KeywordFamily),
+  Native(ManyChars("native"), KeywordFamily),
+  Let(ManyChars("let"), KeywordFamily),
+  Var(ManyChars("var"), KeywordFamily),
   Whitespace(CharConsumer { it == ' ' || it == '\r' || it == '\n' || it == '\t' }),
   BlockComment(CommentFamily),
   LineComment(CommentFamily),
@@ -54,8 +56,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
 
   val promotions: List<Promotion> =
     properties.filterIsInstance<Promotion>()
-  val keyword: Keyword? =
-    properties.filterIsInstance<Keyword>().singleOrNull()
+  val manyChars: ManyChars? =
+    properties.filterIsInstance<ManyChars>().singleOrNull()
   val singleChar: SingleChar? =
     properties.filterIsInstance<SingleChar>().singleOrNull()
   val family: TokenFamily =
@@ -67,7 +69,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
   companion object {
-    val Keywords = entries.filter { item -> item.keyword != null }
+    val ManyChars = entries.filter { item -> item.manyChars != null }
     val SingleChars = entries.filter { item -> item.singleChar != null }
     val CharConsumers = entries.filter { item ->
       item.charConsumer != null || item.charIndexConsumer != null }

@@ -1,0 +1,2 @@
+export func println(messages...)
+  native internal "println"

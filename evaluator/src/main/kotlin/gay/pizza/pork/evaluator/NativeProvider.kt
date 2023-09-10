@@ -1,5 +1,5 @@
 package gay.pizza.pork.evaluator
 
-interface NativeFunctionProvider {
+interface NativeProvider {
   fun provideNativeFunction(definition: String): CallableFunction
 }

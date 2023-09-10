@@ -19,21 +19,10 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))
     val scope = Scope()
-    scope.define("println", CallableFunction { arguments ->
-      if (quiet) {
-        return@CallableFunction None
-      }
-      when (arguments.values.count()) {
-        0 -> println()
-        1 -> println(arguments.values[0])
-        else -> println(arguments.values.joinToString(" "))
-      }
-      None
-    })
-
     val main = tool.loadMainFunction(scope, setupEvaluator = {
-      addNativeFunctionProvider("ffi", JnaNativeProvider())
-      addNativeFunctionProvider("java", JavaNativeProvider())
+      addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
+      addNativeProvider("ffi", JnaNativeProvider())
+      addNativeProvider("java", JavaNativeProvider())
     })
 
     if (dumpScope) {

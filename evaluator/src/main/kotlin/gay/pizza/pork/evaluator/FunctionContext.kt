@@ -20,8 +20,14 @@ class FunctionContext(val compilationUnitContext: CompilationUnitContext, val no
     }
 
     val scope = compilationUnitContext.internalScope.fork()
-    for ((index, argumentSymbol) in node.arguments.withIndex()) {
-      scope.define(argumentSymbol.id, arguments.values[index])
+    for ((index, spec) in node.arguments.withIndex()) {
+      if (spec.multiple) {
+        val list = arguments.values.subList(index, arguments.values.size - 1)
+        scope.define(spec.symbol.id, list)
+        break
+      } else {
+        scope.define(spec.symbol.id, arguments.values[index])
+      }
     }
 
     if (node.block == null) {

@@ -5,11 +5,11 @@ A work-in-progress programming language.
 ```pork
 /* fibonacci sequence */
 func fib(n) {
-  if n == 0
-    then 0
-  else if n == 1
-    then 1
-  else fib(n - 1) + fib(n - 2)
+  if n < 2 {
+    n
+  } else {
+    fib(n - 1) + fib(n - 2)
+  }
 }
 
 func main() {

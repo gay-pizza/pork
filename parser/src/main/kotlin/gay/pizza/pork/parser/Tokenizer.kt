@@ -79,13 +79,18 @@ class Tokenizer(val source: CharSource) {
 
         var type = item
         var text = itemChar.toString()
-        for (promotion in item.promotions) {
-          if (source.peek() != promotion.nextChar) {
-            continue
+        var promoted = true
+        while (promoted) {
+          promoted = false
+          for (promotion in type.promotions) {
+            if (source.peek() != promotion.nextChar) {
+              continue
+            }
+            val nextChar = source.next()
+            type = promotion.type
+            text += nextChar
+            promoted = true
           }
-          val nextChar = source.next()
-          type = promotion.type
-          text += nextChar
         }
         return Token(type, tokenStart, text)
       }

@@ -1,9 +1,6 @@
 package gay.pizza.pork.evaluator
 
-import gay.pizza.pork.ast.CompilationUnit
-import gay.pizza.pork.ast.Definition
-import gay.pizza.pork.ast.FunctionDefinition
-import gay.pizza.pork.ast.ImportDeclaration
+import gay.pizza.pork.ast.*
 import gay.pizza.pork.frontend.ImportLocator
 
 class CompilationUnitContext(
@@ -45,6 +42,7 @@ class CompilationUnitContext(
   }
 
   private fun processAllImports() {
+    processPreludeImport()
     val imports = compilationUnit.declarations.filterIsInstance<ImportDeclaration>()
     for (import in imports) {
       processImport(import)
@@ -56,5 +54,19 @@ class CompilationUnitContext(
     val importLocator = ImportLocator(import.form.id, importPath)
     val evaluationContext = evaluator.context(importLocator)
     internalScope.inherit(evaluationContext.externalScope)
+  }
+
+  private fun processPreludeImport() {
+    processImport(preludeImport)
+  }
+
+  companion object {
+    private val preludeImport = ImportDeclaration(
+      Symbol("std"),
+      listOf(
+        Symbol("lang"),
+        Symbol("prelude")
+      )
+    )
   }
 }

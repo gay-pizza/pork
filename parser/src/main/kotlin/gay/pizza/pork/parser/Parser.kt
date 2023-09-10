@@ -217,7 +217,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun readImportDeclaration(): ImportDeclaration = within {
     expect(TokenType.Import)
     val form = readSymbolRaw()
-    val components = oneAndContinuedBy(TokenType.Period) { readSymbolRaw() }
+    val components = oneAndContinuedBy(TokenType.Dot) { readSymbolRaw() }
     ImportDeclaration(form, components)
   }
 
@@ -237,7 +237,12 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
-      readSymbolRaw()
+      val symbol = readSymbolRaw()
+      var multiple: Boolean = false
+      if (next(TokenType.DotDotDot)) {
+        multiple = true
+      }
+      ArgumentSpec(symbol, multiple)
     }
     expect(TokenType.RightParentheses)
 

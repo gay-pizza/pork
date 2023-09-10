@@ -1,17 +1,13 @@
 /* fibonacci sequence */
 func fib(n) {
-  if n == 0 {
-    0
+  if n < 2 {
+    n
   } else {
-    if n == 1 {
-      1
-    } else {
-      fib(n - 1) + fib(n - 2)
-    }
+    fib(n - 1) + fib(n - 2)
   }
 }
 
 export func main() {
-  let result = fib(20)
+  let result = fib(30)
   println(result)
 }

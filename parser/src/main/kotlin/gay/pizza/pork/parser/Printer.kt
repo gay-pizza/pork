@@ -155,7 +155,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
     append("(")
     for ((index, argument) in node.arguments.withIndex()) {
-      visit(argument)
+      visit(argument.symbol)
+      if (argument.multiple) {
+        append("...")
+      }
       if (index + 1 != node.arguments.size) {
         append(", ")
       }

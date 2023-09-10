@@ -1,11 +1,6 @@
 package gay.pizza.pork.ffi
 
-import gay.pizza.pork.ast.CompilationUnit
-import gay.pizza.pork.ast.DefinitionModifiers
-import gay.pizza.pork.ast.FunctionDefinition
-import gay.pizza.pork.ast.Native
-import gay.pizza.pork.ast.StringLiteral
-import gay.pizza.pork.ast.Symbol
+import gay.pizza.pork.ast.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Parameter
@@ -149,7 +144,12 @@ class JavaAutogen(val javaClass: Class<*>) {
     FunctionDefinition(
       modifiers = DefinitionModifiers(true),
       symbol = Symbol("${prefix}_${name}"),
-      arguments = parameterNames.map { Symbol(it) },
+      arguments = parameterNames.map {
+        ArgumentSpec(
+          symbol = Symbol(it),
+          multiple = false
+        )
+      },
       native = asNative(functionDefinition),
       block = null
     )

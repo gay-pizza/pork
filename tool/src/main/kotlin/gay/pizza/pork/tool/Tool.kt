@@ -5,6 +5,7 @@ import gay.pizza.pork.ast.NodeVisitor
 import gay.pizza.pork.ast.visit
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.Evaluator
+import gay.pizza.pork.evaluator.InternalNativeProvider
 import gay.pizza.pork.evaluator.Scope
 import gay.pizza.pork.ffi.JavaAutogenContentSource
 import gay.pizza.pork.frontend.ContentSource

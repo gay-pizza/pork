@@ -1,12 +1,12 @@
 package gay.pizza.pork.ffi
 
 import gay.pizza.pork.evaluator.CallableFunction
-import gay.pizza.pork.evaluator.NativeFunctionProvider
+import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 
-class JavaNativeProvider : NativeFunctionProvider {
+class JavaNativeProvider : NativeProvider {
   private val lookup = MethodHandles.lookup()
 
   override fun provideNativeFunction(definition: String): CallableFunction {
