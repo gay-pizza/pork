@@ -1,9 +1,6 @@
 @file:Suppress("ConstPropertyName")
 package gay.pizza.pork.buildext.ast
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import gay.pizza.pork.buildext.codegen.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -407,15 +404,10 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
   companion object {
     private const val enableVisitAnyInline = false
 
-    fun run(pkg: String, astDescriptionFile: Path, outputDirectory: Path) {
+    fun run(pkg: String, world: AstWorld, outputDirectory: Path) {
       if (!outputDirectory.exists()) {
         outputDirectory.createDirectories()
       }
-      val astYamlText = astDescriptionFile.readText()
-      val mapper = ObjectMapper(YAMLFactory())
-      mapper.registerModules(KotlinModule.Builder().build())
-      val astDescription = mapper.readValue(astYamlText, AstDescription::class.java)
-      val world = AstWorld.build(astDescription)
       val codegen = AstCodegen(pkg, outputDirectory, world)
       codegen.generate()
     }

@@ -1,22 +1,38 @@
 package gay.pizza.pork.buildext.ast
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import java.nio.file.Path
+import kotlin.io.path.readText
+
 class AstWorld {
   val typeRegistry: AstTypeRegistry = AstTypeRegistry()
 
   fun typesInDependencyOrder(): List<AstType> {
     val typesInNameOrder = typeRegistry.types.sortedBy { it.name }
     val typesInDependencyOrder = mutableListOf<AstType>()
-    for (type in typesInNameOrder) {
+
+    fun add(type: AstType, resolving: MutableSet<AstType>) {
+      if (resolving.contains(type)) {
+        val cyclePath = resolving.joinToString(" ->  ") { it.name }
+        throw RuntimeException("Dependency cycle detected: $cyclePath")
+      }
+      resolving.add(type)
+
       if (type.parent != null) {
-        if (!typesInDependencyOrder.contains(type.parent)) {
-          typesInDependencyOrder.add(type.parent!!)
-        }
+        add(type.parent!!, resolving)
       }
 
       if (!typesInDependencyOrder.contains(type)) {
         typesInDependencyOrder.add(type)
       }
     }
+
+    for (type in typesInNameOrder) {
+      add(type, mutableSetOf())
+    }
+
     return typesInDependencyOrder
   }
 
@@ -54,6 +70,14 @@ class AstWorld {
         }
       }
       return world
+    }
+
+    fun read(path: Path): AstWorld {
+      val astYamlText = path.readText()
+      val mapper = ObjectMapper(YAMLFactory())
+      mapper.registerModules(KotlinModule.Builder().build())
+      val astDescription = mapper.readValue(astYamlText, AstDescription::class.java)
+      return build(astDescription)
     }
   }
 }

@@ -1,0 +1,81 @@
+digraph A {
+  type_Node [shape=box,label="Node"]
+  type_Expression [shape=box,label="Expression"]
+  type_Symbol [shape=box,label="Symbol"]
+  type_Declaration [shape=box,label="Declaration"]
+  type_Definition [shape=box,label="Definition"]
+  type_DefinitionModifiers [shape=box,label="DefinitionModifiers"]
+  type_Block [shape=box,label="Block"]
+  type_CompilationUnit [shape=box,label="CompilationUnit"]
+  type_LetAssignment [shape=box,label="LetAssignment"]
+  type_InfixOperator [shape=box,label="InfixOperator"]
+  type_InfixOperation [shape=box,label="InfixOperation"]
+  type_BooleanLiteral [shape=box,label="BooleanLiteral"]
+  type_FunctionCall [shape=box,label="FunctionCall"]
+  type_FunctionDefinition [shape=box,label="FunctionDefinition"]
+  type_If [shape=box,label="If"]
+  type_ImportDeclaration [shape=box,label="ImportDeclaration"]
+  type_IntegerLiteral [shape=box,label="IntegerLiteral"]
+  type_DoubleLiteral [shape=box,label="DoubleLiteral"]
+  type_ListLiteral [shape=box,label="ListLiteral"]
+  type_Parentheses [shape=box,label="Parentheses"]
+  type_PrefixOperator [shape=box,label="PrefixOperator"]
+  type_PrefixOperation [shape=box,label="PrefixOperation"]
+  type_StringLiteral [shape=box,label="StringLiteral"]
+  type_SymbolReference [shape=box,label="SymbolReference"]
+  type_While [shape=box,label="While"]
+  type_Break [shape=box,label="Break"]
+  type_Continue [shape=box,label="Continue"]
+  type_Native [shape=box,label="Native"]
+  type_Node -> type_Expression
+  type_Node -> type_Symbol
+  type_Node -> type_Declaration
+  type_Node -> type_Definition
+  type_Node -> type_Block
+  type_Node -> type_CompilationUnit
+  type_Node -> type_Native
+  type_Expression -> type_LetAssignment
+  type_Expression -> type_InfixOperation
+  type_Expression -> type_BooleanLiteral
+  type_Expression -> type_FunctionCall
+  type_Expression -> type_If
+  type_Expression -> type_IntegerLiteral
+  type_Expression -> type_DoubleLiteral
+  type_Expression -> type_ListLiteral
+  type_Expression -> type_Parentheses
+  type_Expression -> type_PrefixOperation
+  type_Expression -> type_StringLiteral
+  type_Expression -> type_SymbolReference
+  type_Expression -> type_While
+  type_Expression -> type_Break
+  type_Expression -> type_Continue
+  type_Definition -> type_FunctionDefinition
+  type_Declaration -> type_ImportDeclaration
+  type_Definition -> type_Symbol [style=dotted]
+  type_Definition -> type_DefinitionModifiers [style=dotted]
+  type_Block -> type_Expression [style=dotted]
+  type_CompilationUnit -> type_Declaration [style=dotted]
+  type_CompilationUnit -> type_Definition [style=dotted]
+  type_LetAssignment -> type_Symbol [style=dotted]
+  type_LetAssignment -> type_Expression [style=dotted]
+  type_InfixOperation -> type_Expression [style=dotted]
+  type_InfixOperation -> type_InfixOperator [style=dotted]
+  type_FunctionCall -> type_Symbol [style=dotted]
+  type_FunctionCall -> type_Expression [style=dotted]
+  type_FunctionDefinition -> type_DefinitionModifiers [style=dotted]
+  type_FunctionDefinition -> type_Symbol [style=dotted]
+  type_FunctionDefinition -> type_Block [style=dotted]
+  type_FunctionDefinition -> type_Native [style=dotted]
+  type_If -> type_Expression [style=dotted]
+  type_If -> type_Block [style=dotted]
+  type_ImportDeclaration -> type_Symbol [style=dotted]
+  type_ListLiteral -> type_Expression [style=dotted]
+  type_Parentheses -> type_Expression [style=dotted]
+  type_PrefixOperation -> type_PrefixOperator [style=dotted]
+  type_PrefixOperation -> type_Expression [style=dotted]
+  type_SymbolReference -> type_Symbol [style=dotted]
+  type_While -> type_Expression [style=dotted]
+  type_While -> type_Block [style=dotted]
+  type_Native -> type_Symbol [style=dotted]
+  type_Native -> type_StringLiteral [style=dotted]
+}

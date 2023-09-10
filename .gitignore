@@ -6,3 +6,4 @@ out/
 /work
 /kotlin-js-store
 /.fleet/*
+.DS_Store
