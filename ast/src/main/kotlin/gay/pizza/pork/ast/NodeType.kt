@@ -23,8 +23,10 @@ enum class NodeType(val parent: NodeType? = null) {
   Native(Node),
   Parentheses(Expression),
   PrefixOperation(Expression),
+  SetAssignment(Expression),
   StringLiteral(Expression),
   Symbol(Node),
   SymbolReference(Expression),
+  VarAssignment(Expression),
   While(Expression)
 }

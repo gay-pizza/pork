@@ -26,12 +26,18 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitLetAssignment(node: LetAssignment): Any {
     val value = node.value.visit(this)
-    currentScope.define(node.symbol.id, value)
+    currentScope.define(node.symbol.id, value, ValueStoreType.Let)
     return value
   }
 
   override fun visitSymbolReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
+
+  override fun visitVarAssignment(node: VarAssignment): Any {
+    val value = node.value.visit(this)
+    currentScope.define(node.symbol.id, value, type = ValueStoreType.Var)
+    return value
+  }
 
   override fun visitWhile(node: While): Any {
     val blockFunction = node.block.visit(this) as BlockFunction
@@ -66,6 +72,12 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         !value
       }
     }
+  }
+
+  override fun visitSetAssignment(node: SetAssignment): Any {
+    val value = node.value.visit(this)
+    currentScope.set(node.symbol.id, value)
+    return value
   }
 
   override fun visitIf(node: If): Any {
@@ -108,7 +120,11 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
         euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") }
+        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") },
+        lesser = { a, b -> a < b },
+        greater = { a, b -> a > b },
+        lesserEqual = { a, b -> a <= b },
+        greaterEqual = { a, b -> a >= b }
       )
     }
 
@@ -123,7 +139,11 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
         euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") }
+        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") },
+        lesser = { a, b -> a < b },
+        greater = { a, b -> a > b },
+        lesserEqual = { a, b -> a <= b },
+        greaterEqual = { a, b -> a >= b }
       )
     }
 
@@ -138,7 +158,11 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
         euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
-        remainder = { x, d -> x % d }
+        remainder = { x, d -> x % d },
+        lesser = { a, b -> a < b },
+        greater = { a, b -> a > b },
+        lesserEqual = { a, b -> a <= b },
+        greaterEqual = { a, b -> a >= b }
       )
     }
 
@@ -153,7 +177,11 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
         euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
-        remainder = { x, d -> x % d }
+        remainder = { x, d -> x % d },
+        lesser = { a, b -> a < b },
+        greater = { a, b -> a > b },
+        lesserEqual = { a, b -> a <= b },
+        greaterEqual = { a, b -> a >= b }
       )
     }
 
@@ -170,8 +198,12 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     multiply: (T, T) -> T,
     divide: (T, T) -> T,
     euclideanModulo: (T, T) -> T,
-    remainder: (T, T) -> T
-  ): T {
+    remainder: (T, T) -> T,
+    lesser: (T, T) -> Boolean,
+    greater: (T, T) -> Boolean,
+    lesserEqual: (T, T) -> Boolean,
+    greaterEqual: (T, T) -> Boolean
+  ): Any {
     return when (op) {
       InfixOperator.Plus -> add(convert(left), convert(right))
       InfixOperator.Minus -> subtract(convert(left), convert(right))
@@ -179,6 +211,10 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       InfixOperator.Divide -> divide(convert(left), convert(right))
       InfixOperator.EuclideanModulo -> euclideanModulo(convert(left), convert(right))
       InfixOperator.Remainder -> remainder(convert(left), convert(right))
+      InfixOperator.Lesser -> lesser(convert(left), convert(right))
+      InfixOperator.Greater -> greater(convert(left), convert(right))
+      InfixOperator.LesserEqual -> lesserEqual(convert(left), convert(right))
+      InfixOperator.GreaterEqual -> greaterEqual(convert(left), convert(right))
       else -> throw RuntimeException("Unable to handle operation $op")
     }
   }

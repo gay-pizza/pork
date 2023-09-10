@@ -41,6 +41,20 @@ types:
       type: Symbol
     - name: value
       type: Expression
+  VarAssignment:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol
+    - name: value
+      type: Expression
+  SetAssignment:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol
+    - name: value
+      type: Expression
   InfixOperator:
     values:
     - name: token
@@ -70,6 +84,18 @@ types:
     - name: Remainder
       values:
         token: "rem"
+    - name: Lesser
+      values:
+        token: "<"
+    - name: Greater
+      values:
+        token: ">"
+    - name: GreaterEqual
+      values:
+        token: ">="
+    - name: LesserEqual
+      values:
+        token: "<="
   InfixOperation:
     parent: Expression
     values:

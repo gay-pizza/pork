@@ -14,5 +14,9 @@ enum class InfixOperator(val token: String) {
   Equals("=="),
   NotEquals("!="),
   EuclideanModulo("mod"),
-  Remainder("rem")
+  Remainder("rem"),
+  Lesser("<"),
+  Greater(">"),
+  GreaterEqual(">="),
+  LesserEqual("<=")
 }

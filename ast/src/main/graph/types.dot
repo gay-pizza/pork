@@ -8,6 +8,8 @@ digraph A {
   type_Block [shape=box,label="Block"]
   type_CompilationUnit [shape=box,label="CompilationUnit"]
   type_LetAssignment [shape=box,label="LetAssignment"]
+  type_VarAssignment [shape=box,label="VarAssignment"]
+  type_SetAssignment [shape=box,label="SetAssignment"]
   type_InfixOperator [shape=box,label="InfixOperator"]
   type_InfixOperation [shape=box,label="InfixOperation"]
   type_BooleanLiteral [shape=box,label="BooleanLiteral"]
@@ -35,6 +37,8 @@ digraph A {
   type_Node -> type_CompilationUnit
   type_Node -> type_Native
   type_Expression -> type_LetAssignment
+  type_Expression -> type_VarAssignment
+  type_Expression -> type_SetAssignment
   type_Expression -> type_InfixOperation
   type_Expression -> type_BooleanLiteral
   type_Expression -> type_FunctionCall
@@ -58,6 +62,10 @@ digraph A {
   type_CompilationUnit -> type_Definition [style=dotted]
   type_LetAssignment -> type_Symbol [style=dotted]
   type_LetAssignment -> type_Expression [style=dotted]
+  type_VarAssignment -> type_Symbol [style=dotted]
+  type_VarAssignment -> type_Expression [style=dotted]
+  type_SetAssignment -> type_Symbol [style=dotted]
+  type_SetAssignment -> type_Expression [style=dotted]
   type_InfixOperation -> type_Expression [style=dotted]
   type_InfixOperation -> type_InfixOperator [style=dotted]
   type_FunctionCall -> type_Symbol [style=dotted]

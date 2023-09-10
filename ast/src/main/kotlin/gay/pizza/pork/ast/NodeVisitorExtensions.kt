@@ -7,6 +7,8 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is Block -> visitBlock(node)
     is CompilationUnit -> visitCompilationUnit(node)
     is LetAssignment -> visitLetAssignment(node)
+    is VarAssignment -> visitVarAssignment(node)
+    is SetAssignment -> visitSetAssignment(node)
     is InfixOperation -> visitInfixOperation(node)
     is BooleanLiteral -> visitBooleanLiteral(node)
     is FunctionCall -> visitFunctionCall(node)

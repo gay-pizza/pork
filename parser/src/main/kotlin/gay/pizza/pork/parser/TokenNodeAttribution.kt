@@ -22,6 +22,15 @@ class TokenNodeAttribution : NodeAttribution {
     store.add(token)
   }
 
+  override fun <T : Node> adopt(node: T) {
+    val tokens = nodes.remove(node)
+    if (tokens != null) {
+      for (token in tokens) {
+        push(token)
+      }
+    }
+  }
+
   override fun <T: Node> exit(node: T): T {
     val store = stack.removeLast()
     nodes[node] = store

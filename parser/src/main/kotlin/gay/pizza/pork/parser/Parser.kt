@@ -45,6 +45,14 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     LetAssignment(symbol, value)
   }
 
+  private fun readVarAssignment(): VarAssignment = within {
+    expect(TokenType.Var)
+    val symbol = readSymbolRaw()
+    expect(TokenType.Equals)
+    val value = readExpression()
+    VarAssignment(symbol, value)
+  }
+
   private fun readSymbolRaw(): Symbol = within {
     expect(TokenType.Symbol) { Symbol(it.text) }
   }
@@ -123,6 +131,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         readLetAssignment()
       }
 
+      TokenType.Var -> {
+        readVarAssignment()
+      }
+
       TokenType.Symbol -> {
         readSymbolCases()
       }
@@ -161,6 +173,15 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       }
     }
 
+    if (expression is SymbolReference && peek(TokenType.Equals)) {
+      return within {
+        attribution.adopt(expression)
+        expect(TokenType.Equals)
+        val value = readExpression()
+        SetAssignment(expression.symbol, value)
+      }
+    }
+
     return if (peek(
         TokenType.Plus,
         TokenType.Minus,
@@ -169,7 +190,11 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Equality,
         TokenType.Inequality,
         TokenType.Mod,
-        TokenType.Rem
+        TokenType.Rem,
+        TokenType.Lesser,
+        TokenType.Greater,
+        TokenType.LesserEqual,
+        TokenType.GreaterEqual
       )
     ) {
       within {
@@ -268,6 +293,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       TokenType.Inequality -> InfixOperator.NotEquals
       TokenType.Mod -> InfixOperator.EuclideanModulo
       TokenType.Rem -> InfixOperator.Remainder
+      TokenType.Lesser -> InfixOperator.Lesser
+      TokenType.Greater -> InfixOperator.Greater
+      TokenType.LesserEqual -> InfixOperator.LesserEqual
+      TokenType.GreaterEqual -> InfixOperator.GreaterEqual
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 

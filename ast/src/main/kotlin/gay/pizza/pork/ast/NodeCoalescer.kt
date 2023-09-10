@@ -53,6 +53,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitPrefixOperation(node: PrefixOperation): Unit =
     handle(node)
 
+  override fun visitSetAssignment(node: SetAssignment): Unit =
+    handle(node)
+
   override fun visitStringLiteral(node: StringLiteral): Unit =
     handle(node)
 
@@ -60,6 +63,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
     handle(node)
 
   override fun visitSymbolReference(node: SymbolReference): Unit =
+    handle(node)
+
+  override fun visitVarAssignment(node: VarAssignment): Unit =
     handle(node)
 
   override fun visitWhile(node: While): Unit =

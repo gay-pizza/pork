@@ -6,43 +6,55 @@ class Scope(
   val name: String? = null
 ) {
   private val inherited = inherits.toMutableList()
-  private val variables = mutableMapOf<String, Any>()
+  private val variables = mutableMapOf<String, ValueStore>()
 
-  fun define(name: String, value: Any) {
-    val previous = variables.put(name, value)
+  fun define(name: String, value: Any, type: ValueStoreType = ValueStoreType.Let) {
+    val previous = variables.put(name, ValueStore(value, type))
     if (previous != null) {
       variables[name] = previous
       throw RuntimeException("Variable '${name}' is already defined")
     }
   }
 
-  fun value(name: String): Any {
-    val value = valueOrNotFound(name)
-    if (value === NotFound) {
+  fun set(name: String, value: Any) {
+    val holder = valueHolderOrNotFound(name)
+    if (holder.type == ValueStoreType.Let) {
+      throw RuntimeException("Variable '${name}' is already defined")
+    }
+
+    if (holder === NotFound.Holder) {
       throw RuntimeException("Variable '${name}' not defined")
     }
-    return value
+    holder.value = value
   }
 
-  private fun valueOrNotFound(name: String): Any {
-    val value = variables[name]
-    if (value == null) {
+  fun value(name: String): Any {
+    val holder = valueHolderOrNotFound(name)
+    if (holder === NotFound.Holder) {
+      throw RuntimeException("Variable '${name}' not defined")
+    }
+    return holder.value
+  }
+
+  private fun valueHolderOrNotFound(name: String): ValueStore {
+    val holder = variables[name]
+    if (holder == null) {
       if (parent != null) {
-        val parentMaybeFound = parent.valueOrNotFound(name)
-        if (parentMaybeFound !== NotFound) {
+        val parentMaybeFound = parent.valueHolderOrNotFound(name)
+        if (parentMaybeFound !== NotFound.Holder) {
           return parentMaybeFound
         }
       }
 
       for (inherit in inherited) {
-        val inheritMaybeFound = inherit.valueOrNotFound(name)
-        if (inheritMaybeFound !== NotFound) {
+        val inheritMaybeFound = inherit.valueHolderOrNotFound(name)
+        if (inheritMaybeFound !== NotFound.Holder) {
           return inheritMaybeFound
         }
       }
-      return NotFound
+      return NotFound.Holder
     }
-    return value
+    return holder
   }
 
   fun fork(name: String? = null): Scope =
@@ -80,5 +92,7 @@ class Scope(
     }
   }
 
-  private object NotFound
+  private object NotFound {
+    val Holder = ValueStore(NotFound, ValueStoreType.Let)
+  }
 }

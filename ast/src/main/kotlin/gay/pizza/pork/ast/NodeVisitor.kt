@@ -36,11 +36,15 @@ interface NodeVisitor<T> {
 
   fun visitPrefixOperation(node: PrefixOperation): T
 
+  fun visitSetAssignment(node: SetAssignment): T
+
   fun visitStringLiteral(node: StringLiteral): T
 
   fun visitSymbol(node: Symbol): T
 
   fun visitSymbolReference(node: SymbolReference): T
+
+  fun visitVarAssignment(node: VarAssignment): T
 
   fun visitWhile(node: While): T
 }

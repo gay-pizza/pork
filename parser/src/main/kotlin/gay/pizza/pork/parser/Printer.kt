@@ -95,6 +95,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
   }
 
+  override fun visitVarAssignment(node: VarAssignment) {
+    append("var ")
+    visit(node.symbol)
+    append(" = ")
+    visit(node.value)
+  }
+
   override fun visitWhile(node: While) {
     append("while ")
     visit(node.condition)
@@ -111,6 +118,12 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
   override fun visitPrefixOperation(node: PrefixOperation) {
     append(node.op.token)
     visit(node.expression)
+  }
+
+  override fun visitSetAssignment(node: SetAssignment) {
+    visit(node.symbol)
+    append(" = ")
+    visit(node.value)
   }
 
   override fun visitIf(node: If) {
