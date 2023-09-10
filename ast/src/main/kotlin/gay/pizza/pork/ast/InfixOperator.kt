@@ -12,5 +12,7 @@ enum class InfixOperator(val token: String) {
   Multiply("*"),
   Divide("/"),
   Equals("=="),
-  NotEquals("!=")
+  NotEquals("!="),
+  EuclideanModulo("mod"),
+  Remainder("rem")
 }

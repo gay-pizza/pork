@@ -64,6 +64,12 @@ types:
     - name: NotEquals
       values:
         token: "!="
+    - name: EuclideanModulo
+      values:
+        token: "mod"
+    - name: Remainder
+      values:
+        token: "rem"
   InfixOperation:
     parent: Expression
     values:

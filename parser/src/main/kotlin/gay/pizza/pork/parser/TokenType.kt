@@ -26,6 +26,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   LeftParentheses(SingleChar('(')),
   RightParentheses(SingleChar(')')),
   Negation(SingleChar('!'), Promotion('=', Inequality), OperatorFamily),
+  Mod(Keyword("mod"), OperatorFamily),
+  Rem(Keyword("rem"), OperatorFamily),
   Comma(SingleChar(',')),
   Period(SingleChar('.')),
   False(Keyword("false"), KeywordFamily),

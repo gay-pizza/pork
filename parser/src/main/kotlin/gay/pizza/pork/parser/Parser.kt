@@ -167,7 +167,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Multiply,
         TokenType.Divide,
         TokenType.Equality,
-        TokenType.Inequality
+        TokenType.Inequality,
+        TokenType.Mod,
+        TokenType.Rem
       )
     ) {
       within {
@@ -264,6 +266,8 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       TokenType.Divide -> InfixOperator.Divide
       TokenType.Equality -> InfixOperator.Equals
       TokenType.Inequality -> InfixOperator.NotEquals
+      TokenType.Mod -> InfixOperator.EuclideanModulo
+      TokenType.Rem -> InfixOperator.Remainder
       else -> throw RuntimeException("Unknown Infix Operator")
     }
 
