@@ -23,8 +23,10 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
       if (quiet) {
         return@CallableFunction None
       }
-      for (argument in arguments.values) {
-        println(argument)
+      when (arguments.values.count()) {
+        0 -> println()
+        1 -> println(arguments.values[0])
+        else -> println(arguments.values.joinToString(" "))
       }
       None
     })
