@@ -25,3 +25,8 @@ jobs:
         with:
           name: pork-jar
           path: tool/build/libs/pork-all.jar
+      - name: Archive Idea Plugin
+        uses: actions/upload-artifact@v3
+        with:
+          name: pork-idea
+          path: support/pork-idea/build/distributions/Pork.zip

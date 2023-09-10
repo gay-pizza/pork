@@ -107,8 +107,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
-        euclideanModulo = { a, b -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { a, b -> throw RuntimeException("Can't perform integer remainder between floating point types") }
+        euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
+        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") }
       )
     }
 
@@ -122,8 +122,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
-        euclideanModulo = { a, b -> throw RuntimeException("Can't perform integer modulo between floating point types") },
-        remainder = { a, b -> throw RuntimeException("Can't perform integer remainder between floating point types") }
+        euclideanModulo = { _, _ -> throw RuntimeException("Can't perform integer modulo between floating point types") },
+        remainder = { _, _ -> throw RuntimeException("Can't perform integer remainder between floating point types") }
       )
     }
 

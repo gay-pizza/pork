@@ -1,0 +1,18 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>gay.pizza.plugins.pork</id>
+    <name>Pork</name>
+    <category>Languages</category>
+    <vendor>Gay Pizza Specifications</vendor>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Pork File" language="Pork" extensions="pork" fieldName="INSTANCE"
+                  implementationClass="gay.pizza.pork.intellij.PorkFileType"/>
+        <lang.syntaxHighlighterFactory
+                language="Pork"
+                implementationClass="gay.pizza.pork.intellij.PorkSyntaxHighlighterFactory"/>
+    </extensions>
+
+    <applicationListeners>
+    </applicationListeners>
+</idea-plugin>

@@ -1,12 +1,16 @@
 package gay.pizza.pork.parser
 
-class StringCharSource(val input: String) : CharSource {
-  private var index = 0
+class StringCharSource(
+  val input: CharSequence,
+  val startIndex: Int = 0,
+  val endIndex: Int = input.length - 1
+) : CharSource {
+  private var index = startIndex
   override val currentIndex: Int
     get() = index
 
   override fun next(): Char {
-    if (index == input.length) {
+    if (index == endIndex) {
       return CharSource.NullChar
     }
     val char = input[index]
@@ -15,7 +19,7 @@ class StringCharSource(val input: String) : CharSource {
   }
 
   override fun peek(): Char {
-    if (index == input.length) {
+    if (index == endIndex) {
       return CharSource.NullChar
     }
     return input[index]

@@ -10,5 +10,6 @@ include(
   ":evaluator",
   ":stdlib",
   ":ffi",
-  ":tool"
+  ":tool",
+  ":support:pork-idea"
 )
