@@ -20,6 +20,7 @@ class JnaNativeProvider : NativeFunctionProvider {
     "float" -> function.invokeFloat(values)
     "double" -> function.invokeDouble(values)
     "void" -> function.invokeVoid(values)
+    "char*" -> function.invokeString(values, false)
     else -> throw RuntimeException("Unsupported ffi return type: $type")
   }
 }
