@@ -20,3 +20,41 @@ jobs:
       with:
         name: pork-linux-amd64
         path: tool/build/native/nativeCompile/pork
+  darwin-amd64:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    - name: Set up GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '17'
+        distribution: 'graalvm'
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: nativeCompile
+    - name: Archive Pork Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: pork-darwin-amd64
+        path: tool/build/native/nativeCompile/pork
+  windows-amd64:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    - name: Set up GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: '17'
+        distribution: 'graalvm'
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: nativeCompile
+    - name: Archive Pork Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: pork-windows-amd64
+        path: tool/build/native/nativeCompile/pork.exe
