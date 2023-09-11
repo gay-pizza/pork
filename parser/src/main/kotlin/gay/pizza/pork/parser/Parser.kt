@@ -83,7 +83,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readPrefixOperation(): PrefixOperation = within {
-    expect(TokenType.Negation, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
+    expect(TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
       PrefixOperation(convertPrefixOperator(it), readExpression())
     }
   }
@@ -157,7 +157,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         readParentheses()
       }
 
-      TokenType.Negation, TokenType.Plus, TokenType.Minus, TokenType.Tilde -> {
+      TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde -> {
         readPrefixOperation()
       }
 
@@ -215,7 +215,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Lesser,
         TokenType.Greater,
         TokenType.LesserEqual,
-        TokenType.GreaterEqual
+        TokenType.GreaterEqual,
+        TokenType.And,
+        TokenType.Or
       )
     ) {
       within {
@@ -338,10 +340,13 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     TokenType.Greater -> InfixOperator.Greater
     TokenType.LesserEqual -> InfixOperator.LesserEqual
     TokenType.GreaterEqual -> InfixOperator.GreaterEqual
+    TokenType.And -> InfixOperator.BooleanAnd
+    TokenType.Or -> InfixOperator.BooleanOr
     else -> throw RuntimeException("Unknown Infix Operator")
   }
 
   private fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
+    TokenType.Not -> PrefixOperator.BooleanNot
     TokenType.Plus -> PrefixOperator.UnaryPlus
     TokenType.Minus -> PrefixOperator.UnaryMinus
     TokenType.Tilde -> PrefixOperator.BinaryNot

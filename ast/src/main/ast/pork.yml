@@ -96,6 +96,12 @@ types:
     - name: LesserEqual
       values:
         token: "<="
+    - name: BooleanAnd
+      values:
+        token: "and"
+    - name: BooleanOr
+      values:
+        token: "or"
     - name: BinaryAnd
       values:
         token: "&"
@@ -196,9 +202,9 @@ types:
     - name: token
       type: String
     enums:
-    - name: Negate
+    - name: BooleanNot
       values:
-        token: "!"
+        token: "not"
     - name: UnaryPlus
       values:
         token: "+"
