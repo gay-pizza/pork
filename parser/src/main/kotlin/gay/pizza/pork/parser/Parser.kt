@@ -83,7 +83,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readPrefixOperation(): PrefixOperation = within {
-    expect(TokenType.Negation, TokenType.Plus, TokenType.Minus) {
+    expect(TokenType.Negation, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
       PrefixOperation(convertPrefixOperator(it), readExpression())
     }
   }
@@ -148,7 +148,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         readParentheses()
       }
 
-      TokenType.Negation, TokenType.Plus, TokenType.Minus -> {
+      TokenType.Negation, TokenType.Plus, TokenType.Minus, TokenType.Tilde -> {
         readPrefixOperation()
       }
 
@@ -192,6 +192,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Minus,
         TokenType.Multiply,
         TokenType.Divide,
+        TokenType.Ampersand,
+        TokenType.Pipe,
+        TokenType.Caret,
         TokenType.Equality,
         TokenType.Inequality,
         TokenType.Mod,
@@ -311,6 +314,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     TokenType.Minus -> InfixOperator.Minus
     TokenType.Multiply -> InfixOperator.Multiply
     TokenType.Divide -> InfixOperator.Divide
+    TokenType.Ampersand -> InfixOperator.BinaryAnd
+    TokenType.Pipe -> InfixOperator.BinaryOr
+    TokenType.Caret -> InfixOperator.BinaryExclusiveOr
     TokenType.Equality -> InfixOperator.Equals
     TokenType.Inequality -> InfixOperator.NotEquals
     TokenType.Mod -> InfixOperator.EuclideanModulo
@@ -325,6 +331,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
     TokenType.Plus -> PrefixOperator.UnaryPlus
     TokenType.Minus -> PrefixOperator.UnaryMinus
+    TokenType.Tilde -> PrefixOperator.BinaryNot
     else -> throw RuntimeException("Unknown Prefix Operator")
   }
 

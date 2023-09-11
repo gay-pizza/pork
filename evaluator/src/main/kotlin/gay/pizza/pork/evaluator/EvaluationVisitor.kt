@@ -75,7 +75,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         }
         !value
       }
-      PrefixOperator.UnaryPlus, PrefixOperator.UnaryMinus -> {
+      PrefixOperator.UnaryPlus, PrefixOperator.UnaryMinus, PrefixOperator.BinaryNot -> {
         if (value !is Number) {
           throw RuntimeException("Numeric unary '${node.op.token}' illegal on non-numeric type '${value.javaClass.simpleName}'")
         }
@@ -91,7 +91,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         value,
         convert = { it.toDouble() },
         plus = { +it },
-        minus = { -it }
+        minus = { -it },
+        binaryNot = unaryFloatingPointTypeError("binary not")
       )
     }
     is Float -> {
@@ -100,7 +101,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         value,
         convert = { it.toFloat() },
         plus = { +it },
-        minus = { -it }
+        minus = { -it },
+        binaryNot = unaryFloatingPointTypeError("binary not")
       )
     }
     is Long -> {
@@ -109,7 +111,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         value,
         convert = { it.toLong() },
         plus = { +it },
-        minus = { -it }
+        minus = { -it },
+        binaryNot = { it.inv() }
       )
     }
     is Int -> {
@@ -118,7 +121,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         value,
         convert = { it.toInt() },
         plus = { +it },
-        minus = { -it }
+        minus = { -it },
+        binaryNot = { it.inv() }
       )
     }
     else -> throw RuntimeException("Unknown numeric type: ${value.javaClass.name}")
@@ -179,6 +183,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
+        binaryAnd = { _, _ -> floatingPointTypeError("binary and") },
+        binaryOr = { _, _ -> floatingPointTypeError("binary or") },
+        binaryExclusiveOr = { _, _ -> floatingPointTypeError("binary exclusive-or") },
         euclideanModulo = { _, _ -> floatingPointTypeError("integer modulo") },
         remainder = { _, _ -> floatingPointTypeError("integer remainder") },
         lesser = { a, b -> a < b },
@@ -198,6 +205,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
+        binaryAnd = { _, _ -> floatingPointTypeError("binary and") },
+        binaryOr = { _, _ -> floatingPointTypeError("binary or") },
+        binaryExclusiveOr = { _, _ -> floatingPointTypeError("binary exclusive-or") },
         euclideanModulo = { _, _ -> floatingPointTypeError("integer modulo") },
         remainder = { _, _ -> floatingPointTypeError("integer remainder") },
         lesser = { a, b -> a < b },
@@ -217,6 +227,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
+        binaryAnd = { a, b -> a and b },
+        binaryOr = { a, b -> a or b },
+        binaryExclusiveOr = { a, b -> a xor b },
         euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
         remainder = { x, d -> x % d },
         lesser = { a, b -> a < b },
@@ -236,6 +249,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         subtract = { a, b -> a - b },
         multiply = { a, b -> a * b },
         divide = { a, b -> a / b },
+        binaryAnd = { a, b -> a and b },
+        binaryOr = { a, b -> a or b },
+        binaryExclusiveOr = { a, b -> a xor b },
         euclideanModulo = { x, d -> (x % d).let { q -> if (q < 0) q + abs(d) else q } },
         remainder = { x, d -> x % d },
         lesser = { a, b -> a < b },
@@ -257,6 +273,9 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     subtract: (T, T) -> T,
     multiply: (T, T) -> T,
     divide: (T, T) -> T,
+    binaryAnd: (T, T) -> T,
+    binaryOr: (T, T) -> T,
+    binaryExclusiveOr: (T, T) -> T,
     euclideanModulo: (T, T) -> T,
     remainder: (T, T) -> T,
     lesser: (T, T) -> Boolean,
@@ -269,13 +288,16 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       InfixOperator.Minus -> subtract(convert(left), convert(right))
       InfixOperator.Multiply -> multiply(convert(left), convert(right))
       InfixOperator.Divide -> divide(convert(left), convert(right))
+      InfixOperator.Equals, InfixOperator.NotEquals -> throw RuntimeException("Unable to handle operation $op")
+      InfixOperator.BinaryAnd -> binaryAnd(convert(left), convert(right))
+      InfixOperator.BinaryOr -> binaryOr(convert(left), convert(right))
+      InfixOperator.BinaryExclusiveOr -> binaryExclusiveOr(convert(left), convert(right))
       InfixOperator.EuclideanModulo -> euclideanModulo(convert(left), convert(right))
       InfixOperator.Remainder -> remainder(convert(left), convert(right))
       InfixOperator.Lesser -> lesser(convert(left), convert(right))
       InfixOperator.Greater -> greater(convert(left), convert(right))
       InfixOperator.LesserEqual -> lesserEqual(convert(left), convert(right))
       InfixOperator.GreaterEqual -> greaterEqual(convert(left), convert(right))
-      else -> throw RuntimeException("Unable to handle operation $op")
     }
   }
 
@@ -284,12 +306,14 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     value: Number,
     convert: (Number) -> T,
     plus: (T) -> T,
-    minus: (T) -> T
+    minus: (T) -> T,
+    binaryNot: (T) -> T
   ): Any {
     return when (op) {
+      PrefixOperator.Negate -> throw RuntimeException("Unable to handle operation $op")
       PrefixOperator.UnaryPlus -> plus(convert(value))
       PrefixOperator.UnaryMinus -> minus(convert(value))
-      else -> throw RuntimeException("Unable to handle operation $op")
+      PrefixOperator.BinaryNot -> binaryNot(convert(value))
     }
   }
 
@@ -326,6 +350,10 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     } finally {
       currentScope = currentScope.leave()
     }
+  }
+
+  private fun unaryFloatingPointTypeError(operation: String): Nothing {
+    throw RuntimeException("Can't perform $operation on a floating point type")
   }
 
   private fun floatingPointTypeError(operation: String): Nothing {
