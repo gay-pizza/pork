@@ -1,14 +1,11 @@
 func buildRow(str, a, b, c, d) {
-  let checkSeparator = "|        "
-  print("|", str, checkSeparator)
-  if a { print("✅") } else { print("🚫") }
-  print(checkSeparator)
-  if b { print("✅") } else { print("🚫") }
-  print(checkSeparator)
-  if c { print("✅") } else { print("🚫") }
-  print(checkSeparator)
-  if d { print("✅") } else { print("🚫") }
-  println("|")
+  let checkSeparator = "       "
+  print("|", str, "| ")
+  for i in [a, b, c, d] {
+    print(checkSeparator)
+    if a { print("✅|") } else { print("🚫|") }
+  }
+  println()
 }
 
 export func main() {
@@ -29,5 +26,5 @@ export func main() {
   buildRow("!a ||  b", (not false) or false, (not true) or false, (not false) or true, (not true) or true)
   buildRow(" a || !b", false or (not false), true or (not false), false or (not true), true or (not true))
   buildRow("!a || !b", (not false) or (not false), (not true) or (not false), (not false) or (not true), (not true) or (not true))
-  println("|-----------------------------------------------------|")
+  println("|------------------------------------------------------|")
 }
