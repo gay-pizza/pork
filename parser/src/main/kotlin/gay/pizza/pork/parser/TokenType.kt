@@ -51,7 +51,9 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Native(ManyChars("native"), KeywordFamily),
   Let(ManyChars("let"), KeywordFamily),
   Var(ManyChars("var"), KeywordFamily),
-  Whitespace(CharConsumer { it == ' ' || it == '\r' || it == '\n' || it == '\t' }),
+  Whitespace(CharConsumer { it == ' ' || it == '\t' || it == '\r' }), // JAAJ WAS HERE
+  Semicolon(SingleChar(';')),
+  Line(SingleChar('\n')),
   BlockComment(CommentFamily),
   LineComment(CommentFamily),
   EndOfFile;

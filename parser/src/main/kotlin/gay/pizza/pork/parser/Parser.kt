@@ -346,6 +346,8 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun <T> collect(
     peeking: TokenType,
     consuming: TokenType? = null,
+    expecting: Array<TokenType>? = null,
+    expectingIgnoreType: IgnoreType = IgnoreType.Default,
     read: () -> T
   ): List<T> {
     val items = mutableListOf<T>()
@@ -353,6 +355,9 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       val item = read()
       if (consuming != null) {
         next(consuming)
+      }
+      if (expecting != null) {
+        expect(expectingIgnoreType, *expecting)
       }
       items.add(item)
     }
@@ -381,8 +386,8 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     } else false
   }
 
-  private fun expect(vararg types: TokenType): Token {
-    val token = next()
+  private fun expect(ignoreType: IgnoreType, vararg types: TokenType): Token {
+    val token = next(ignoreType)
     if (!types.contains(token.type)) {
       throw RuntimeException(
         "Expected one of ${types.joinToString(", ")}" +
@@ -392,24 +397,26 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     return token
   }
 
+  private fun expect(vararg types: TokenType): Token = expect(IgnoreType.Default, *types)
+
   private fun <T: Node> expect(vararg types: TokenType, consume: (Token) -> T): T =
     consume(expect(*types))
 
-  private fun next(): Token {
+  private fun next(ignoreType: IgnoreType = IgnoreType.Default): Token {
     while (true) {
       val token = unsanitizedSource.next()
       attribution.push(token)
-      if (ignoredByParser(token.type)) {
+      if (ignoredByParser(ignoreType, token.type)) {
         continue
       }
       return token
     }
   }
 
-  private fun peek(): Token {
+  private fun peek(ignoreType: IgnoreType = IgnoreType.Default): Token {
     while (true) {
       val token = unsanitizedSource.peek()
-      if (ignoredByParser(token.type)) {
+      if (ignoredByParser(ignoreType, token.type)) {
         attribution.push(token)
         unsanitizedSource.next()
         continue
@@ -423,10 +430,18 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     return attribution.exit(block())
   }
 
-  private fun ignoredByParser(type: TokenType): Boolean = when (type) {
-    TokenType.BlockComment -> true
-    TokenType.LineComment -> true
-    TokenType.Whitespace -> true
-    else -> false
+  private fun ignoredByParser(ignoreType: IgnoreType, type: TokenType): Boolean = ignoreType.ignored(type)
+
+  private enum class IgnoreType {
+    ExpressionList, Default;
+
+    fun ignored(type: TokenType): Boolean = when {
+      type == TokenType.BlockComment -> true
+      type == TokenType.LineComment -> true
+      type == TokenType.Whitespace -> true
+      type == TokenType.Semicolon && this == Default -> true
+      type == TokenType.Line && this == Default -> true
+      else -> false
+    }
   }
 }
