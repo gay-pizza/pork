@@ -92,7 +92,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitPrefixOperation(node: PrefixOperation): Any {
     val value = node.expression.visit(this)
     return when (node.op) {
-      PrefixOperator.Negate -> {
+      PrefixOperator.BooleanNot -> {
         if (value !is Boolean) {
           throw RuntimeException("Cannot negate a value which is not a boolean.")
         }
@@ -190,6 +190,14 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         return left != right
       }
       else -> {}
+    }
+
+    if (left is Boolean && right is Boolean) {
+      when (node.op) {
+        InfixOperator.BooleanAnd -> return left && right
+        InfixOperator.BooleanOr -> return left || right
+        else -> {}
+      }
     }
 
     if (left !is Number || right !is Number) {
@@ -311,7 +319,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       InfixOperator.Minus -> subtract(convert(left), convert(right))
       InfixOperator.Multiply -> multiply(convert(left), convert(right))
       InfixOperator.Divide -> divide(convert(left), convert(right))
-      InfixOperator.Equals, InfixOperator.NotEquals -> throw RuntimeException("Unable to handle operation $op")
+      InfixOperator.Equals, InfixOperator.NotEquals, InfixOperator.BooleanAnd, InfixOperator.BooleanOr -> throw RuntimeException("Unable to handle operation $op")
       InfixOperator.BinaryAnd -> binaryAnd(convert(left), convert(right))
       InfixOperator.BinaryOr -> binaryOr(convert(left), convert(right))
       InfixOperator.BinaryExclusiveOr -> binaryExclusiveOr(convert(left), convert(right))
@@ -333,7 +341,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     binaryNot: (T) -> T
   ): Any {
     return when (op) {
-      PrefixOperator.Negate -> throw RuntimeException("Unable to handle operation $op")
+      PrefixOperator.BooleanNot -> throw RuntimeException("Unable to handle operation $op")
       PrefixOperator.UnaryPlus -> plus(convert(value))
       PrefixOperator.UnaryMinus -> minus(convert(value))
       PrefixOperator.BinaryNot -> binaryNot(convert(value))

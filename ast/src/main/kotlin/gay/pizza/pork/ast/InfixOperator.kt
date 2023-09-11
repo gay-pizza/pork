@@ -19,6 +19,8 @@ enum class InfixOperator(val token: String) {
   Greater(">"),
   GreaterEqual(">="),
   LesserEqual("<="),
+  BooleanAnd("and"),
+  BooleanOr("or"),
   BinaryAnd("&"),
   BinaryOr("|"),
   BinaryExclusiveOr("^")

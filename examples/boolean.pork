@@ -1,0 +1,30 @@
+func buildRow(str, a, b, c, d) {
+  let checkSeparator = "       "
+  print("|", str, "| ")
+  for i in [a, b, c, d] {
+    print(checkSeparator)
+    if a { print("✅|") } else { print("🚫|") }
+  }
+  println()
+}
+
+export func main() {
+  println("|          | a=🚫 b=🚫| a=✅b=🚫| a=🚫b=✅| a=✅b=✅|")
+  buildRow(" a ==  b", false == false, true == false, false == true, true == true)
+  buildRow("!a ==  b", (not false) == false, (not true) == false, (not false) == true, (not true) == true)
+  buildRow(" a == !b", false == (not false), true == (not false), false == (not true), true == (not true))
+  buildRow("!a == !b", (not false) == (not false), (not true) == (not false), (not false) == (not true), (not true) == (not true))
+  buildRow(" a !=  b", false != false, true != false, false != true, true != true)
+  buildRow("!a !=  b", (not false) != false, (not true) != false, (not false) != true, (not true) != true)
+  buildRow(" a != !b", false != (not false), true != (not false), false != (not true), true != (not true))
+  buildRow("!a != !b", (not false) != (not false), (not true) != (not false), (not false) != (not true), (not true) != (not true))
+  buildRow(" a &&  b", false and false, true and false, false and true, true and true)
+  buildRow("!a &&  b", (not false) and false, (not true) and false, (not false) and true, (not true) and true)
+  buildRow(" a && !b", false and (not false), true and (not false), false and (not true), true and (not true))
+  buildRow("!a && !b", (not false) and (not false), (not true) and (not false), (not false) and (not true), (not true) and (not true))
+  buildRow(" a ||  b", false or false, true or false, false or true, true or true)
+  buildRow("!a ||  b", (not false) or false, (not true) or false, (not false) or true, (not true) or true)
+  buildRow(" a || !b", false or (not false), true or (not false), false or (not true), true or (not true))
+  buildRow("!a || !b", (not false) or (not false), (not true) or (not false), (not false) or (not true), (not true) or (not true))
+  println("|------------------------------------------------------|")
+}
