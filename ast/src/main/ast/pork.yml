@@ -96,6 +96,15 @@ types:
     - name: LesserEqual
       values:
         token: "<="
+    - name: BinaryAnd
+      values:
+        token: "&"
+    - name: BinaryOr
+      values:
+        token: "|"
+    - name: BinaryExclusiveOr
+      values:
+        token: "^"
   InfixOperation:
     parent: Expression
     values:
@@ -196,6 +205,9 @@ types:
     - name: UnaryMinus
       values:
         token: "-"
+    - name: BinaryNot
+      values:
+        token: "~"
   PrefixOperation:
     parent: Expression
     values:
