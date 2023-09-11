@@ -60,11 +60,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun readSymbolCases(): Expression = within {
     val symbol = readSymbolRaw()
     if (next(TokenType.LeftParentheses)) {
-      val arguments = collect(
-        TokenType.RightParentheses,
-        TokenType.Comma,
-        forceConsumeExceptLast = true
-      ) {
+      val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
         readExpression()
       }
       expect(TokenType.RightParentheses)
@@ -363,17 +359,14 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun <T> collect(
     peeking: TokenType,
     consuming: TokenType? = null,
-    forceConsumeExceptLast: Boolean = false,
     read: () -> T
   ): List<T> {
     val items = mutableListOf<T>()
     while (!peek(peeking)) {
       val item = read()
       if (consuming != null) {
-        if (!next(consuming)) {
-          if (!peek(peeking)) {
-            expect(consuming)
-          }
+        if (!peek(peeking)) {
+          expect(consuming)
         }
       }
       items.add(item)
