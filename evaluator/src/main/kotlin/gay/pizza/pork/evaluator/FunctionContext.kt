@@ -9,7 +9,7 @@ class FunctionContext(val compilationUnitContext: CompilationUnitContext, val no
     val native = node.native!!
     val nativeFunctionProvider =
       compilationUnitContext.evaluator.nativeFunctionProvider(native.form.id)
-    nativeFunctionProvider.provideNativeFunction(native.definition.text)
+    nativeFunctionProvider.provideNativeFunction(native.definition.text, node.arguments)
   }
 
   private val nativeCached by lazy { resolveMaybeNative() }

@@ -1,0 +1,2 @@
+export func printf(format, arguments...)
+  native ffi "c:printf:int:char*,..."

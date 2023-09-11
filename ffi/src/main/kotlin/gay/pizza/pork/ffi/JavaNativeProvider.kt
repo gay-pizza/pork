@@ -1,5 +1,6 @@
 package gay.pizza.pork.ffi
 
+import gay.pizza.pork.ast.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None
@@ -9,7 +10,7 @@ import java.lang.invoke.MethodType
 class JavaNativeProvider : NativeProvider {
   private val lookup = MethodHandles.lookup()
 
-  override fun provideNativeFunction(definition: String): CallableFunction {
+  override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
     val functionDefinition = JavaFunctionDefinition.parse(definition)
     val javaClass = lookupClass(functionDefinition.type)
     val returnTypeClass = lookupClass(functionDefinition.returnType)
@@ -21,7 +22,7 @@ class JavaNativeProvider : NativeProvider {
       returnTypeClass,
       parameterClasses
     )
-    return CallableFunction { arguments -> handle.invokeWithArguments(arguments.values) ?: None }
+    return CallableFunction { functionArguments -> handle.invokeWithArguments(functionArguments.values) ?: None }
   }
 
   private fun lookupClass(name: String): Class<*> = when (name) {

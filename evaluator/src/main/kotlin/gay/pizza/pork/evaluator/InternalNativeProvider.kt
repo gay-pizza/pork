@@ -1,12 +1,14 @@
 package gay.pizza.pork.evaluator
 
+import gay.pizza.pork.ast.ArgumentSpec
+
 class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   private val functions = mutableMapOf(
     "print" to CallableFunction(::printValues),
     "println" to CallableFunction(::printLine)
   )
 
-  override fun provideNativeFunction(definition: String): CallableFunction {
+  override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
     return functions[definition] ?: throw RuntimeException("Unknown Internal Function: $definition")
   }
 
