@@ -33,5 +33,13 @@ gradlePlugin {
       displayName = "Pork Module"
       description = "Module convention for pork"
     }
+
+    create("pork_stdlib") {
+      id = "gay.pizza.pork.stdlib"
+      implementationClass = "gay.pizza.pork.buildext.PorkStdlibPlugin"
+
+      displayName = "Pork Stdlib"
+      description = "Stdlib generation code for pork"
+    }
   }
 }

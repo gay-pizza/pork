@@ -15,10 +15,6 @@ import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 
 open class GenerateAstCode : DefaultTask() {
-  init {
-    outputs.upToDateWhen { false }
-  }
-
   @get:InputFile
   var astDescriptionFile: File = project.file("src/main/ast/pork.yml")
 
