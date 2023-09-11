@@ -1,0 +1,20 @@
+/* Barber shop sign generator! */
+func generatePole(width, height) {
+  var i = 0
+  while i < height {
+    let index = i++ mod width
+    var j = 0
+    while j < width {
+      if j == index { print("#") } else { print("_") }
+      j++
+    }
+    println()
+  }
+}
+
+export func main() {
+  println("nobody:")
+  println()
+  println("barber pole:")
+  generatePole(6, 18)
+}

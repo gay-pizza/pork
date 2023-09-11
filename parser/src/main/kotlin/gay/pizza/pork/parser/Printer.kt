@@ -120,6 +120,11 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.expression)
   }
 
+  override fun visitSuffixOperation(node: SuffixOperation) {
+    visit(node.reference)
+    append(node.op.token)
+  }
+
   override fun visitSetAssignment(node: SetAssignment) {
     visit(node.symbol)
     append(" = ")

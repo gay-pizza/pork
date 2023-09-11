@@ -24,6 +24,8 @@ digraph A {
   type_Parentheses [shape=box,label="Parentheses"]
   type_PrefixOperator [shape=box,label="PrefixOperator"]
   type_PrefixOperation [shape=box,label="PrefixOperation"]
+  type_SuffixOperator [shape=box,label="SuffixOperator"]
+  type_SuffixOperation [shape=box,label="SuffixOperation"]
   type_StringLiteral [shape=box,label="StringLiteral"]
   type_SymbolReference [shape=box,label="SymbolReference"]
   type_While [shape=box,label="While"]
@@ -49,6 +51,7 @@ digraph A {
   type_Expression -> type_ListLiteral
   type_Expression -> type_Parentheses
   type_Expression -> type_PrefixOperation
+  type_Expression -> type_SuffixOperation
   type_Expression -> type_StringLiteral
   type_Expression -> type_SymbolReference
   type_Expression -> type_While
@@ -84,6 +87,8 @@ digraph A {
   type_Parentheses -> type_Expression [style=dotted]
   type_PrefixOperation -> type_PrefixOperator [style=dotted]
   type_PrefixOperation -> type_Expression [style=dotted]
+  type_SuffixOperation -> type_SuffixOperator [style=dotted]
+  type_SuffixOperation -> type_SymbolReference [style=dotted]
   type_SymbolReference -> type_Symbol [style=dotted]
   type_While -> type_Expression [style=dotted]
   type_While -> type_Block [style=dotted]

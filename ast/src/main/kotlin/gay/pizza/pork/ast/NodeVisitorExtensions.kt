@@ -20,6 +20,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is ListLiteral -> visitListLiteral(node)
     is Parentheses -> visitParentheses(node)
     is PrefixOperation -> visitPrefixOperation(node)
+    is SuffixOperation -> visitSuffixOperation(node)
     is StringLiteral -> visitStringLiteral(node)
     is SymbolReference -> visitSymbolReference(node)
     is While -> visitWhile(node)

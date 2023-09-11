@@ -40,6 +40,8 @@ interface NodeVisitor<T> {
 
   fun visitStringLiteral(node: StringLiteral): T
 
+  fun visitSuffixOperation(node: SuffixOperation): T
+
   fun visitSymbol(node: Symbol): T
 
   fun visitSymbolReference(node: SymbolReference): T

@@ -2,6 +2,7 @@ package gay.pizza.pork.evaluator
 
 class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   private val functions = mutableMapOf(
+    "print" to CallableFunction(::printValues),
     "println" to CallableFunction(::printLine)
   )
 
@@ -9,15 +10,15 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
     return functions[definition] ?: throw RuntimeException("Unknown Internal Function: $definition")
   }
 
+  private fun printValues(arguments: Arguments): Any {
+    if (quiet || arguments.values.isEmpty()) return None
+    print(arguments.values.joinToString(" "))
+    return None
+  }
+
   private fun printLine(arguments: Arguments): Any {
-    if (quiet) {
-      return None
-    }
-    when (arguments.values.count()) {
-      0 -> println()
-      1 -> println(arguments.values[0])
-      else -> println(arguments.values.joinToString(" "))
-    }
+    if (quiet) return None
+    println(arguments.values.joinToString(" "))
     return None
   }
 }

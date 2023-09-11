@@ -71,7 +71,63 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         }
         !value
       }
+      PrefixOperator.UnaryPlus, PrefixOperator.UnaryMinus -> {
+        if (value !is Number) {
+          throw RuntimeException("Numeric unary '${node.op.token}' illegal on non-numeric type '${value.javaClass.simpleName}'")
+        }
+        unaryNumericOperation(node, value)
+      }
     }
+  }
+
+  private fun unaryNumericOperation(node: PrefixOperation, value: Number) = when (value) {
+    is Double -> {
+      unaryNumericOperation(
+        node.op,
+        value,
+        convert = { it.toDouble() },
+        plus = { +it },
+        minus = { -it }
+      )
+    }
+    is Float -> {
+      unaryNumericOperation(
+        node.op,
+        value,
+        convert = { it.toFloat() },
+        plus = { +it },
+        minus = { -it }
+      )
+    }
+    is Long -> {
+      unaryNumericOperation(
+        node.op,
+        value,
+        convert = { it.toLong() },
+        plus = { +it },
+        minus = { -it }
+      )
+    }
+    is Int -> {
+      unaryNumericOperation(
+        node.op,
+        value,
+        convert = { it.toInt() },
+        plus = { +it },
+        minus = { -it }
+      )
+    }
+    else -> throw RuntimeException("Unknown numeric type: ${value.javaClass.name}")
+  }
+
+  override fun visitSuffixOperation(node: SuffixOperation): Any {
+    val previousValue = currentScope.value(node.reference.symbol.id)
+    val infix = visitInfixOperation(InfixOperation(node.reference, when (node.op) {
+      SuffixOperator.Increment -> InfixOperator.Plus
+      SuffixOperator.Decrement -> InfixOperator.Minus
+    }, IntegerLiteral(1)))
+    currentScope.set(node.reference.symbol.id, infix)
+    return previousValue
   }
 
   override fun visitSetAssignment(node: SetAssignment): Any {
@@ -215,6 +271,20 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       InfixOperator.Greater -> greater(convert(left), convert(right))
       InfixOperator.LesserEqual -> lesserEqual(convert(left), convert(right))
       InfixOperator.GreaterEqual -> greaterEqual(convert(left), convert(right))
+      else -> throw RuntimeException("Unable to handle operation $op")
+    }
+  }
+
+  private inline fun <T: Number> unaryNumericOperation(
+    op: PrefixOperator,
+    value: Number,
+    convert: (Number) -> T,
+    plus: (T) -> T,
+    minus: (T) -> T
+  ): Any {
+    return when (op) {
+      PrefixOperator.UnaryPlus -> plus(convert(value))
+      PrefixOperator.UnaryMinus -> minus(convert(value))
       else -> throw RuntimeException("Unable to handle operation $op")
     }
   }
