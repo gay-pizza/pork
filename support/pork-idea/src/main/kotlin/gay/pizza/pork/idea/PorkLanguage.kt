@@ -1,4 +1,4 @@
-package gay.pizza.pork.intellij
+package gay.pizza.pork.idea
 
 import com.intellij.lang.Language
 

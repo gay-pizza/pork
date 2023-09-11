@@ -1,4 +1,4 @@
-package gay.pizza.pork.intellij
+package gay.pizza.pork.idea
 
 import com.intellij.openapi.util.IconLoader.getIcon
 import javax.swing.Icon

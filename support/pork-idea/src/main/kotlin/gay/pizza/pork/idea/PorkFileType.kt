@@ -1,4 +1,4 @@
-package gay.pizza.pork.intellij
+package gay.pizza.pork.idea
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.util.NlsContexts
