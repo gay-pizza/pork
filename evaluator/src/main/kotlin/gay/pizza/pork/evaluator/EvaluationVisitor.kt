@@ -30,6 +30,10 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     return value
   }
 
+  override fun visitLetDefinition(node: LetDefinition): Any {
+    topLevelUsedError("LetDefinition", "CompilationUnitContext")
+  }
+
   override fun visitSymbolReference(node: SymbolReference): Any =
     currentScope.value(node.symbol.id)
 

@@ -41,6 +41,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitLetAssignment(node: LetAssignment): Unit =
     handle(node)
 
+  override fun visitLetDefinition(node: LetDefinition): Unit =
+    handle(node)
+
   override fun visitListLiteral(node: ListLiteral): Unit =
     handle(node)
 

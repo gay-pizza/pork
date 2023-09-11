@@ -91,6 +91,14 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.value)
   }
 
+  override fun visitLetDefinition(node: LetDefinition) {
+    visitDefinitionModifiers(node.modifiers)
+    append("let ")
+    visit(node.symbol)
+    append(" = ")
+    visit(node.value)
+  }
+
   override fun visitSymbolReference(node: SymbolReference) {
     visit(node.symbol)
   }
@@ -152,10 +160,14 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.right)
   }
 
-  override fun visitFunctionDefinition(node: FunctionDefinition) {
-    if (node.modifiers.export) {
+  private fun visitDefinitionModifiers(modifiers: DefinitionModifiers) {
+    if (modifiers.export) {
       append("export ")
     }
+  }
+
+  override fun visitFunctionDefinition(node: FunctionDefinition) {
+    visitDefinitionModifiers(node.modifiers)
     append("func ")
     visit(node.symbol)
     append("(")

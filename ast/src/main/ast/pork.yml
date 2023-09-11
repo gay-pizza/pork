@@ -137,6 +137,15 @@ types:
       type: Block?
     - name: native
       type: Native?
+  LetDefinition:
+    parent: Definition
+    values:
+    - name: modifiers
+      type: DefinitionModifiers
+    - name: symbol
+      type: Symbol
+    - name: value
+      type: Expression
   If:
     parent: Expression
     values:

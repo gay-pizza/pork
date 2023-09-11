@@ -1,7 +1,9 @@
+let count = 5
+
 export func main() {
   var x = 1
-  while x <= 5 {
+  while x <= count {
     println(x)
-    x = x + 1
+    x++
   }
 }

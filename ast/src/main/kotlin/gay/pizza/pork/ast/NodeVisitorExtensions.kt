@@ -13,6 +13,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is BooleanLiteral -> visitBooleanLiteral(node)
     is FunctionCall -> visitFunctionCall(node)
     is FunctionDefinition -> visitFunctionDefinition(node)
+    is LetDefinition -> visitLetDefinition(node)
     is If -> visitIf(node)
     is ImportDeclaration -> visitImportDeclaration(node)
     is IntegerLiteral -> visitIntegerLiteral(node)

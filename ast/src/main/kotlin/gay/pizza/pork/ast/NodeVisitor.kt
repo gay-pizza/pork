@@ -28,6 +28,8 @@ interface NodeVisitor<T> {
 
   fun visitLetAssignment(node: LetAssignment): T
 
+  fun visitLetDefinition(node: LetDefinition): T
+
   fun visitListLiteral(node: ListLiteral): T
 
   fun visitNative(node: Native): T

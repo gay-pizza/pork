@@ -39,6 +39,10 @@ class CompilationUnitContext(
 
   private fun definitionValue(definition: Definition): Any = when (definition) {
     is FunctionDefinition -> FunctionContext(this, definition)
+    is LetDefinition -> {
+      EvaluationVisitor(internalScope.fork("let ${definition.symbol.id}"))
+        .visit(definition.value)
+    }
   }
 
   private fun processAllImports() {

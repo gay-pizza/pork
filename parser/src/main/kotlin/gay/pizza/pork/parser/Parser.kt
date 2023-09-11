@@ -226,7 +226,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     ImportDeclaration(form, components)
   }
 
-  private fun readFunctionDeclaration(): FunctionDefinition = within {
+  private fun readDefinitionModifiers(): DefinitionModifiers {
     val modifiers = DefinitionModifiers(export = false)
     while (true) {
       val token = peek()
@@ -238,12 +238,16 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         else -> break
       }
     }
+    return modifiers
+  }
+
+  private fun readFunctionDeclaration(modifiers: DefinitionModifiers): FunctionDefinition = within {
     expect(TokenType.Func)
     val name = readSymbolRaw()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
       val symbol = readSymbolRaw()
-      var multiple: Boolean = false
+      var multiple = false
       if (next(TokenType.DotDotDot)) {
         multiple = true
       }
@@ -261,11 +265,21 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     FunctionDefinition(modifiers, name, arguments, block, native)
   }
 
+  private fun readLetDefinition(modifiers: DefinitionModifiers): LetDefinition = within {
+    val modifiers = readDefinitionModifiers()
+    expect(TokenType.Let)
+    val name = readSymbolRaw()
+    expect(TokenType.Equals)
+    val value = readExpression()
+    LetDefinition(modifiers, name, value)
+  }
+
   private fun maybeReadDefinition(): Definition? {
+    val modifiers = readDefinitionModifiers()
     val token = peek()
     return when (token.type) {
-      TokenType.Export,
-      TokenType.Func -> readFunctionDeclaration()
+      TokenType.Func -> readFunctionDeclaration(modifiers)
+      TokenType.Let -> readLetDefinition(modifiers)
       else -> null
     }
   }
