@@ -266,7 +266,6 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readLetDefinition(modifiers: DefinitionModifiers): LetDefinition = within {
-    val modifiers = readDefinitionModifiers()
     expect(TokenType.Let)
     val name = readSymbolRaw()
     expect(TokenType.Equals)

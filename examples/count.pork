@@ -1,4 +1,4 @@
-let count = 5
+export let count = 5
 
 export func main() {
   var x = 1
