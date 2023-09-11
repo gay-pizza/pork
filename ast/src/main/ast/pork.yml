@@ -250,6 +250,15 @@ types:
       type: Expression
     - name: block
       type: Block
+  ForIn:
+    parent: Expression
+    values:
+    - name: symbol
+      type: Symbol
+    - name: expression
+      type: Expression
+    - name: block
+      type: Block
   Break:
     parent: Expression
     values: []

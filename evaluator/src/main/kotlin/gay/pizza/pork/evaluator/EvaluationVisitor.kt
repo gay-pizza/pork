@@ -8,6 +8,29 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitIntegerLiteral(node: IntegerLiteral): Any = node.value
   override fun visitDoubleLiteral(node: DoubleLiteral): Any = node.value
+  override fun visitForIn(node: ForIn): Any {
+    val blockFunction = node.block.visit(this) as BlockFunction
+    var result: Any? = null
+    val value = node.expression.visit(this)
+    if (value !is Iterable<*>) {
+      throw RuntimeException("Unable to iterate on value that is not a iterable.")
+    }
+
+    for (item in value) {
+      try {
+        scoped {
+          currentScope.define(node.symbol.id, item ?: None)
+          result = blockFunction.call()
+        }
+      } catch (_: BreakMarker) {
+        break
+      } catch (_: ContinueMarker) {
+        continue
+      }
+    }
+    return result ?: None
+  }
+
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
 

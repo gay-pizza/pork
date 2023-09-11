@@ -12,6 +12,7 @@ enum class NodeType(val parent: NodeType? = null) {
   Declaration(Node),
   Definition(Node),
   DoubleLiteral(Expression),
+  ForIn(Expression),
   FunctionCall(Expression),
   FunctionDefinition(Definition),
   If(Expression),

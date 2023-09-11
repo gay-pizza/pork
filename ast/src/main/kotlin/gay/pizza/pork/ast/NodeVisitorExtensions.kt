@@ -25,6 +25,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is StringLiteral -> visitStringLiteral(node)
     is SymbolReference -> visitSymbolReference(node)
     is While -> visitWhile(node)
+    is ForIn -> visitForIn(node)
     is Break -> visitBreak(node)
     is Continue -> visitContinue(node)
     is Native -> visitNative(node)

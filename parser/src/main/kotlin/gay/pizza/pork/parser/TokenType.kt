@@ -47,6 +47,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   If(ManyChars("if"), KeywordFamily),
   Else(ManyChars("else"), KeywordFamily),
   While(ManyChars("while"), KeywordFamily),
+  For(ManyChars("for"), KeywordFamily),
+  In(ManyChars("in"), KeywordFamily),
   Continue(ManyChars("continue"), KeywordFamily),
   Break(ManyChars("break"), KeywordFamily),
   Import(ManyChars("import"), KeywordFamily),

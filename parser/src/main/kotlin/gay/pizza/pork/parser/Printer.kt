@@ -28,6 +28,15 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append(node.value.toString())
   }
 
+  override fun visitForIn(node: ForIn) {
+    append("for ")
+    visit(node.symbol)
+    append(" in ")
+    visit(node.expression)
+    append(" ")
+    visit(node.block)
+  }
+
   override fun visitStringLiteral(node: StringLiteral) {
     append("\"")
     append(StringEscape.escape(node.text))

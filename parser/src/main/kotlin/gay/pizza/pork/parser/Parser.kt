@@ -106,6 +106,15 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     While(condition, block)
   }
 
+  private fun readForIn(): ForIn = within {
+    expect(TokenType.For)
+    val symbol = readSymbolRaw()
+    expect(TokenType.In)
+    val value = readExpression()
+    val block = readBlock()
+    ForIn(symbol, value, block)
+  }
+
   private fun readNative(): Native = within {
     expect(TokenType.Native)
     val form = readSymbolRaw()
@@ -158,6 +167,10 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
 
       TokenType.While -> {
         readWhile()
+      }
+
+      TokenType.For -> {
+        readForIn()
       }
 
       TokenType.Break -> {

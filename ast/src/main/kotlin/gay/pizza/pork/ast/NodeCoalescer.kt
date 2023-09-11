@@ -20,6 +20,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitDoubleLiteral(node: DoubleLiteral): Unit =
     handle(node)
 
+  override fun visitForIn(node: ForIn): Unit =
+    handle(node)
+
   override fun visitFunctionCall(node: FunctionCall): Unit =
     handle(node)
 

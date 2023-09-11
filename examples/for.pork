@@ -1,0 +1,7 @@
+let items = ["Hello", "Goodbye"]
+
+export func main() {
+  for item in items {
+    println(item)
+  }
+}

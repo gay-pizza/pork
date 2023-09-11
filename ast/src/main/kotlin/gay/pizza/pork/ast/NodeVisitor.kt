@@ -14,6 +14,8 @@ interface NodeVisitor<T> {
 
   fun visitDoubleLiteral(node: DoubleLiteral): T
 
+  fun visitForIn(node: ForIn): T
+
   fun visitFunctionCall(node: FunctionCall): T
 
   fun visitFunctionDefinition(node: FunctionDefinition): T
