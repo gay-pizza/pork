@@ -20,6 +20,11 @@ jobs:
       with:
         name: pork-linux-amd64
         path: tool/build/native/nativeCompile/pork
+    - name: Archive Pork Runtime Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: pork-rt-linux-amd64
+        path: minimal/build/native/nativeCompile/pork-rt
   darwin-amd64:
     runs-on: macos-latest
     steps:
@@ -39,6 +44,11 @@ jobs:
       with:
         name: pork-darwin-amd64
         path: tool/build/native/nativeCompile/pork
+    - name: Archive Pork Runtime Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: pork-rt-darwin-amd64
+        path: minimal/build/native/nativeCompile/pork-rt
   windows-amd64:
     runs-on: windows-latest
     steps:
@@ -58,3 +68,8 @@ jobs:
       with:
         name: pork-windows-amd64
         path: tool/build/native/nativeCompile/pork.exe
+    - name: Archive Pork Runtime Executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: pork-rt-windows-amd64
+        path: minimal/build/native/nativeCompile/pork-rt.exe

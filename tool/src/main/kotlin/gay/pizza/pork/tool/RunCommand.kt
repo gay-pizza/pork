@@ -8,6 +8,7 @@ import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.ffi.JnaNativeProvider
+import gay.pizza.pork.minimal.FileTool
 
 class RunCommand : CliktCommand(help = "Run Program", name = "run") {
   val loop by option("--loop", help = "Loop Program").flag()

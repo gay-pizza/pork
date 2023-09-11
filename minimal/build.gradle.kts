@@ -6,13 +6,18 @@ plugins {
 }
 
 dependencies {
-  api(project(":minimal"))
-  api("com.github.ajalt.clikt:clikt:4.2.0")
+  api(project(":ast"))
+  api(project(":parser"))
+  api(project(":frontend"))
+  api(project(":evaluator"))
+  api(project(":stdlib"))
+  api(project(":ffi"))
+  implementation(project(":common"))
 }
 
 application {
-  applicationName = "pork"
-  mainClass.set("gay.pizza.pork.tool.MainKt")
+  applicationName = "pork-rt"
+  mainClass.set("gay.pizza.pork.minimal.MainKt")
 }
 
 for (task in arrayOf(tasks.shadowDistTar, tasks.shadowDistZip, tasks.shadowJar)) {
@@ -21,14 +26,14 @@ for (task in arrayOf(tasks.shadowDistTar, tasks.shadowDistZip, tasks.shadowJar))
     task.name.startsWith("shadow") -> "-shadow"
     else -> ""
   }
-  task.get().archiveBaseName.set("pork${suffix}")
+  task.get().archiveBaseName.set("pork-rt${suffix}")
 }
 
 graalvmNative {
   binaries {
     named("main") {
-      imageName.set("pork")
-      mainClass.set("gay.pizza.pork.tool.MainKt")
+      imageName.set("pork-rt")
+      mainClass.set("gay.pizza.pork.minimal.MainKt")
       sharedLibrary.set(false)
       buildArgs("-march=compatibility")
       resources {

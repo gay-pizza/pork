@@ -5,6 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.NodeCoalescer
 import gay.pizza.pork.ast.visit
+import gay.pizza.pork.minimal.FileTool
 import gay.pizza.pork.parser.TokenNodeAttribution
 
 class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute") {

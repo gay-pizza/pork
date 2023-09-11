@@ -11,5 +11,6 @@ include(
   ":stdlib",
   ":ffi",
   ":tool",
+  ":minimal",
   ":support:pork-idea"
 )

@@ -1,4 +1,4 @@
-package gay.pizza.pork.tool
+package gay.pizza.pork.minimal
 
 import gay.pizza.dough.fs.FsPath
 import gay.pizza.dough.fs.readString
