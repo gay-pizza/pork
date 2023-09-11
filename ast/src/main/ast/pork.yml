@@ -181,6 +181,12 @@ types:
     - name: Negate
       values:
         token: "!"
+    - name: UnaryPlus
+      values:
+        token: "+"
+    - name: UnaryMinus
+      values:
+        token: "-"
   PrefixOperation:
     parent: Expression
     values:
@@ -188,6 +194,24 @@ types:
       type: PrefixOperator
     - name: expression
       type: Expression
+  SuffixOperator:
+    values:
+    - name: token
+      type: String
+    enums:
+    - name: Increment
+      values:
+        token: "++"
+    - name: Decrement
+      values:
+        token: "--"
+  SuffixOperation:
+    parent: Expression
+    values:
+    - name: op
+      type: SuffixOperator
+    - name: reference
+      type: SymbolReference
   StringLiteral:
     parent: Expression
     values:

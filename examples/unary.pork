@@ -1,0 +1,6 @@
+export func main() {
+  let constant = -42
+  println("constant set by unary minus:     ", constant)
+  println("constant modified by unary minus:", -constant)
+  println("constant modified by unary plus: ", +constant)
+}

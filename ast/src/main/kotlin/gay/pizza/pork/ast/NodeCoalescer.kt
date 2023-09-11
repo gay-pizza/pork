@@ -59,6 +59,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitStringLiteral(node: StringLiteral): Unit =
     handle(node)
 
+  override fun visitSuffixOperation(node: SuffixOperation): Unit =
+    handle(node)
+
   override fun visitSymbol(node: Symbol): Unit =
     handle(node)
 

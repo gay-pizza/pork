@@ -66,7 +66,12 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       expect(TokenType.RightParentheses)
       FunctionCall(symbol, arguments)
     } else {
-      SymbolReference(symbol)
+      val reference = SymbolReference(symbol)
+      if (peek(TokenType.PlusPlus, TokenType.MinusMinus)) {
+        expect(TokenType.PlusPlus, TokenType.MinusMinus) {
+          SuffixOperation(convertSuffixOperator(it), reference)
+        }
+      } else reference
     }
   }
 
@@ -78,8 +83,8 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   }
 
   private fun readPrefixOperation(): PrefixOperation = within {
-    expect(TokenType.Negation) {
-      PrefixOperation(PrefixOperator.Negate, readExpression())
+    expect(TokenType.Negation, TokenType.Plus, TokenType.Minus) {
+      PrefixOperation(convertPrefixOperator(it), readExpression())
     }
   }
 
@@ -143,7 +148,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         readParentheses()
       }
 
-      TokenType.Negation -> {
+      TokenType.Negation, TokenType.Plus, TokenType.Minus -> {
         readPrefixOperation()
       }
 
@@ -288,22 +293,33 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     }
   }
 
-  private fun convertInfixOperator(token: Token): InfixOperator =
-    when (token.type) {
-      TokenType.Plus -> InfixOperator.Plus
-      TokenType.Minus -> InfixOperator.Minus
-      TokenType.Multiply -> InfixOperator.Multiply
-      TokenType.Divide -> InfixOperator.Divide
-      TokenType.Equality -> InfixOperator.Equals
-      TokenType.Inequality -> InfixOperator.NotEquals
-      TokenType.Mod -> InfixOperator.EuclideanModulo
-      TokenType.Rem -> InfixOperator.Remainder
-      TokenType.Lesser -> InfixOperator.Lesser
-      TokenType.Greater -> InfixOperator.Greater
-      TokenType.LesserEqual -> InfixOperator.LesserEqual
-      TokenType.GreaterEqual -> InfixOperator.GreaterEqual
-      else -> throw RuntimeException("Unknown Infix Operator")
-    }
+  private fun convertInfixOperator(token: Token): InfixOperator = when (token.type) {
+    TokenType.Plus -> InfixOperator.Plus
+    TokenType.Minus -> InfixOperator.Minus
+    TokenType.Multiply -> InfixOperator.Multiply
+    TokenType.Divide -> InfixOperator.Divide
+    TokenType.Equality -> InfixOperator.Equals
+    TokenType.Inequality -> InfixOperator.NotEquals
+    TokenType.Mod -> InfixOperator.EuclideanModulo
+    TokenType.Rem -> InfixOperator.Remainder
+    TokenType.Lesser -> InfixOperator.Lesser
+    TokenType.Greater -> InfixOperator.Greater
+    TokenType.LesserEqual -> InfixOperator.LesserEqual
+    TokenType.GreaterEqual -> InfixOperator.GreaterEqual
+    else -> throw RuntimeException("Unknown Infix Operator")
+  }
+
+  private fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
+    TokenType.Plus -> PrefixOperator.UnaryPlus
+    TokenType.Minus -> PrefixOperator.UnaryMinus
+    else -> throw RuntimeException("Unknown Prefix Operator")
+  }
+
+  private fun convertSuffixOperator(token: Token): SuffixOperator = when (token.type) {
+    TokenType.PlusPlus -> SuffixOperator.Increment
+    TokenType.MinusMinus -> SuffixOperator.Decrement
+    else -> throw RuntimeException("Unknown Suffix Operator")
+  }
 
   fun readCompilationUnit(): CompilationUnit = within {
     val declarations = mutableListOf<Declaration>()

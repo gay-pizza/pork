@@ -5,9 +5,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("prefixOperator")
-enum class PrefixOperator(val token: String) {
-  Negate("!"),
-  UnaryPlus("+"),
-  UnaryMinus("-")
+@SerialName("suffixOperator")
+enum class SuffixOperator(val token: String) {
+  Increment("++"),
+  Decrement("--")
 }

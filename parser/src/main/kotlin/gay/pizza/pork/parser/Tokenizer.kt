@@ -9,6 +9,7 @@ class Tokenizer(val source: CharSource) {
       var endOfComment = false
       while (true) {
         val char = source.next()
+        if (char == CharSource.NullChar) throw RuntimeException("Unterminated block comment")
         append(char)
 
         if (endOfComment) {
