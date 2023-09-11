@@ -10,4 +10,6 @@ object PorkTokenTypes {
   val Operator = IElementType("operator", PorkLanguage)
   val String = IElementType("string", PorkLanguage)
   val Number = IElementType("number", PorkLanguage)
+  val BlockComment = IElementType("lineComment", PorkLanguage)
+  val LineComment = IElementType("blockComment", PorkLanguage)
 }

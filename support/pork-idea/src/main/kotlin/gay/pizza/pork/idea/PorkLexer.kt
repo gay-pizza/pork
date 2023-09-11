@@ -89,8 +89,13 @@ class PorkLexer : LexerBase() {
       PorkTokenTypes.Number
     token.type == TokenType.Whitespace ->
       PorkTokenTypes.Whitespace
+    token.type == TokenType.BlockComment ->
+      PorkTokenTypes.BlockComment
+    token.type == TokenType.LineComment ->
+      PorkTokenTypes.LineComment
     else -> PsiTokenType.CODE_FRAGMENT
   }
 
-  override fun toString(): String = "Lexer(start=$internalTokenStart, end=$internalTokenEnd)"
+  override fun toString(): String =
+    "PorkLexer(start=$internalTokenStart, end=$internalTokenEnd)"
 }

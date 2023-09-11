@@ -19,7 +19,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       writeAstType(type)
     }
     writeNodeType()
-    writeNodeVisitor()
+    writeNodeVisitors()
     writeNodeCoalescer()
   }
 
@@ -45,8 +45,8 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     write("NodeType.kt", KotlinWriter(enumClass))
   }
 
-  private fun writeNodeVisitor() {
-    val visitorInterface = KotlinClass(
+  private fun writeNodeVisitors() {
+    val nodeVisitorInterface = KotlinClass(
       pkg,
       "NodeVisitor",
       typeParameters = mutableListOf("T"),
@@ -60,7 +60,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
         continue
       }
 
-      val visitFunction = KotlinFunction(
+      val nodeVisitFunction = KotlinFunction(
         "visit${type.name}",
         returnType = "T",
         parameters = mutableListOf(
@@ -68,9 +68,9 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
         ),
         isInterfaceMethod = true
       )
-      visitorInterface.functions.add(visitFunction)
+      nodeVisitorInterface.functions.add(nodeVisitFunction)
     }
-    write("NodeVisitor.kt", KotlinWriter(visitorInterface))
+    write("NodeVisitor.kt", KotlinWriter(nodeVisitorInterface))
 
     val visitorExtensionSet = KotlinFunctionSet(pkg)
     val visitAnyFunction = KotlinFunction(

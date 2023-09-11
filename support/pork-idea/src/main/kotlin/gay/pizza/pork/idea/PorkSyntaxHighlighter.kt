@@ -40,6 +40,16 @@ object PorkSyntaxHighlighter : SyntaxHighlighter {
           "PORK.NUMBER",
           DefaultLanguageHighlighterColors.NUMBER
         )
+      PorkTokenTypes.BlockComment ->
+        TextAttributesKey.createTextAttributesKey(
+          "PORK.COMMENT.BLOCK",
+          DefaultLanguageHighlighterColors.BLOCK_COMMENT
+        )
+      PorkTokenTypes.LineComment ->
+        TextAttributesKey.createTextAttributesKey(
+          "PORK.COMMENT.LINE",
+          DefaultLanguageHighlighterColors.LINE_COMMENT
+        )
       else -> null
     }
     return if (attributes == null)
