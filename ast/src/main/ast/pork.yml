@@ -123,6 +123,7 @@ types:
       type: Symbol
     - name: multiple
       type: Boolean
+      defaultValue: "false"
   FunctionDefinition:
     parent: Definition
     values:

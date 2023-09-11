@@ -241,6 +241,9 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       for (value in type.values!!) {
         val member = KotlinMember(value.name, toKotlinType(value.typeRef))
         member.abstract = value.abstract
+        if (value.defaultValue != null) {
+          member.value = value.defaultValue
+        }
         if (type.isParentAbstract(value)) {
           member.overridden = true
         }
@@ -279,7 +282,9 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
         ),
         isImmediateExpression = true
       )
-      val anyListMembers = type.values?.any { it.typeRef.form == AstTypeRefForm.List } ?: false
+      val anyListMembers = type.values?.any {
+        it.typeRef.form == AstTypeRefForm.List
+      } ?: false
       val elideVisitChildren: Boolean
       if (anyListMembers) {
         val visitParameters = (type.values?.mapNotNull {

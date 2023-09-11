@@ -59,7 +59,12 @@ class AstWorld {
           type.markHasValues()
           for (value in typeDescription.values) {
             val typeRef = AstTypeRef.parse(value.type, world.typeRegistry)
-            val typeValue = AstValue(value.name, typeRef, abstract = value.required)
+            val typeValue = AstValue(
+              value.name,
+              typeRef,
+              abstract = value.required,
+              defaultValue = value.defaultValue
+            )
             type.addValue(typeValue)
           }
         }
