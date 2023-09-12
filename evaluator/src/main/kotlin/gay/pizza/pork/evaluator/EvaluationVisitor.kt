@@ -117,7 +117,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         convert = { it.toDouble() },
         plus = { +it },
         minus = { -it },
-        binaryNot = unaryFloatingPointTypeError("binary not")
+        binaryNot = { unaryFloatingPointTypeError("binary not") }
       )
     }
     is Float -> {
@@ -127,7 +127,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         convert = { it.toFloat() },
         plus = { +it },
         minus = { -it },
-        binaryNot = unaryFloatingPointTypeError("binary not")
+        binaryNot = { unaryFloatingPointTypeError("binary not") }
       )
     }
     is Long -> {
