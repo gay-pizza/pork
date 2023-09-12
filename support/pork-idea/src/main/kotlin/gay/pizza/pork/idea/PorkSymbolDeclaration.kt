@@ -16,8 +16,7 @@ class PorkSymbolDeclaration(val element: PsiElement) : PsiSymbolDeclaration {
 
   override fun getSymbol(): Symbol {
     val element = getSymbolElement()
-    val porkNode = element.getUserData(PorkNodeKey)!!
-    return PorkFunctionSymbol((porkNode as gay.pizza.pork.ast.Symbol).id)
+    return PorkFunctionSymbol(element.text.trim())
   }
 
   private fun getSymbolElement(): PsiElement {
