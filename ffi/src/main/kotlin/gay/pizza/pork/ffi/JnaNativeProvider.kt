@@ -10,6 +10,7 @@ class JnaNativeProvider : NativeProvider {
   override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
     val functionDefinition = FfiFunctionDefinition.parse(definition)
     val function = Function.getFunction(functionDefinition.library, functionDefinition.function)
+      ?: throw RuntimeException("Failed to find function ${functionDefinition.function} in library ${functionDefinition.library}")
     return CallableFunction { functionArgs ->
       val ffiArgs = mutableListOf<Any?>()
       for ((index, spec) in arguments.withIndex()) {
