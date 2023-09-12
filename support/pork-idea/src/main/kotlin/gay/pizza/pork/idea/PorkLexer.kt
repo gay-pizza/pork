@@ -56,7 +56,7 @@ class PorkLexer : LexerBase() {
 
     try {
       val currentToken = tokenizer.next()
-      currentTokenType = tokenAsElement(currentToken)
+      currentTokenType = PorkElementTypes.elementTypeFor(currentToken.type)
       internalTokenStart = currentToken.start
       internalTokenEnd = currentToken.start + currentToken.text.length
     } catch (e: ProcessCanceledException) {
@@ -74,26 +74,6 @@ class PorkLexer : LexerBase() {
 
   override fun getBufferEnd(): Int {
     return source.endIndex
-  }
-
-  private fun tokenAsElement(token: Token): IElementType = when  {
-    token.type.family == TokenFamily.KeywordFamily ->
-      PorkTokenTypes.Keyword
-    token.type.family == TokenFamily.SymbolFamily ->
-      PorkTokenTypes.Symbol
-    token.type.family == TokenFamily.OperatorFamily ->
-      PorkTokenTypes.Operator
-    token.type.family == TokenFamily.StringLiteralFamily ->
-      PorkTokenTypes.String
-    token.type.family == TokenFamily.NumericLiteralFamily ->
-      PorkTokenTypes.Number
-    token.type == TokenType.Whitespace ->
-      PorkTokenTypes.Whitespace
-    token.type == TokenType.BlockComment ->
-      PorkTokenTypes.BlockComment
-    token.type == TokenType.LineComment ->
-      PorkTokenTypes.LineComment
-    else -> PsiTokenType.CODE_FRAGMENT
   }
 
   override fun toString(): String =

@@ -11,6 +11,13 @@
         <lang.syntaxHighlighterFactory
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkSyntaxHighlighterFactory"/>
+        <lang.parserDefinition
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkParserDefinition"/>
+        <lang.commenter
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkCommenter"/>
+        <psi.declarationProvider implementation="gay.pizza.pork.idea.PorkSymbolDeclarationProvider"/>
     </extensions>
 
     <applicationListeners>

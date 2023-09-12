@@ -185,7 +185,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       }
 
       else -> {
-        throw RuntimeException(
+        throw ParseError(
           "Failed to parse token: ${token.type} '${token.text}' as" +
             " expression (index ${unsanitizedSource.currentIndex})"
         )
@@ -308,7 +308,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       return definition
     }
     val token = peek()
-    throw RuntimeException(
+    throw ParseError(
       "Failed to parse token: ${token.type} '${token.text}' as" +
         " definition (index ${unsanitizedSource.currentIndex})"
     )
@@ -318,7 +318,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     val token = peek()
     return when (token.type) {
       TokenType.Import -> readImportDeclaration()
-      else -> throw RuntimeException(
+      else -> throw ParseError(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${unsanitizedSource.currentIndex})"
       )
@@ -343,7 +343,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     TokenType.GreaterEqual -> InfixOperator.GreaterEqual
     TokenType.And -> InfixOperator.BooleanAnd
     TokenType.Or -> InfixOperator.BooleanOr
-    else -> throw RuntimeException("Unknown Infix Operator")
+    else -> throw ParseError("Unknown Infix Operator")
   }
 
   private fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
@@ -351,13 +351,13 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     TokenType.Plus -> PrefixOperator.UnaryPlus
     TokenType.Minus -> PrefixOperator.UnaryMinus
     TokenType.Tilde -> PrefixOperator.BinaryNot
-    else -> throw RuntimeException("Unknown Prefix Operator")
+    else -> throw ParseError("Unknown Prefix Operator")
   }
 
   private fun convertSuffixOperator(token: Token): SuffixOperator = when (token.type) {
     TokenType.PlusPlus -> SuffixOperator.Increment
     TokenType.MinusMinus -> SuffixOperator.Decrement
-    else -> throw RuntimeException("Unknown Suffix Operator")
+    else -> throw ParseError("Unknown Suffix Operator")
   }
 
   fun readCompilationUnit(): CompilationUnit = within {
@@ -425,7 +425,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private fun expect(vararg types: TokenType): Token {
     val token = next()
     if (!types.contains(token.type)) {
-      throw RuntimeException(
+      throw ParseError(
         "Expected one of ${types.joinToString(", ")}" +
           " but got type ${token.type} '${token.text}'"
       )
@@ -459,10 +459,7 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     }
   }
 
-  private fun <T: Node> within(block: () -> T): T {
-    attribution.enter()
-    return attribution.exit(block())
-  }
+  fun <T: Node> within(block: () -> T): T = attribution.guarded(block)
 
   private fun ignoredByParser(type: TokenType): Boolean = when (type) {
     TokenType.BlockComment -> true

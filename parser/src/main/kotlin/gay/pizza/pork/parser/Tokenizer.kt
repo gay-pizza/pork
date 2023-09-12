@@ -9,7 +9,9 @@ class Tokenizer(val source: CharSource) {
       var endOfComment = false
       while (true) {
         val char = source.next()
-        if (char == CharSource.NullChar) throw RuntimeException("Unterminated block comment")
+        if (char == CharSource.NullChar) {
+          throw ParseError("Unterminated block comment")
+        }
         append(char)
 
         if (endOfComment) {
@@ -48,7 +50,7 @@ class Tokenizer(val source: CharSource) {
       while (true) {
         val char = source.peek()
         if (char == CharSource.NullChar) {
-          throw RuntimeException("Unterminated string.")
+          throw ParseError("Unterminated string.")
         }
         append(source.next())
         if (char == '"') {
@@ -107,7 +109,7 @@ class Tokenizer(val source: CharSource) {
             continue
           }
         } else {
-          throw RuntimeException("Unknown Char Consumer")
+          throw ParseError("Unknown Char Consumer")
         }
 
         val text = buildString {
@@ -134,7 +136,7 @@ class Tokenizer(val source: CharSource) {
         return readStringLiteral(char)
       }
 
-      throw RuntimeException("Failed to parse: (${char}) next ${source.peek()}")
+      throw ParseError("Failed to parse: (${char}) next ${source.peek()}")
     }
     return Token.endOfFile(source.currentIndex)
   }

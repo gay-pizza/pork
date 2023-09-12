@@ -6,6 +6,8 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
+import gay.pizza.pork.parser.TokenFamily
+import gay.pizza.pork.parser.TokenType
 
 object PorkSyntaxHighlighter : SyntaxHighlighter {
   override fun getHighlightingLexer(): Lexer {
@@ -14,42 +16,45 @@ object PorkSyntaxHighlighter : SyntaxHighlighter {
 
   override fun getTokenHighlights(tokenType: IElementType?): Array<TextAttributesKey> {
     if (tokenType == null) return emptyArray()
-    val attributes = when (tokenType) {
-      PorkTokenTypes.Keyword ->
+    val ourTokenType = PorkElementTypes.tokenTypeFor(tokenType) ?: return emptyArray()
+    val attributes = when (ourTokenType.family) {
+      TokenFamily.KeywordFamily ->
         TextAttributesKey.createTextAttributesKey(
           "PORK.KEYWORD",
           DefaultLanguageHighlighterColors.KEYWORD
         )
-      PorkTokenTypes.Symbol ->
+      TokenFamily.SymbolFamily ->
         TextAttributesKey.createTextAttributesKey(
           "PORK.SYMBOL",
           DefaultLanguageHighlighterColors.LOCAL_VARIABLE
         )
-      PorkTokenTypes.Operator ->
+      TokenFamily.OperatorFamily ->
         TextAttributesKey.createTextAttributesKey(
           "PORK.OPERATOR",
           DefaultLanguageHighlighterColors.OPERATION_SIGN
         )
-      PorkTokenTypes.String ->
+      TokenFamily.StringLiteralFamily ->
         TextAttributesKey.createTextAttributesKey(
           "PORK.STRING",
           DefaultLanguageHighlighterColors.STRING
         )
-      PorkTokenTypes.Number ->
+      TokenFamily.NumericLiteralFamily ->
         TextAttributesKey.createTextAttributesKey(
           "PORK.NUMBER",
           DefaultLanguageHighlighterColors.NUMBER
         )
-      PorkTokenTypes.BlockComment ->
-        TextAttributesKey.createTextAttributesKey(
-          "PORK.COMMENT.BLOCK",
-          DefaultLanguageHighlighterColors.BLOCK_COMMENT
-        )
-      PorkTokenTypes.LineComment ->
-        TextAttributesKey.createTextAttributesKey(
-          "PORK.COMMENT.LINE",
-          DefaultLanguageHighlighterColors.LINE_COMMENT
-        )
+      TokenFamily.CommentFamily ->
+        when (ourTokenType) {
+          TokenType.LineComment -> TextAttributesKey.createTextAttributesKey(
+            "PORK.COMMENT.LINE",
+            DefaultLanguageHighlighterColors.LINE_COMMENT
+          )
+
+          else -> TextAttributesKey.createTextAttributesKey(
+            "PORK.COMMENT.BLOCK",
+            DefaultLanguageHighlighterColors.BLOCK_COMMENT
+          )
+        }
       else -> null
     }
     return if (attributes == null)
