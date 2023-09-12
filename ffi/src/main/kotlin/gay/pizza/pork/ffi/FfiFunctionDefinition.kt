@@ -3,7 +3,8 @@ package gay.pizza.pork.ffi
 class FfiFunctionDefinition(
   val library: String,
   val function: String,
-  val returnType: String
+  val returnType: String,
+  val parameters: List<String>
 ) {
   companion object {
     fun parse(def: String): FfiFunctionDefinition {
@@ -15,7 +16,13 @@ class FfiFunctionDefinition(
           "but '${def}' was specified")
       }
       val (library, function, returnType) = parts
-      return FfiFunctionDefinition(library, function, returnType)
+      val parametersString = if (parts.size == 4) parts[3] else ""
+      return FfiFunctionDefinition(
+        library,
+        function,
+        returnType,
+        parametersString.split(",")
+      )
     }
   }
 }
