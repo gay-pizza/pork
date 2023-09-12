@@ -182,6 +182,11 @@ types:
     values:
     - name: value
       type: Int
+  LongLiteral:
+    parent: Expression
+    values:
+    - name: value
+      type: Long
   DoubleLiteral:
     parent: Expression
     values:

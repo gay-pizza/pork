@@ -6,7 +6,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
 import gay.pizza.pork.ast.NodeType
-import gay.pizza.pork.parser.TokenType
 
 @Suppress("UnstableApiUsage")
 class PorkSymbolDeclaration(val element: PsiElement) : PsiSymbolDeclaration {

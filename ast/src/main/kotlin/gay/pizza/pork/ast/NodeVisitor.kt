@@ -34,6 +34,8 @@ interface NodeVisitor<T> {
 
   fun visitListLiteral(node: ListLiteral): T
 
+  fun visitLongLiteral(node: LongLiteral): T
+
   fun visitNative(node: Native): T
 
   fun visitParentheses(node: Parentheses): T

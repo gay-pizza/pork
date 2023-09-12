@@ -70,6 +70,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append("]")
   }
 
+  override fun visitLongLiteral(node: LongLiteral) {
+    append(node.value.toString())
+  }
+
   override fun visitNative(node: Native) {
     append("native ")
     visit(node.form)

@@ -11,7 +11,15 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       if (it.text.contains(".")) {
         DoubleLiteral(it.text.toDouble())
       } else {
-        IntegerLiteral(it.text.toInt())
+        val integer = it.text.toIntOrNull()
+        if (integer != null) {
+          IntegerLiteral(integer)
+        }
+        val long = it.text.toLongOrNull()
+        if (long != null) {
+          LongLiteral(long)
+        }
+        throw ParseError("Illegal integer value")
       }
     }
   }

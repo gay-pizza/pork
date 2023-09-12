@@ -17,6 +17,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is If -> visitIf(node)
     is ImportDeclaration -> visitImportDeclaration(node)
     is IntegerLiteral -> visitIntegerLiteral(node)
+    is LongLiteral -> visitLongLiteral(node)
     is DoubleLiteral -> visitDoubleLiteral(node)
     is ListLiteral -> visitListLiteral(node)
     is Parentheses -> visitParentheses(node)

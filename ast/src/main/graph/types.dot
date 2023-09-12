@@ -20,6 +20,7 @@ digraph A {
   type_If [shape=box,label="If"]
   type_ImportDeclaration [shape=box,label="ImportDeclaration"]
   type_IntegerLiteral [shape=box,label="IntegerLiteral"]
+  type_LongLiteral [shape=box,label="LongLiteral"]
   type_DoubleLiteral [shape=box,label="DoubleLiteral"]
   type_ListLiteral [shape=box,label="ListLiteral"]
   type_Parentheses [shape=box,label="Parentheses"]
@@ -49,6 +50,7 @@ digraph A {
   type_Expression -> type_FunctionCall
   type_Expression -> type_If
   type_Expression -> type_IntegerLiteral
+  type_Expression -> type_LongLiteral
   type_Expression -> type_DoubleLiteral
   type_Expression -> type_ListLiteral
   type_Expression -> type_Parentheses

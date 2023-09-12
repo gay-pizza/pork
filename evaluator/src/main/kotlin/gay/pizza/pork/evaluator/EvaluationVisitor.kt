@@ -39,6 +39,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitListLiteral(node: ListLiteral): Any =
     node.items.map { it.visit(this) }
 
+  override fun visitLongLiteral(node: LongLiteral): Any = node.value
+
   override fun visitSymbol(node: Symbol): Any = None
 
   override fun visitFunctionCall(node: FunctionCall): Any {

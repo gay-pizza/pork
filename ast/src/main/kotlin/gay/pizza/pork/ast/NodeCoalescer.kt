@@ -50,6 +50,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitListLiteral(node: ListLiteral): Unit =
     handle(node)
 
+  override fun visitLongLiteral(node: LongLiteral): Unit =
+    handle(node)
+
   override fun visitNative(node: Native): Unit =
     handle(node)
 
