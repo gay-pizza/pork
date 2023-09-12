@@ -46,4 +46,6 @@ object PorkElementTypes {
 
   fun elementTypeFor(nodeType: NodeType): IElementType =
     nodeTypeToElementType[nodeType]!!
+
+  val FailedToParse: IElementType = IElementType("FailedToParse", PorkLanguage)
 }

@@ -17,16 +17,20 @@ class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution
       while (!builder.eof()) {
         builder.advanceLexer()
       }
-      throw PorkParser.ExitParser(e.error)
+      throw PorkParser.ExitParser()
     } catch (e: ParseError) {
+      marker.error(e.error)
       while (!builder.eof()) {
         builder.advanceLexer()
       }
-      marker.error(e.error)
-      throw PorkParser.ExitParser(e.error)
+      throw PorkParser.ExitParser()
     } catch (e: PorkParser.ExitParser) {
-      marker.error(e.error)
-      throw e
+      if (e.error != null) {
+        marker.error(e.error)
+      } else {
+        marker.done(PorkElementTypes.FailedToParse)
+      }
+      throw PorkParser.ExitParser()
     }
   }
 }

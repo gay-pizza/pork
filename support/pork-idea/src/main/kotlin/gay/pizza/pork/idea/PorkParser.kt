@@ -17,5 +17,7 @@ class PorkParser : PsiParser {
     return builder.treeBuilt
   }
 
-  class ExitParser(val error: String) : RuntimeException("Exit Parser: $error")
+  class ExitParser(val error: String? = null) : RuntimeException(
+    if (error == null) "Fast Exit" else "Exit Parser: $error"
+  )
 }

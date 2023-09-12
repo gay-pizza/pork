@@ -13,11 +13,11 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
       } else {
         val integer = it.text.toIntOrNull()
         if (integer != null) {
-          IntegerLiteral(integer)
+          return@expect IntegerLiteral(integer)
         }
         val long = it.text.toLongOrNull()
         if (long != null) {
-          LongLiteral(long)
+          return@expect LongLiteral(long)
         }
         throw ParseError("Illegal integer value")
       }
