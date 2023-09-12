@@ -18,6 +18,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     for (type in world.typeRegistry.types) {
       writeAstType(type)
     }
+    writeNodeExtensions()
     writeNodeType()
     writeNodeVisitors()
     writeNodeCoalescer()
@@ -124,7 +125,6 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     visitAllFunction.body.add(
       "nodeLists.asSequence().flatten().filterNotNull().map { visit(it) }.toList()")
     visitorExtensionSet.functions.add(visitAllFunction)
-
     write("NodeVisitorExtensions.kt", KotlinWriter(visitorExtensionSet))
   }
 
@@ -190,12 +190,22 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     }
 
     if (role == AstTypeRole.RootNode) {
+      kotlinClassLike.imports.add("kotlinx.serialization.Transient")
       val typeMember = KotlinMember(
         "type",
         "NodeType",
         abstract = true
       )
       kotlinClassLike.members.add(typeMember)
+      val dataMember = KotlinMember(
+        "data",
+        "Any?",
+        value = "null",
+        mutable = true,
+        notInsideConstructor = true,
+        annotations = mutableListOf("@Transient")
+      )
+      kotlinClassLike.members.add(dataMember)
 
       val abstractVisitChildrenFunction = KotlinFunction(
         "visitChildren",
@@ -387,6 +397,21 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     kotlinClassLike.annotations.add("SerialName(\"$serialName\")")
 
     write("${type.name}.kt", KotlinWriter(kotlinClassLike))
+  }
+
+  private fun writeNodeExtensions() {
+    val nodeExtensionSet = KotlinFunctionSet(pkg)
+    val dataFunction = KotlinFunction(
+      "data",
+      typeParameters = mutableListOf("P"),
+      extensionOf = "Node",
+      returnType = "P?",
+      isImmediateExpression = true,
+      annotations = mutableListOf("""@Suppress("UNCHECKED_CAST")""")
+    )
+    dataFunction.body.add("data as? P?")
+    nodeExtensionSet.functions.add(dataFunction)
+    write("NodeExtensions.kt", KotlinWriter(nodeExtensionSet))
   }
 
   private fun toKotlinType(typeRef: AstTypeRef): String {

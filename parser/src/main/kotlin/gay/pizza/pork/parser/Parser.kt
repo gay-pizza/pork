@@ -2,6 +2,7 @@ package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.*
 
+@Suppress("SameParameterValue")
 class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
   private val unsanitizedSource = source
 

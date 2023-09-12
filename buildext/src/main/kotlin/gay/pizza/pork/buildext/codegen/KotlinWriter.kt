@@ -15,7 +15,7 @@ class KotlinWriter() {
     }
     writeClassLike(classType, kotlinClass)
     val members = kotlinClass.members.filter {
-      it.abstract || (it.overridden && it.value != null)
+      it.abstract || (it.overridden && it.value != null) || it.notInsideConstructor
     }
     if (members.isEmpty() && kotlinClass.functions.isEmpty()) {
       appendLine()
@@ -23,19 +23,33 @@ class KotlinWriter() {
       appendLine(" {")
     }
 
-    for (member in members) {
-      val form = if (member.mutable) "var" else "val"
+    for ((index, member) in members.withIndex()) {
+      for (annotation in member.annotations) {
+        appendLine("  $annotation")
+      }
+
+      val privacy = when {
+        member.private -> "private "
+        member.protected -> "protected "
+        else -> ""
+      }
+      val form = if (member.mutable) "${privacy}var" else "${privacy}val"
       if (member.abstract) {
         appendLine("  abstract $form ${member.name}: ${member.type}")
       } else {
+        append("  ")
         if (member.overridden) {
-          append("  override ")
+          append("override ")
         }
         append("$form ${member.name}: ${member.type}")
         if (member.value != null) {
           append(" = ")
           append(member.value)
         }
+        appendLine()
+      }
+
+      if (index != members.size - 1) {
         appendLine()
       }
     }
@@ -109,7 +123,7 @@ class KotlinWriter() {
     }
 
     val contructedMembers = kotlinClass.members.filter {
-      !it.abstract && !(it.overridden && it.value != null)
+      !it.abstract && !(it.overridden && it.value != null) && !it.notInsideConstructor
     }
 
     if (contructedMembers.isNotEmpty()) {

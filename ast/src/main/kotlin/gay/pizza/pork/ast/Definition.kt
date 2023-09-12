@@ -8,5 +8,6 @@ import kotlinx.serialization.Serializable
 @SerialName("definition")
 sealed class Definition : Node() {
   abstract val symbol: Symbol
+
   abstract val modifiers: DefinitionModifiers
 }
