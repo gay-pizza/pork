@@ -46,15 +46,15 @@ class JnaNativeProvider : NativeProvider {
 
   private fun convert(type: String, value: Any?): Any? = when (rewriteType(type)) {
     "short" -> numberConvert(type, value) { toShort() }
-    "unsigned short" -> numberConvert(type, value) { toShort().toUShort() }
+    "unsigned short" -> numberConvert(type, value) { toShort() }
     "int" -> numberConvert(type, value) { toInt() }
-    "unsigned int" -> numberConvert(type, value) { toInt().toUInt() }
+    "unsigned int" -> numberConvert(type, value) { toInt() }
     "long" -> numberConvert(type, value) { toLong() }
-    "unsigned long" -> numberConvert(type, value) { toLong().toULong() }
+    "unsigned long" -> numberConvert(type, value) { toLong() }
     "double" -> numberConvert(type, value) { toDouble() }
     "float" -> numberConvert(type, value) { toFloat() }
     "char*" -> notNullConvert(type, value) { toString() }
-    "void*" -> nullableConvert(type, value) { this as Pointer }
+    "void*" -> nullableConvert(value) { this as Pointer }
     else -> throw RuntimeException("Unsupported ffi type: $type")
   }
 
@@ -65,7 +65,7 @@ class JnaNativeProvider : NativeProvider {
     return into(value)
   }
 
-  private fun <T> nullableConvert(type: String, value: Any?, into: Any.() -> T): T? {
+  private fun <T> nullableConvert(value: Any?, into: Any.() -> T): T? {
     if (value == null) {
       return null
     }
