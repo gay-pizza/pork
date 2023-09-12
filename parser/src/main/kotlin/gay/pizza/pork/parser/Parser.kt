@@ -192,6 +192,11 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         Continue()
       }
 
+      TokenType.None -> {
+        expect(TokenType.None)
+        NoneLiteral()
+      }
+
       else -> {
         throw ParseError(
           "Failed to parse token: ${token.type} '${token.text}' as" +

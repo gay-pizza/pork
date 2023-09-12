@@ -38,6 +38,8 @@ interface NodeVisitor<T> {
 
   fun visitNative(node: Native): T
 
+  fun visitNoneLiteral(node: NoneLiteral): T
+
   fun visitParentheses(node: Parentheses): T
 
   fun visitPrefixOperation(node: PrefixOperation): T

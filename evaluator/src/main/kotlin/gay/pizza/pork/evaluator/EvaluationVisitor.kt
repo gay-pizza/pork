@@ -374,6 +374,8 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     topLevelUsedError("Native", "FunctionContext")
   }
 
+  override fun visitNoneLiteral(node: NoneLiteral): Any = None
+
   override fun visitContinue(node: Continue): Any = ContinueMarker
 
   private inline fun <T> scoped(block: () -> T): T {

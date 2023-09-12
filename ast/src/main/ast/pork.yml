@@ -276,6 +276,9 @@ types:
   Continue:
     parent: Expression
     values: []
+  NoneLiteral:
+    parent: Expression
+    values: []
   Native:
     parent: Node
     values:

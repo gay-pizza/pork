@@ -29,6 +29,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is ForIn -> visitForIn(node)
     is Break -> visitBreak(node)
     is Continue -> visitContinue(node)
+    is NoneLiteral -> visitNoneLiteral(node)
     is Native -> visitNative(node)
   }
 

@@ -81,6 +81,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.definition)
   }
 
+  override fun visitNoneLiteral(node: NoneLiteral) {
+    append("none")
+  }
+
   override fun visitSymbol(node: Symbol) {
     append(node.id)
   }

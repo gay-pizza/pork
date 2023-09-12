@@ -34,6 +34,7 @@ digraph A {
   type_ForIn [shape=box,label="ForIn"]
   type_Break [shape=box,label="Break"]
   type_Continue [shape=box,label="Continue"]
+  type_NoneLiteral [shape=box,label="NoneLiteral"]
   type_Native [shape=box,label="Native"]
   type_Node -> type_Expression
   type_Node -> type_Symbol
@@ -62,6 +63,7 @@ digraph A {
   type_Expression -> type_ForIn
   type_Expression -> type_Break
   type_Expression -> type_Continue
+  type_Expression -> type_NoneLiteral
   type_Definition -> type_FunctionDefinition
   type_Definition -> type_LetDefinition
   type_Declaration -> type_ImportDeclaration

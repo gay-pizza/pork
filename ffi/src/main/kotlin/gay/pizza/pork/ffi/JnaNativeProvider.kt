@@ -1,15 +1,18 @@
 package gay.pizza.pork.ffi
 
 import com.sun.jna.Function
+import com.sun.jna.NativeLibrary
 import com.sun.jna.Pointer
 import gay.pizza.pork.ast.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.NativeProvider
+import gay.pizza.pork.evaluator.None
 
 class JnaNativeProvider : NativeProvider {
   override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
     val functionDefinition = FfiFunctionDefinition.parse(definition)
-    val function = Function.getFunction(functionDefinition.library, functionDefinition.function)
+    val library = NativeLibrary.getInstance(functionDefinition.library)
+    val function = library.getFunction(functionDefinition.function)
       ?: throw RuntimeException("Failed to find function ${functionDefinition.function} in library ${functionDefinition.library}")
     return CallableFunction { functionArgs ->
       val ffiArgs = mutableListOf<Any?>()
@@ -38,7 +41,7 @@ class JnaNativeProvider : NativeProvider {
     "void" -> function.invokeVoid(values)
     "char*" -> function.invokeString(values, false)
     else -> throw RuntimeException("Unsupported ffi return type: $type")
-  }
+  } ?: None
 
   private fun rewriteType(type: String): String = when (type) {
     "size_t" -> "long"
@@ -55,7 +58,13 @@ class JnaNativeProvider : NativeProvider {
     "double" -> numberConvert(type, value) { toDouble() }
     "float" -> numberConvert(type, value) { toFloat() }
     "char*" -> notNullConvert(type, value) { toString() }
-    "void*" -> nullableConvert(value) { this as Pointer }
+    "void*" -> nullableConvert(value) {
+      if (value is Long) {
+        Pointer(value)
+      } else {
+        value as Pointer
+      }
+    }
     else -> throw RuntimeException("Unsupported ffi type: $type")
   }
 
@@ -67,14 +76,14 @@ class JnaNativeProvider : NativeProvider {
   }
 
   private fun <T> nullableConvert(value: Any?, into: Any.() -> T): T? {
-    if (value == null) {
+    if (value == null || value == None) {
       return null
     }
     return into(value)
   }
 
   private fun <T> numberConvert(type: String, value: Any?, into: Number.() -> T): T {
-    if (value == null) {
+    if (value == null || value == None) {
       throw RuntimeException("Null values cannot be used for converting to numeric type $type")
     }
 
