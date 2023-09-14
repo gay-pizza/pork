@@ -2,214 +2,53 @@ package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.*
 
-@Suppress("SameParameterValue")
-class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
-  private val unsanitizedSource = source
+class Parser(source: TokenSource, attribution: NodeAttribution) :
+  ParserBase(source, attribution) {
+  private var storedSymbol: Symbol? = null
+  private var storedDefinitionModifiers: DefinitionModifiers? = null
 
-  private fun readNumberLiteral(): Expression = within {
-    expect(TokenType.NumberLiteral) {
-      if (it.text.contains(".")) {
-        DoubleLiteral(it.text.toDouble())
-      } else {
-        val integer = it.text.toIntOrNull()
-        if (integer != null) {
-          return@expect IntegerLiteral(integer)
-        }
-        val long = it.text.toLongOrNull()
-        if (long != null) {
-          return@expect LongLiteral(long)
-        }
-        throw ParseError("Illegal integer value")
-      }
+  override fun parseBlock(): Block = guarded {
+    expect(TokenType.LeftCurly)
+    val items = collect(TokenType.RightCurly) {
+      parseExpression()
     }
+    expect(TokenType.RightCurly)
+    Block(items)
   }
 
-  private fun readStringLiteral(): StringLiteral = within {
-    expect(TokenType.StringLiteral) {
-      val content = StringEscape.unescape(StringEscape.unquote(it.text))
-      StringLiteral(content)
-    }
-  }
-
-  private fun readBooleanLiteral(): BooleanLiteral = within {
-    expect(TokenType.True, TokenType.False) {
-      BooleanLiteral(it.type == TokenType.True)
-    }
-  }
-
-  private fun readListLiteral(): ListLiteral = within {
-    expect(TokenType.LeftBracket)
-    val items = collect(TokenType.RightBracket, TokenType.Comma) {
-      readExpression()
-    }
-    expect(TokenType.RightBracket)
-    ListLiteral(items)
-  }
-
-  private fun readLetAssignment(): LetAssignment = within {
-    expect(TokenType.Let)
-    val symbol = readSymbolRaw()
-    expect(TokenType.Equals)
-    val value = readExpression()
-    LetAssignment(symbol, value)
-  }
-
-  private fun readVarAssignment(): VarAssignment = within {
-    expect(TokenType.Var)
-    val symbol = readSymbolRaw()
-    expect(TokenType.Equals)
-    val value = readExpression()
-    VarAssignment(symbol, value)
-  }
-
-  private fun readSymbolRaw(): Symbol = within {
-    expect(TokenType.Symbol) { Symbol(it.text) }
-  }
-
-  private fun readSymbolCases(): Expression = within {
-    val symbol = readSymbolRaw()
-    if (next(TokenType.LeftParentheses)) {
-      val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
-        readExpression()
-      }
-      expect(TokenType.RightParentheses)
-      FunctionCall(symbol, arguments)
-    } else {
-      val reference = SymbolReference(symbol)
-      if (peek(TokenType.PlusPlus, TokenType.MinusMinus)) {
-        expect(TokenType.PlusPlus, TokenType.MinusMinus) {
-          SuffixOperation(convertSuffixOperator(it), reference)
-        }
-      } else reference
-    }
-  }
-
-  private fun readParentheses(): Parentheses = within {
-    expect(TokenType.LeftParentheses)
-    val expression = readExpression()
-    expect(TokenType.RightParentheses)
-    Parentheses(expression)
-  }
-
-  private fun readPrefixOperation(): PrefixOperation = within {
-    expect(TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
-      PrefixOperation(convertPrefixOperator(it), readExpression())
-    }
-  }
-
-  private fun readIf(): If = within {
-    expect(TokenType.If)
-    val condition = readExpression()
-    val thenBlock = readBlock()
-    var elseBlock: Block? = null
-    if (next(TokenType.Else)) {
-      elseBlock = readBlock()
-    }
-    If(condition, thenBlock, elseBlock)
-  }
-
-  private fun readWhile(): While = within {
-    expect(TokenType.While)
-    val condition = readExpression()
-    val block = readBlock()
-    While(condition, block)
-  }
-
-  private fun readForIn(): ForIn = within {
-    expect(TokenType.For)
-    val symbol = readSymbolRaw()
-    expect(TokenType.In)
-    val value = readExpression()
-    val block = readBlock()
-    ForIn(symbol, value, block)
-  }
-
-  private fun readNative(): Native = within {
-    expect(TokenType.Native)
-    val form = readSymbolRaw()
-    val definition = readStringLiteral()
-    Native(form, definition)
-  }
-
-  fun readExpression(): Expression {
+  override fun parseExpression(): Expression {
     val token = peek()
     val expression = when (token.type) {
-      TokenType.NumberLiteral -> {
-        readNumberLiteral()
-      }
-
-      TokenType.StringLiteral -> {
-        readStringLiteral()
-      }
-
-      TokenType.True, TokenType.False -> {
-        readBooleanLiteral()
-      }
-
-      TokenType.LeftBracket -> {
-        readListLiteral()
-      }
-
-      TokenType.Let -> {
-        readLetAssignment()
-      }
-
-      TokenType.Var -> {
-        readVarAssignment()
-      }
-
-      TokenType.Symbol -> {
-        readSymbolCases()
-      }
-
-      TokenType.LeftParentheses -> {
-        readParentheses()
-      }
-
-      TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde -> {
-        readPrefixOperation()
-      }
-
-      TokenType.If -> {
-        readIf()
-      }
-
-      TokenType.While -> {
-        readWhile()
-      }
-
-      TokenType.For -> {
-        readForIn()
-      }
-
-      TokenType.Break -> {
-        expect(TokenType.Break)
-        Break()
-      }
-
-      TokenType.Continue -> {
-        expect(TokenType.Continue)
-        Continue()
-      }
-
-      TokenType.None -> {
-        expect(TokenType.None)
-        NoneLiteral()
-      }
+      TokenType.NumberLiteral -> parseNumberLiteral()
+      TokenType.StringLiteral -> parseStringLiteral()
+      TokenType.True, TokenType.False -> parseBooleanLiteral()
+      TokenType.LeftBracket -> parseListLiteral()
+      TokenType.Let -> parseLetAssignment()
+      TokenType.Var -> parseVarAssignment()
+      TokenType.Symbol -> parseSymbolCases()
+      TokenType.LeftParentheses -> parseParentheses()
+      TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde ->
+        parsePrefixOperation()
+      TokenType.If -> parseIf()
+      TokenType.While -> parseWhile()
+      TokenType.For -> parseForIn()
+      TokenType.Break -> parseBreak()
+      TokenType.Continue -> parseContinue()
+      TokenType.None -> parseNoneLiteral()
 
       else -> {
-        throw ParseError(
+        throw gay.pizza.pork.parser.ParseError(
           "Failed to parse token: ${token.type} '${token.text}' as" +
-            " expression (index ${unsanitizedSource.currentIndex})"
+            " expression (index ${source.currentIndex})"
         )
       }
     }
 
     if (expression is SymbolReference && peek(TokenType.Equals)) {
-      return within {
+      return guarded {
         attribution.adopt(expression)
         expect(TokenType.Equals)
-        val value = readExpression()
+        val value = parseExpression()
         SetAssignment(expression.symbol, value)
       }
     }
@@ -234,31 +73,57 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
         TokenType.Or
       )
     ) {
-      within {
+      guarded {
         val infixToken = next()
-        val infixOperator = convertInfixOperator(infixToken)
-        InfixOperation(expression, infixOperator, readExpression())
+        val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
+        InfixOperation(expression, infixOperator, parseExpression())
       }
     } else expression
   }
 
-  private fun readBlock(): Block = within {
-    expect(TokenType.LeftCurly)
-    val items = collect(TokenType.RightCurly) {
-      readExpression()
+  override fun parseBooleanLiteral(): BooleanLiteral = guarded {
+    if (next(TokenType.True)) {
+      BooleanLiteral(true)
+    } else if (next(TokenType.False)) {
+      BooleanLiteral(false)
+    } else {
+      throw ParseError("Expected ")
     }
-    expect(TokenType.RightCurly)
-    Block(items)
   }
 
-  private fun readImportDeclaration(): ImportDeclaration = within {
-    expect(TokenType.Import)
-    val form = readSymbolRaw()
-    val components = oneAndContinuedBy(TokenType.Dot) { readSymbolRaw() }
-    ImportDeclaration(form, components)
+  override fun parseBreak(): Break = guarded {
+    expect(TokenType.Break)
+    Break()
   }
 
-  private fun readDefinitionModifiers(): DefinitionModifiers {
+  override fun parseCompilationUnit(): CompilationUnit = guarded {
+    val declarations = mutableListOf<Declaration>()
+    val definitions = mutableListOf<Definition>()
+    var declarationAccepted = true
+
+    while (!peek(TokenType.EndOfFile)) {
+      if (declarationAccepted) {
+        val definition = maybeParseDefinition()
+        if (definition != null) {
+          declarationAccepted = false
+          definitions.add(definition)
+          continue
+        }
+        declarations.add(parseDeclaration())
+      } else {
+        definitions.add(parseDefinition())
+      }
+    }
+
+    CompilationUnit(declarations, definitions)
+  }
+
+  override fun parseContinue(): Continue = guarded {
+    expect(TokenType.Continue)
+    Continue()
+  }
+
+  private fun parseDefinitionModifiers(): DefinitionModifiers {
     val modifiers = DefinitionModifiers(export = false)
     while (true) {
       val token = peek()
@@ -273,12 +138,68 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     return modifiers
   }
 
-  private fun readFunctionDeclaration(modifiers: DefinitionModifiers): FunctionDefinition = within {
+  fun maybeParseDefinition(): Definition? {
+    try {
+      storedDefinitionModifiers = parseDefinitionModifiers()
+      val token = peek()
+      return when (token.type) {
+        TokenType.Func -> parseFunctionDefinition()
+        TokenType.Let -> parseLetDefinition()
+        else -> null
+      }
+    } finally {
+      storedDefinitionModifiers = null
+    }
+  }
+
+  override fun parseDeclaration(): Declaration {
+    val token = peek()
+    return when (token.type) {
+      TokenType.Import -> parseImportDeclaration()
+      else -> throw gay.pizza.pork.parser.ParseError(
+        "Failed to parse token: ${token.type} '${token.text}' as" +
+          " declaration (index ${source.currentIndex})"
+      )
+    }
+  }
+
+  override fun parseDefinition(): Definition {
+    return maybeParseDefinition() ?: throw ParseError("Unable to parse definition")
+  }
+
+  override fun parseDoubleLiteral(): DoubleLiteral = guarded {
+    DoubleLiteral(expect(TokenType.NumberLiteral).text.toDouble())
+  }
+
+  override fun parseForIn(): ForIn = guarded {
+    expect(TokenType.For)
+    val symbol = parseSymbol()
+    expect(TokenType.In)
+    val value = parseExpression()
+    val block = parseBlock()
+    ForIn(symbol, value, block)
+  }
+
+  override fun parseFunctionCall(): FunctionCall = guarded {
+    parseFunctionCall(null)
+  }
+
+  fun parseFunctionCall(target: Symbol?): FunctionCall = guarded {
+    val symbol = target ?: parseSymbol()
+    val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
+      parseExpression()
+    }
+    expect(TokenType.RightParentheses)
+    FunctionCall(symbol, arguments)
+  }
+
+  override fun parseFunctionDefinition(): FunctionDefinition = guarded {
+    val modifiers = storedDefinitionModifiers ?: parseDefinitionModifiers()
     expect(TokenType.Func)
-    val name = readSymbolRaw()
+    val name = parseSymbol()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
-      val symbol = readSymbolRaw()
+      val symbol = parseSymbol()
       var multiple = false
       if (next(TokenType.DotDotDot)) {
         multiple = true
@@ -290,194 +211,167 @@ class Parser(source: PeekableSource<Token>, val attribution: NodeAttribution) {
     var native: Native? = null
     var block: Block? = null
     if (peek(TokenType.Native)) {
-      native = readNative()
+      native = parseNative()
     } else {
-      block = readBlock()
+      block = parseBlock()
     }
     FunctionDefinition(modifiers, name, arguments, block, native)
   }
 
-  private fun readLetDefinition(modifiers: DefinitionModifiers): LetDefinition = within {
+  override fun parseIf(): If = guarded {
+    expect(TokenType.If)
+    val condition = parseExpression()
+    val thenBlock = parseBlock()
+    var elseBlock: Block? = null
+    if (next(TokenType.Else)) {
+      elseBlock = parseBlock()
+    }
+    If(condition, thenBlock, elseBlock)
+  }
+
+  override fun parseImportDeclaration(): ImportDeclaration = guarded {
+    expect(TokenType.Import)
+    val form = parseSymbol()
+    val components = oneAndContinuedBy(TokenType.Dot) {
+      parseSymbol()
+    }
+    ImportDeclaration(form, components)
+  }
+
+  override fun parseInfixOperation(): InfixOperation = guarded {
+    val infixToken = next()
+    val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
+    InfixOperation(parseExpression(), infixOperator, parseExpression())
+  }
+
+  private fun parseNumberLiteral(): Expression = guarded {
+    val token = peek()
+    if (token.type != TokenType.NumberLiteral) {
+      expect(TokenType.NumberLiteral)
+    }
+
+    when {
+      token.text.contains(".") -> parseDoubleLiteral()
+      token.text.toIntOrNull() != null -> parseIntegerLiteral()
+      token.text.toLongOrNull() != null -> parseLongLiteral()
+      else -> throw ParseError("Invalid numeric literal")
+    }
+  }
+
+  override fun parseIntegerLiteral(): IntegerLiteral = guarded {
+    IntegerLiteral(expect(TokenType.NumberLiteral).text.toInt())
+  }
+
+  override fun parseLetAssignment(): LetAssignment = guarded {
     expect(TokenType.Let)
-    val name = readSymbolRaw()
+    val symbol = parseSymbol()
     expect(TokenType.Equals)
-    val value = readExpression()
-    LetDefinition(modifiers, name, value)
+    val value = parseExpression()
+    LetAssignment(symbol, value)
   }
 
-  private fun maybeReadDefinition(): Definition? {
-    val modifiers = readDefinitionModifiers()
-    val token = peek()
-    return when (token.type) {
-      TokenType.Func -> readFunctionDeclaration(modifiers)
-      TokenType.Let -> readLetDefinition(modifiers)
-      else -> null
+  override fun parseLetDefinition(): LetDefinition = guarded {
+    val definitionModifiers = storedDefinitionModifiers ?: parseDefinitionModifiers()
+    expect(TokenType.Let)
+    val name = parseSymbol()
+    expect(TokenType.Equals)
+    val value = parseExpression()
+    LetDefinition(definitionModifiers, name, value)
+  }
+
+  override fun parseListLiteral(): ListLiteral = guarded {
+    expect(TokenType.LeftBracket)
+    val items = collect(TokenType.RightBracket, TokenType.Comma) {
+      parseExpression()
+    }
+    expect(TokenType.RightBracket)
+    ListLiteral(items)
+  }
+
+  override fun parseLongLiteral(): LongLiteral = guarded {
+    LongLiteral(expect(TokenType.NumberLiteral).text.toLong())
+  }
+
+  override fun parseNative(): Native = guarded {
+    expect(TokenType.Native)
+    val form = parseSymbol()
+    val definition = parseStringLiteral()
+    Native(form, definition)
+  }
+
+  override fun parseNoneLiteral(): NoneLiteral = guarded {
+    expect(TokenType.None)
+    NoneLiteral()
+  }
+
+  override fun parseParentheses(): Parentheses = guarded {
+    expect(TokenType.LeftParentheses)
+    val expression = parseExpression()
+    expect(TokenType.RightParentheses)
+    Parentheses(expression)
+  }
+
+  override fun parsePrefixOperation(): PrefixOperation = guarded {
+    expect(TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
+      PrefixOperation(ParserHelpers.convertPrefixOperator(it), parseExpression())
     }
   }
 
-  private fun readDefinition(): Definition {
-    val definition = maybeReadDefinition()
-    if (definition != null) {
-      return definition
-    }
-    val token = peek()
-    throw ParseError(
-      "Failed to parse token: ${token.type} '${token.text}' as" +
-        " definition (index ${unsanitizedSource.currentIndex})"
-    )
+  override fun parseSetAssignment(): SetAssignment = guarded {
+    val symbol = storedSymbol ?: parseSymbol()
+    expect(TokenType.Equals)
+    val value = parseExpression()
+    SetAssignment(symbol, value)
   }
 
-  fun readDeclaration(): Declaration {
-    val token = peek()
-    return when (token.type) {
-      TokenType.Import -> readImportDeclaration()
-      else -> throw ParseError(
-        "Failed to parse token: ${token.type} '${token.text}' as" +
-          " declaration (index ${unsanitizedSource.currentIndex})"
-      )
+  override fun parseStringLiteral(): StringLiteral = guarded {
+    expect(TokenType.StringLiteral) {
+      val content = StringEscape.unescape(StringEscape.unquote(it.text))
+      StringLiteral(content)
     }
   }
 
-  private fun convertInfixOperator(token: Token): InfixOperator = when (token.type) {
-    TokenType.Plus -> InfixOperator.Plus
-    TokenType.Minus -> InfixOperator.Minus
-    TokenType.Multiply -> InfixOperator.Multiply
-    TokenType.Divide -> InfixOperator.Divide
-    TokenType.Ampersand -> InfixOperator.BinaryAnd
-    TokenType.Pipe -> InfixOperator.BinaryOr
-    TokenType.Caret -> InfixOperator.BinaryExclusiveOr
-    TokenType.Equality -> InfixOperator.Equals
-    TokenType.Inequality -> InfixOperator.NotEquals
-    TokenType.Mod -> InfixOperator.EuclideanModulo
-    TokenType.Rem -> InfixOperator.Remainder
-    TokenType.Lesser -> InfixOperator.Lesser
-    TokenType.Greater -> InfixOperator.Greater
-    TokenType.LesserEqual -> InfixOperator.LesserEqual
-    TokenType.GreaterEqual -> InfixOperator.GreaterEqual
-    TokenType.And -> InfixOperator.BooleanAnd
-    TokenType.Or -> InfixOperator.BooleanOr
-    else -> throw ParseError("Unknown Infix Operator")
+  override fun parseSuffixOperation(): SuffixOperation = guarded {
+    val reference = parseSymbolReference()
+    expect(TokenType.PlusPlus, TokenType.MinusMinus) {
+      SuffixOperation(ParserHelpers.convertSuffixOperator(it), reference)
+    }
   }
 
-  private fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
-    TokenType.Not -> PrefixOperator.BooleanNot
-    TokenType.Plus -> PrefixOperator.UnaryPlus
-    TokenType.Minus -> PrefixOperator.UnaryMinus
-    TokenType.Tilde -> PrefixOperator.BinaryNot
-    else -> throw ParseError("Unknown Prefix Operator")
-  }
-
-  private fun convertSuffixOperator(token: Token): SuffixOperator = when (token.type) {
-    TokenType.PlusPlus -> SuffixOperator.Increment
-    TokenType.MinusMinus -> SuffixOperator.Decrement
-    else -> throw ParseError("Unknown Suffix Operator")
-  }
-
-  fun readCompilationUnit(): CompilationUnit = within {
-    val declarations = mutableListOf<Declaration>()
-    val definitions = mutableListOf<Definition>()
-    var declarationAccepted = true
-
-    while (!peek(TokenType.EndOfFile)) {
-      if (declarationAccepted) {
-        val definition = maybeReadDefinition()
-        if (definition != null) {
-          declarationAccepted = false
-          definitions.add(definition)
-          continue
+  private fun parseSymbolCases(): Expression = guarded {
+    val symbol = parseSymbol()
+    if (next(TokenType.LeftParentheses)) {
+      parseFunctionCall(symbol)
+    } else {
+      val reference = SymbolReference(symbol)
+      if (peek(TokenType.PlusPlus, TokenType.MinusMinus)) {
+        expect(TokenType.PlusPlus, TokenType.MinusMinus) {
+          SuffixOperation(ParserHelpers.convertSuffixOperator(it), reference)
         }
-        declarations.add(readDeclaration())
-      } else {
-        definitions.add(readDefinition())
-      }
-    }
-
-    CompilationUnit(declarations, definitions)
-  }
-
-  private fun <T> collect(
-    peeking: TokenType,
-    consuming: TokenType? = null,
-    read: () -> T
-  ): List<T> {
-    val items = mutableListOf<T>()
-    while (!peek(peeking)) {
-      val item = read()
-      if (consuming != null) {
-        if (!peek(peeking)) {
-          expect(consuming)
-        }
-      }
-      items.add(item)
-    }
-    return items
-  }
-
-  private fun <T> oneAndContinuedBy(separator: TokenType, read: () -> T): List<T> {
-    val items = mutableListOf<T>()
-    items.add(read())
-    while (peek(separator)) {
-      expect(separator)
-      items.add(read())
-    }
-    return items
-  }
-
-  private fun peek(vararg types: TokenType): Boolean {
-    val token = peek()
-    return types.contains(token.type)
-  }
-
-  private fun next(type: TokenType): Boolean {
-    return if (peek(type)) {
-      expect(type)
-      true
-    } else false
-  }
-
-  private fun expect(vararg types: TokenType): Token {
-    val token = next()
-    if (!types.contains(token.type)) {
-      throw ParseError(
-        "Expected one of ${types.joinToString(", ")}" +
-          " but got type ${token.type} '${token.text}'"
-      )
-    }
-    return token
-  }
-
-  private fun <T: Node> expect(vararg types: TokenType, consume: (Token) -> T): T =
-    consume(expect(*types))
-
-  private fun next(): Token {
-    while (true) {
-      val token = unsanitizedSource.next()
-      attribution.push(token)
-      if (ignoredByParser(token.type)) {
-        continue
-      }
-      return token
+      } else reference
     }
   }
 
-  private fun peek(): Token {
-    while (true) {
-      val token = unsanitizedSource.peek()
-      if (ignoredByParser(token.type)) {
-        attribution.push(token)
-        unsanitizedSource.next()
-        continue
-      }
-      return token
-    }
+  override fun parseSymbol(): Symbol = guarded {
+    expect(TokenType.Symbol) { Symbol(it.text) }
   }
 
-  fun <T: Node> within(block: () -> T): T = attribution.guarded(block)
+  override fun parseSymbolReference(): SymbolReference = guarded {
+    SymbolReference(parseSymbol())
+  }
 
-  private fun ignoredByParser(type: TokenType): Boolean = when (type) {
-    TokenType.BlockComment -> true
-    TokenType.LineComment -> true
-    TokenType.Whitespace -> true
-    else -> false
+  override fun parseVarAssignment(): VarAssignment = guarded {
+    expect(TokenType.Var)
+    val symbol = parseSymbol()
+    expect(TokenType.Equals)
+    val value = parseExpression()
+    VarAssignment(symbol, value)
+  }
+
+  override fun parseWhile(): While = guarded {
+    expect(TokenType.While)
+    val condition = parseExpression()
+    val block = parseBlock()
+    While(condition, block)
   }
 }

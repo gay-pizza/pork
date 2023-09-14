@@ -24,7 +24,7 @@ class World(val importSource: ImportSource) {
     val tokenizer = Tokenizer(charSource)
     val tokenStream = tokenizer.tokenize()
     val parser = Parser(TokenStreamSource(tokenStream), DiscardNodeAttribution)
-    val unit = parser.readCompilationUnit()
+    val unit = parser.parseCompilationUnit()
     internalUnits[stableKey] = unit
     return unit
   }

@@ -23,7 +23,7 @@ abstract class Tool {
     Tokenizer(createCharSource()).tokenize()
 
   fun parse(attribution: NodeAttribution = DiscardNodeAttribution): CompilationUnit =
-    Parser(TokenStreamSource(tokenize()), attribution).readCompilationUnit()
+    Parser(TokenStreamSource(tokenize()), attribution).parseCompilationUnit()
 
   fun highlight(scheme: HighlightScheme): List<Highlight> =
     Highlighter(scheme).highlight(tokenize())

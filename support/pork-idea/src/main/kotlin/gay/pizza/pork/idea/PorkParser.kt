@@ -12,7 +12,7 @@ class PorkParser : PsiParser {
     val source = PsiBuilderTokenSource(builder)
     val parser = Parser(source, psiBuilderMarkAttribution)
     try {
-      parser.within { parser.readCompilationUnit() }
+      parser.parseCompilationUnit()
     } catch (_: ExitParser) {}
     return builder.treeBuilt
   }

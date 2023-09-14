@@ -20,8 +20,11 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     }
     writeNodeExtensions()
     writeNodeType()
-    writeNodeVisitors()
+    writeNodeVisitor()
     writeNodeCoalescer()
+    writeNodeVisitorExtensions()
+    writeNodeParser()
+    writeNodeParserExtensions()
   }
 
   private fun writeNodeType() {
@@ -46,7 +49,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     write("NodeType.kt", KotlinWriter(enumClass))
   }
 
-  private fun writeNodeVisitors() {
+  private fun writeNodeVisitor() {
     val nodeVisitorInterface = KotlinClass(
       pkg,
       "NodeVisitor",
@@ -72,7 +75,9 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       nodeVisitorInterface.functions.add(nodeVisitFunction)
     }
     write("NodeVisitor.kt", KotlinWriter(nodeVisitorInterface))
+  }
 
+  private fun writeNodeVisitorExtensions() {
     val visitorExtensionSet = KotlinFunctionSet(pkg)
     val visitAnyFunction = KotlinFunction(
       "visit",
@@ -126,6 +131,63 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       "nodeLists.asSequence().flatten().filterNotNull().map { visit(it) }.toList()")
     visitorExtensionSet.functions.add(visitAllFunction)
     write("NodeVisitorExtensions.kt", KotlinWriter(visitorExtensionSet))
+  }
+
+  private fun writeNodeParserExtensions() {
+    val parserExtensionSet = KotlinFunctionSet(pkg)
+    val parseAnyFunction = KotlinFunction(
+      "parse",
+      extensionOf = "NodeParser",
+      returnType = "Node",
+      parameters = mutableListOf(
+        KotlinParameter("type", type = "NodeType")
+      ),
+      isImmediateExpression = true
+    )
+
+    if (enableVisitAnyInline) {
+      parseAnyFunction.inline = true
+      parseAnyFunction.annotations.add("""@Suppress("NOTHING_TO_INLINE")""")
+    }
+
+    parseAnyFunction.body.add("when (type) {")
+    for (type in world.typeRegistry.types.filter {
+      world.typeRegistry.roleOfType(it) in arrayOf(
+        AstTypeRole.AstNode,
+        AstTypeRole.HierarchyNode
+      )
+    }) {
+      parseAnyFunction.body.add("  NodeType.${type.name} -> parse${type.name}()")
+    }
+    parseAnyFunction.body.add("  else -> throw RuntimeException(\"Unable to automatically parse type: \${type.name}\")")
+    parseAnyFunction.body.add("}")
+    parserExtensionSet.functions.add(parseAnyFunction)
+    write("NodeParserExtensions.kt", KotlinWriter(parserExtensionSet))
+  }
+
+  private fun writeNodeParser() {
+    val nodeParserInterface = KotlinClass(
+      pkg,
+      "NodeParser",
+      isInterface = true
+    )
+
+    for (type in world.typesInDependencyOrder()) {
+      val role = world.typeRegistry.roleOfType(type)
+
+      if (role !in arrayOf(AstTypeRole.AstNode, AstTypeRole.HierarchyNode)) {
+        continue
+      }
+
+      val nodeParseFunction = KotlinFunction(
+        "parse${type.name}",
+        returnType = type.name,
+        parameters = mutableListOf(),
+        isInterfaceMethod = true
+      )
+      nodeParserInterface.functions.add(nodeParseFunction)
+    }
+    write("NodeParser.kt", KotlinWriter(nodeParserInterface))
   }
 
   private fun writeNodeCoalescer() {
@@ -190,48 +252,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     }
 
     if (role == AstTypeRole.RootNode) {
-      kotlinClassLike.imports.add("kotlinx.serialization.Transient")
-      val typeMember = KotlinMember(
-        "type",
-        "NodeType",
-        abstract = true
-      )
-      kotlinClassLike.members.add(typeMember)
-      val dataMember = KotlinMember(
-        "data",
-        "Any?",
-        value = "null",
-        mutable = true,
-        notInsideConstructor = true,
-        annotations = mutableListOf("@Transient")
-      )
-      kotlinClassLike.members.add(dataMember)
-
-      val abstractVisitChildrenFunction = KotlinFunction(
-        "visitChildren",
-        returnType = "List<T>",
-        open = true,
-        typeParameters = mutableListOf("T"),
-        parameters = mutableListOf(
-          KotlinParameter("visitor", "NodeVisitor<T>")
-        ),
-        isImmediateExpression = true
-      )
-      abstractVisitChildrenFunction.body.add("emptyList()")
-      kotlinClassLike.functions.add(abstractVisitChildrenFunction)
-
-      val abstractVisitSelfFunction = KotlinFunction(
-        "visit",
-        returnType = "T",
-        open = true,
-        typeParameters = mutableListOf("T"),
-        parameters = mutableListOf(
-          KotlinParameter("visitor", "NodeVisitor<T>")
-        ),
-        isImmediateExpression = true
-      )
-      abstractVisitSelfFunction.body.add("visitor.visit(this)")
-      kotlinClassLike.functions.add(abstractVisitSelfFunction)
+      addRootNodeDefinitions(kotlinClassLike)
     } else if (role == AstTypeRole.AstNode) {
       val typeMember = KotlinMember(
         "type",
@@ -282,111 +303,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     }
 
     if (role == AstTypeRole.AstNode) {
-      val visitChildrenFunction = KotlinFunction(
-        "visitChildren",
-        returnType = "List<T>",
-        typeParameters = mutableListOf("T"),
-        overridden = true,
-        parameters = mutableListOf(
-          KotlinParameter("visitor", "NodeVisitor<T>")
-        ),
-        isImmediateExpression = true
-      )
-      val anyListMembers = type.values?.any {
-        it.typeRef.form == AstTypeRefForm.List
-      } ?: false
-      val elideVisitChildren: Boolean
-      if (anyListMembers) {
-        val visitParameters = (type.values?.mapNotNull {
-          if (it.typeRef.primitive != null) {
-            null
-          } else if (it.typeRef.type != null &&
-            !world.typeRegistry.roleOfType(it.typeRef.type).isNodeInherited()) {
-            null
-          } else if (it.typeRef.form == AstTypeRefForm.Single ||
-            it.typeRef.form == AstTypeRefForm.Nullable) {
-            "listOf(${it.name})"
-          } else {
-            it.name
-          }
-        } ?: emptyList()).joinToString(", ")
-        elideVisitChildren = visitParameters.isEmpty()
-        visitChildrenFunction.body.add("visitor.visitAll(${visitParameters})")
-      } else {
-        val visitParameters = (type.values?.mapNotNull {
-          if (it.typeRef.primitive != null) {
-            null
-          } else if (it.typeRef.type != null &&
-            !world.typeRegistry.roleOfType(it.typeRef.type).isNodeInherited()) {
-            null
-          } else {
-            it.name
-          }
-        } ?: emptyList()).joinToString(", ")
-        elideVisitChildren = visitParameters.isEmpty()
-        visitChildrenFunction.body.add("visitor.visitNodes(${visitParameters})")
-      }
-
-      if (!elideVisitChildren) {
-        kotlinClassLike.functions.add(visitChildrenFunction)
-      }
-
-      val visitSelfFunction = KotlinFunction(
-        "visit",
-        returnType = "T",
-        typeParameters = mutableListOf("T"),
-        overridden = true,
-        parameters = mutableListOf(
-          KotlinParameter("visitor", "NodeVisitor<T>")
-        ),
-        isImmediateExpression = true
-      )
-      visitSelfFunction.body.add("visitor.visit${type.name}(this)")
-      kotlinClassLike.functions.add(visitSelfFunction)
-
-      val equalsAndHashCodeMembers = kotlinClassLike.members.map {
-        it.name
-      }.sortedBy { it == "type" }
-      val equalsFunction = KotlinFunction(
-        "equals",
-        returnType = "Boolean",
-        overridden = true
-      )
-      equalsFunction.parameters.add(KotlinParameter(
-        "other",
-        "Any?"
-      ))
-      equalsFunction.body.add("if (other !is ${type.name}) return false")
-      var predicate = equalsAndHashCodeMembers.mapNotNull {
-        if (it == "type") null else "other.${it} == $it"
-      }.joinToString(" && ")
-      if (predicate.isEmpty()) {
-        predicate = "true"
-      }
-      equalsFunction.body.add("return $predicate")
-      kotlinClassLike.functions.add(equalsFunction)
-
-      val hashCodeFunction = KotlinFunction(
-        "hashCode",
-        returnType = "Int",
-        overridden = true
-      )
-
-      if (equalsAndHashCodeMembers.size == 1) {
-        val member = equalsAndHashCodeMembers.single()
-        hashCodeFunction.isImmediateExpression = true
-        hashCodeFunction.body.add("31 * ${member}.hashCode()")
-      } else {
-        for ((index, value) in equalsAndHashCodeMembers.withIndex()) {
-          if (index == 0) {
-            hashCodeFunction.body.add("var result = ${value}.hashCode()")
-          } else {
-            hashCodeFunction.body.add("result = 31 * result + ${value}.hashCode()")
-          }
-        }
-        hashCodeFunction.body.add("return result")
-      }
-      kotlinClassLike.functions.add(hashCodeFunction)
+      addAstNodeDefinitions(type, kotlinClassLike)
     }
 
     val serialName = kotlinClassLike.name[0].lowercase() +
@@ -397,6 +314,159 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     kotlinClassLike.annotations.add("SerialName(\"$serialName\")")
 
     write("${type.name}.kt", KotlinWriter(kotlinClassLike))
+  }
+
+  private fun addRootNodeDefinitions(kotlinClassLike: KotlinClassLike) {
+    kotlinClassLike.imports.add("kotlinx.serialization.Transient")
+    val typeMember = KotlinMember(
+      "type",
+      "NodeType",
+      abstract = true
+    )
+    kotlinClassLike.members.add(typeMember)
+    val dataMember = KotlinMember(
+      "data",
+      "Any?",
+      value = "null",
+      mutable = true,
+      notInsideConstructor = true,
+      annotations = mutableListOf("@Transient")
+    )
+    kotlinClassLike.members.add(dataMember)
+
+    val abstractVisitChildrenFunction = KotlinFunction(
+      "visitChildren",
+      returnType = "List<T>",
+      open = true,
+      typeParameters = mutableListOf("T"),
+      parameters = mutableListOf(
+        KotlinParameter("visitor", "NodeVisitor<T>")
+      ),
+      isImmediateExpression = true
+    )
+    abstractVisitChildrenFunction.body.add("emptyList()")
+    kotlinClassLike.functions.add(abstractVisitChildrenFunction)
+
+    val abstractVisitSelfFunction = KotlinFunction(
+      "visit",
+      returnType = "T",
+      open = true,
+      typeParameters = mutableListOf("T"),
+      parameters = mutableListOf(
+        KotlinParameter("visitor", "NodeVisitor<T>")
+      ),
+      isImmediateExpression = true
+    )
+    abstractVisitSelfFunction.body.add("visitor.visit(this)")
+    kotlinClassLike.functions.add(abstractVisitSelfFunction)
+  }
+
+  private fun addAstNodeDefinitions(type: AstType, kotlinClassLike: KotlinClassLike) {
+    val visitChildrenFunction = KotlinFunction(
+      "visitChildren",
+      returnType = "List<T>",
+      typeParameters = mutableListOf("T"),
+      overridden = true,
+      parameters = mutableListOf(
+        KotlinParameter("visitor", "NodeVisitor<T>")
+      ),
+      isImmediateExpression = true
+    )
+    val anyListMembers = type.values?.any {
+      it.typeRef.form == AstTypeRefForm.List
+    } ?: false
+    val elideVisitChildren: Boolean
+    if (anyListMembers) {
+      val visitParameters = (type.values?.mapNotNull {
+        if (it.typeRef.primitive != null) {
+          null
+        } else if (it.typeRef.type != null &&
+          !world.typeRegistry.roleOfType(it.typeRef.type).isNodeInherited()) {
+          null
+        } else if (it.typeRef.form == AstTypeRefForm.Single ||
+          it.typeRef.form == AstTypeRefForm.Nullable) {
+          "listOf(${it.name})"
+        } else {
+          it.name
+        }
+      } ?: emptyList()).joinToString(", ")
+      elideVisitChildren = visitParameters.isEmpty()
+      visitChildrenFunction.body.add("visitor.visitAll(${visitParameters})")
+    } else {
+      val visitParameters = (type.values?.mapNotNull {
+        if (it.typeRef.primitive != null) {
+          null
+        } else if (it.typeRef.type != null &&
+          !world.typeRegistry.roleOfType(it.typeRef.type).isNodeInherited()) {
+          null
+        } else {
+          it.name
+        }
+      } ?: emptyList()).joinToString(", ")
+      elideVisitChildren = visitParameters.isEmpty()
+      visitChildrenFunction.body.add("visitor.visitNodes(${visitParameters})")
+    }
+
+    if (!elideVisitChildren) {
+      kotlinClassLike.functions.add(visitChildrenFunction)
+    }
+
+    val visitSelfFunction = KotlinFunction(
+      "visit",
+      returnType = "T",
+      typeParameters = mutableListOf("T"),
+      overridden = true,
+      parameters = mutableListOf(
+        KotlinParameter("visitor", "NodeVisitor<T>")
+      ),
+      isImmediateExpression = true
+    )
+    visitSelfFunction.body.add("visitor.visit${type.name}(this)")
+    kotlinClassLike.functions.add(visitSelfFunction)
+
+    val equalsAndHashCodeMembers = kotlinClassLike.members.map {
+      it.name
+    }.sortedBy { it == "type" }
+    val equalsFunction = KotlinFunction(
+      "equals",
+      returnType = "Boolean",
+      overridden = true
+    )
+    equalsFunction.parameters.add(KotlinParameter(
+      "other",
+      "Any?"
+    ))
+    equalsFunction.body.add("if (other !is ${type.name}) return false")
+    var predicate = equalsAndHashCodeMembers.mapNotNull {
+      if (it == "type") null else "other.${it} == $it"
+    }.joinToString(" && ")
+    if (predicate.isEmpty()) {
+      predicate = "true"
+    }
+    equalsFunction.body.add("return $predicate")
+    kotlinClassLike.functions.add(equalsFunction)
+
+    val hashCodeFunction = KotlinFunction(
+      "hashCode",
+      returnType = "Int",
+      overridden = true
+    )
+
+    if (equalsAndHashCodeMembers.size == 1) {
+      val member = equalsAndHashCodeMembers.single()
+      hashCodeFunction.isImmediateExpression = true
+      hashCodeFunction.body.add("31 * ${member}.hashCode()")
+    } else {
+      for ((index, value) in equalsAndHashCodeMembers.withIndex()) {
+        if (index == 0) {
+          hashCodeFunction.body.add("var result = ${value}.hashCode()")
+        } else {
+          hashCodeFunction.body.add("result = 31 * result + ${value}.hashCode()")
+        }
+      }
+      hashCodeFunction.body.add("return result")
+    }
+    kotlinClassLike.functions.add(hashCodeFunction)
   }
 
   private fun writeNodeExtensions() {
