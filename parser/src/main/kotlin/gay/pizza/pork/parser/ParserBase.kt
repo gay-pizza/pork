@@ -4,8 +4,6 @@ import gay.pizza.pork.ast.Node
 import gay.pizza.pork.ast.NodeParser
 
 abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribution) : NodeParser {
-  open class ParseError(error: String) : RuntimeException(error)
-
   class ExpectedTokenError(got: Token, vararg expectedTypes: TokenType) : ParseError(
     "Expected one of ${expectedTypes.joinToString(", ")}" +
       " but got type ${got.type} '${got.text}'"

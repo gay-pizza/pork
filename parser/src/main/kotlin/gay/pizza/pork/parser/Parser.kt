@@ -16,7 +16,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     Block(items)
   }
 
-  override fun parseExpression(): Expression {
+  override fun parseExpression(): Expression = guarded {
     val token = peek()
     val expression = when (token.type) {
       TokenType.NumberLiteral -> parseNumberLiteral()
@@ -37,7 +37,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       TokenType.None -> parseNoneLiteral()
 
       else -> {
-        throw gay.pizza.pork.parser.ParseError(
+        throw ParseError(
           "Failed to parse token: ${token.type} '${token.text}' as" +
             " expression (index ${source.currentIndex})"
         )
@@ -45,7 +45,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
 
     if (expression is SymbolReference && peek(TokenType.Equals)) {
-      return guarded {
+      return@guarded guarded {
         attribution.adopt(expression)
         expect(TokenType.Equals)
         val value = parseExpression()
@@ -53,7 +53,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       }
     }
 
-    return if (peek(
+    return@guarded if (peek(
         TokenType.Plus,
         TokenType.Minus,
         TokenType.Multiply,
@@ -138,7 +138,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     return modifiers
   }
 
-  fun maybeParseDefinition(): Definition? {
+  private fun maybeParseDefinition(): Definition? {
     try {
       storedDefinitionModifiers = parseDefinitionModifiers()
       val token = peek()
@@ -152,19 +152,19 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
   }
 
-  override fun parseDeclaration(): Declaration {
+  override fun parseDeclaration(): Declaration = guarded {
     val token = peek()
-    return when (token.type) {
+    return@guarded when (token.type) {
       TokenType.Import -> parseImportDeclaration()
-      else -> throw gay.pizza.pork.parser.ParseError(
+      else -> throw ParseError(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${source.currentIndex})"
       )
     }
   }
 
-  override fun parseDefinition(): Definition {
-    return maybeParseDefinition() ?: throw ParseError("Unable to parse definition")
+  override fun parseDefinition(): Definition = guarded {
+    maybeParseDefinition() ?: throw ParseError("Unable to parse definition")
   }
 
   override fun parseDoubleLiteral(): DoubleLiteral = guarded {

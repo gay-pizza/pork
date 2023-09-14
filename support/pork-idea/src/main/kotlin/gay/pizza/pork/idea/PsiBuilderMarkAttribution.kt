@@ -4,14 +4,17 @@ import com.intellij.lang.PsiBuilder
 import gay.pizza.pork.ast.Node
 import gay.pizza.pork.parser.ParseError
 import gay.pizza.pork.parser.ParserNodeAttribution
+import java.util.IdentityHashMap
 
 class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution() {
+  private val map = IdentityHashMap<Node, Node>()
+
   override fun <T : Node> guarded(block: () -> T): T {
     val marker = builder.mark()
-    try {
+    val result = try {
       val item = super.guarded(block)
       marker.done(PorkElementTypes.elementTypeFor(item.type))
-      return item
+      item
     } catch (e: PsiBuilderTokenSource.BadCharacterError) {
       marker.error("Bad character.")
       while (!builder.eof()) {
@@ -32,5 +35,10 @@ class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution
       }
       throw PorkParser.ExitParser()
     }
+    if (map[result] != null) {
+      marker.drop()
+    }
+    map[result] = result
+    return result
   }
 }
