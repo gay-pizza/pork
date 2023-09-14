@@ -1,6 +1,7 @@
 package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.Node
+import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.ast.data
 
 open class ParserNodeAttribution : NodeAttribution {
@@ -22,7 +23,7 @@ open class ParserNodeAttribution : NodeAttribution {
     }
   }
 
-  override fun <T : Node> guarded(block: () -> T): T {
+  override fun <T : Node> guarded(type: NodeType?, block: () -> T): T {
     var store = mutableListOf<Token>()
     current = store
     stack.add(store)

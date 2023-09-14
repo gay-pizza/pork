@@ -19,6 +19,9 @@ abstract class Tool {
   abstract fun createContentSource(): ContentSource
   abstract fun rootFilePath(): String
 
+  val rootImportLocator: ImportLocator
+    get() = ImportLocator("local", rootFilePath())
+
   fun tokenize(): TokenStream =
     Tokenizer(createCharSource()).tokenize()
 
@@ -33,16 +36,20 @@ abstract class Tool {
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
   fun loadMainFunction(scope: Scope, setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
+    val world = buildWorld()
+    val evaluator = Evaluator(world, scope)
+    setupEvaluator(evaluator)
+    val resultingScope = evaluator.evaluate(rootImportLocator)
+    return resultingScope.value("main") as CallableFunction
+  }
+
+  fun buildWorld(): World {
     val fileContentSource = createContentSource()
     val dynamicImportSource = DynamicImportSource()
     dynamicImportSource.addContentSource("std", PorkStdlib)
     dynamicImportSource.addContentSource("local", fileContentSource)
     dynamicImportSource.addContentSource("java", JavaAutogenContentSource)
-    val world = World(dynamicImportSource)
-    val evaluator = Evaluator(world, scope)
-    setupEvaluator(evaluator)
-    val resultingScope = evaluator.evaluate(ImportLocator("local", rootFilePath()))
-    return resultingScope.value("main") as CallableFunction
+    return World(dynamicImportSource)
   }
 
   fun run(scope: Scope, quiet: Boolean = false) {

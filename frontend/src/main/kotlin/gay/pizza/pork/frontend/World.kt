@@ -9,6 +9,7 @@ import gay.pizza.pork.parser.Tokenizer
 
 class World(val importSource: ImportSource) {
   private val internalUnits = mutableMapOf<String, CompilationUnit>()
+  private val importedUnits = mutableMapOf<CompilationUnit, Set<CompilationUnit>>()
 
   val units: List<CompilationUnit>
     get() = internalUnits.values.toList()
@@ -37,6 +38,7 @@ class World(val importSource: ImportSource) {
       val importedUnit = loadOneUnit(importLocator)
       units.add(importedUnit)
     }
+    importedUnits[unit] = units
     return units
   }
 
@@ -45,6 +47,9 @@ class World(val importSource: ImportSource) {
     resolveAllImports(unit)
     return unit
   }
+
+  fun importedBy(unit: CompilationUnit): Set<CompilationUnit> =
+    importedUnits[unit] ?: emptySet()
 
   private fun pickContentSource(form: String): ContentSource =
     importSource.provideContentSource(form)

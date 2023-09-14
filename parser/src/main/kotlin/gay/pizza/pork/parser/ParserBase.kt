@@ -2,6 +2,7 @@ package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.Node
 import gay.pizza.pork.ast.NodeParser
+import gay.pizza.pork.ast.NodeType
 
 abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribution) : NodeParser {
   class ExpectedTokenError(got: Token, vararg expectedTypes: TokenType) : ParseError(
@@ -9,7 +10,8 @@ abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribut
       " but got type ${got.type} '${got.text}'"
   )
 
-  protected fun <T: Node> guarded(block: () -> T): T = attribution.guarded(block)
+  protected fun <T: Node> guarded(type: NodeType? = null, block: () -> T): T =
+    attribution.guarded(type, block)
 
   protected fun <T> collect(
     peeking: TokenType,

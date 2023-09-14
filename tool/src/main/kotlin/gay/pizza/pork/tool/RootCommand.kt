@@ -15,7 +15,8 @@ class RootCommand : CliktCommand(
       ReprintCommand(),
       ParseCommand(),
       AstCommand(),
-      AttributeCommand()
+      AttributeCommand(),
+      ScopeAnalysisCommand()
     )
   }
 
