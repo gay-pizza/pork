@@ -155,7 +155,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   override fun parseDeclaration(): Declaration = guarded {
     val token = peek()
     return@guarded when (token.type) {
-      TokenType.Import -> parseImportDeclaration()
+      TokenType.Import, TokenType.Impork, TokenType.PorkLoad -> parseImportDeclaration()
       else -> throw ParseError(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${source.currentIndex})"
