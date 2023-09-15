@@ -230,7 +230,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   }
 
   override fun parseImportDeclaration(): ImportDeclaration = guarded {
-    expect(TokenType.Import, TokenType.Impork, TokenType.PorkLoad)
+    expect(TokenType.Import)
     val form = parseSymbol()
     val components = oneAndContinuedBy(TokenType.Dot) {
       parseSymbol()
