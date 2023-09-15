@@ -55,7 +55,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   In(ManyChars("in"), KeywordFamily),
   Continue(ManyChars("continue"), KeywordFamily),
   Break(ManyChars("break"), KeywordFamily),
-  Import(ManyChars("import"), KeywordFamily),
+  Import(AnyOf("import", "impork", "porkload"), KeywordFamily),
   Export(ManyChars("export"), KeywordFamily),
   Func(ManyChars("func"), KeywordFamily),
   Native(ManyChars("native"), KeywordFamily),
@@ -70,6 +70,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     properties.filterIsInstance<Promotion>()
   val manyChars: ManyChars? =
     properties.filterIsInstance<ManyChars>().singleOrNull()
+  val anyOf: AnyOf? =
+    properties.filterIsInstance<AnyOf>().singleOrNull()
   val singleChar: SingleChar? =
     properties.filterIsInstance<SingleChar>().singleOrNull()
   val family: TokenFamily =
@@ -81,6 +83,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
   companion object {
+    val AnyOf = entries.filter { item -> item.anyOf != null }
     val ManyChars = entries.filter { item -> item.manyChars != null }
     val SingleChars = entries.filter { item -> item.singleChar != null }
     val CharConsumers = entries.filter { item ->
