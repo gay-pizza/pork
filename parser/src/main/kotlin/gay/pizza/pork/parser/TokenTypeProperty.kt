@@ -17,9 +17,10 @@ interface TokenTypeProperty {
         break
       }
     }
+
     if (upgraded == null) {
-      for(item in TokenType.AnyOf) {
-        if(item.anyOf != null && item.anyOf.strings.contains(token.text)) {
+      for (item in TokenType.AnyOf) { 
+        if (item.anyOf != null && item.anyOf.strings.contains(token.text)) {
           upgraded = Token(item, token.start, token.text)
           break
         }
