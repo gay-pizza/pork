@@ -57,7 +57,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Break(ManyChars("break"), KeywordFamily),
   Import(ManyChars("import"), KeywordFamily),
   Impork(ManyChars("impork"), KeywordFamily),
-  PorkLoad(ManyChar("porkload"), KeywordFamily),
+  PorkLoad(ManyChars("porkload"), KeywordFamily),
   Export(ManyChars("export"), KeywordFamily),
   Func(ManyChars("func"), KeywordFamily),
   Native(ManyChars("native"), KeywordFamily),
