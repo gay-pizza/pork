@@ -1,0 +1,171 @@
+import local SDL2
+import java java.util.List
+import java java.util.ArrayList
+import java java.util.Collections
+
+let cellSize = 16
+let gridWidth  = 64
+let gridHeight = 40
+
+func clearScreen(renderer) {
+  SDL_SetRenderDrawColor(renderer, 240, 181,  84, 255)
+  SDL_RenderClear(renderer)
+}
+
+func drawGrid(renderer) {
+  let w = cellSize * gridWidth
+  let h = cellSize * gridHeight
+
+  SDL_SetRenderDrawColor(renderer, 243, 232, 115, 255)
+  var i = 1
+  while i < gridWidth {
+    let x = i * cellSize
+    SDL_RenderDrawLine(renderer, x, 0, x, h)
+    i++
+  }
+  i = 1
+  while i < gridHeight {
+    let y = i * cellSize
+    SDL_RenderDrawLine(renderer, 0, y, w, y)
+    i++
+  }
+}
+
+func drawCells(renderer, cells, swap) {
+  SDL_SetRenderDrawColor(renderer, 89, 145,  57, 255)
+
+  var i = 0
+  var iy = 0
+  while iy < gridHeight {
+    var ix = 0
+    while ix < gridWidth {
+      let mask = if swap { 2 } else { 1 }
+      if (java_util_ArrayList_get(cells, i) & mask) == mask {
+        let x = ix * cellSize
+        let y = iy * cellSize
+        SDL_RenderDrawLine(renderer, x, y, x + cellSize, y)
+        SDL_RenderDrawLine(renderer, x, y + cellSize, x + cellSize, y + cellSize)
+        SDL_RenderDrawLine(renderer, x, y, x, y + cellSize)
+        SDL_RenderDrawLine(renderer, x + cellSize, y, x + cellSize, y + cellSize)
+        SDL_RenderDrawLine(renderer, x, y, x + cellSize, y + cellSize)
+        SDL_RenderDrawLine(renderer, x + cellSize, y, x, y + cellSize)
+      }
+      i++
+      ix++
+    }
+    iy++
+  }
+}
+
+func createCellGrid() {
+  let numCells = gridWidth * gridHeight
+  let init = java_util_Collections_nCopies(numCells, 0)
+  java_util_ArrayList_new_collection(init)
+}
+
+func getCell(cells, swap, x, y) {
+  if (x >= 0) and (y >= 0) and (x < gridWidth) and (y < gridHeight) {
+    let mask = if swap { 2 } else { 1 }
+    (java_util_ArrayList_get(cells, x + y * gridWidth) & mask) != 0
+  } else {
+    false
+  }
+}
+
+func setCell(cells, swap, x, y, state) {
+  if (x >= 0) and (y >= 0) and (x < gridWidth) and (y < gridHeight) {
+    let mask = if swap { 2 } else { 1 }
+    let idx = x + y * gridWidth
+    let value = java_util_ArrayList_get(cells, idx)
+    if state { java_util_ArrayList_set(cells, idx, value | mask) }
+    else     { java_util_ArrayList_set(cells, idx, value & (~mask)) }
+  }
+}
+
+func countNeighbours(cells, swap, x, y) {
+  var count = 0
+  if getCell(cells, swap, x, y - 1) { count++ }
+  if getCell(cells, swap, x + 1, y - 1) { count++ }
+  if getCell(cells, swap, x + 1, y) { count++ }
+  if getCell(cells, swap, x + 1, y + 1) { count++ }
+  if getCell(cells, swap, x, y + 1) { count++ }
+  if getCell(cells, swap, x - 1, y + 1) { count++ }
+  if getCell(cells, swap, x - 1, y) { count++ }
+  if getCell(cells, swap, x - 1, y - 1) { count++ }
+  count
+}
+
+func gameOfLife(cells, swap) {
+  var iy = 0
+  while iy < gridHeight {
+    var ix = 0
+    while ix < gridWidth {
+      let neighbours = countNeighbours(cells, not swap, ix, iy)
+      let live = if getCell(cells, not swap, ix, iy) {
+        (neighbours == 2) or (neighbours == 3)
+      } else {
+        neighbours == 3
+      }
+      setCell(cells, swap, ix, iy, live)
+      ix++
+    }
+    iy++
+  }
+}
+
+func createGosperGun(cells, swap, x, y) {
+  for i in [
+    [ 1, 5], [ 2, 5], [ 1, 6], [ 2, 6], [11, 5], [11, 6], [11, 7], [12, 4],
+    [12, 8], [13, 3], [14, 3], [13, 9], [14, 9], [15, 6], [16, 4], [16, 8],
+    [17, 5], [17, 6], [17, 7], [18, 6], [18, 6], [21, 3], [22, 3], [21, 4],
+    [22, 4], [21, 5], [22, 5], [23, 2], [23, 6], [25, 1], [25, 2], [25, 6],
+    [25, 7], [35, 3], [36, 3], [35, 4], [36, 4]
+  ] {
+    setCell(cells, false,
+      x + java_util_List_get(i, 0),
+      y + java_util_List_get(i, 1),
+      true)
+  }
+}
+
+export func main() {
+  SDL_Init(SDL_INIT_VIDEO)
+
+  let winWidth  = cellSize * gridWidth
+  let winHeight = cellSize * gridHeight
+  let window = SDL_CreateWindow(
+    "Game of Swine",
+    SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    winWidth, winHeight,
+    SDL_WINDOW_ALLOW_HIGHDPI)
+  SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "letterbox")
+  let rend = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC)
+  SDL_RenderSetLogicalSize(rend, winWidth, winHeight)
+
+  let cells = createCellGrid()
+  createGosperGun(cells, false, 1, 1)
+
+  var page = false
+  var running = true
+  while running {
+    SDL_WaitEvent(None)
+    let modifiers = SDL_GetModState()
+    if (modifiers & KMOD_RSHIFT) == KMOD_RSHIFT { running = false }
+
+    clearScreen(rend)
+    drawGrid(rend)
+    drawCells(rend, cells, page)
+
+    if (modifiers & KMOD_LSHIFT) == KMOD_LSHIFT {
+      page = not page
+      gameOfLife(cells, page)
+    }
+
+    SDL_RenderPresent(rend)
+    SDL_PumpEvents()
+  }
+
+  SDL_DestroyRenderer(rend)
+  SDL_DestroyWindow(window)
+  SDL_Quit()
+}
