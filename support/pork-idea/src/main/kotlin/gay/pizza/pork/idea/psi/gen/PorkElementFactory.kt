@@ -38,6 +38,7 @@ object PorkElementFactory {
       NodeType.Continue -> ContinueElement(node)
       NodeType.NoneLiteral -> NoneLiteralElement(node)
       NodeType.Native -> NativeElement(node)
+      NodeType.IndexedBy -> IndexedByElement(node)
       else -> ASTWrapperPsiElement(node)
     }
 }

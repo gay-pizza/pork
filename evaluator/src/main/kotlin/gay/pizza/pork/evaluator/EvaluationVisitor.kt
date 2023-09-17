@@ -366,6 +366,21 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     topLevelUsedError("ImportDeclaration", "CompilationUnitContext")
   }
 
+  override fun visitIndexedBy(node: IndexedBy): Any {
+    val value = node.expression.visit(this)
+    val index = node.index.visit(this)
+
+    if (value is List<*> && index is Number) {
+      return value[index.toInt()] ?: None
+    }
+
+    if (value is Array<*> && index is Number) {
+      return value[index.toInt()] ?: None
+    }
+
+    throw RuntimeException("Failed to index '${value}' by '${index}': Unsupported types used.")
+  }
+
   override fun visitCompilationUnit(node: CompilationUnit): Any {
     topLevelUsedError("CompilationUnit", "CompilationUnitContext")
   }

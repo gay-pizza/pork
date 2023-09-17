@@ -78,6 +78,10 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
         val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
         InfixOperation(expression, infixOperator, parseExpression())
       }
+    } else if (next(TokenType.LeftBracket)) {
+      val index = parseExpression()
+      expect(TokenType.RightBracket)
+      IndexedBy(expression, index)
     } else expression
   }
 
@@ -235,6 +239,14 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       parseSymbol()
     }
     ImportDeclaration(form, components)
+  }
+
+  override fun parseIndexedBy(): IndexedBy = guarded(NodeType.IndexedBy) {
+    val expression = parseExpression()
+    expect(TokenType.LeftBracket)
+    val index = parseExpression()
+    expect(TokenType.RightBracket)
+    IndexedBy(expression, index)
   }
 
   override fun parseInfixOperation(): InfixOperation = guarded(NodeType.InfixOperation) {

@@ -24,6 +24,8 @@ interface NodeVisitor<T> {
 
   fun visitImportDeclaration(node: ImportDeclaration): T
 
+  fun visitIndexedBy(node: IndexedBy): T
+
   fun visitInfixOperation(node: InfixOperation): T
 
   fun visitIntegerLiteral(node: IntegerLiteral): T

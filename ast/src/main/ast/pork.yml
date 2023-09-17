@@ -292,3 +292,10 @@ types:
       type: Symbol
     - name: definition
       type: StringLiteral
+  IndexedBy:
+    parent: Expression
+    values:
+    - name: expression
+      type: Expression
+    - name: index
+      type: Expression

@@ -30,6 +30,8 @@ interface NodeParser {
 
   fun parseImportDeclaration(): ImportDeclaration
 
+  fun parseIndexedBy(): IndexedBy
+
   fun parseInfixOperation(): InfixOperation
 
   fun parseIntegerLiteral(): IntegerLiteral

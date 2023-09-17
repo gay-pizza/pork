@@ -35,6 +35,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitImportDeclaration(node: ImportDeclaration): Unit =
     handle(node)
 
+  override fun visitIndexedBy(node: IndexedBy): Unit =
+    handle(node)
+
   override fun visitInfixOperation(node: InfixOperation): Unit =
     handle(node)
 

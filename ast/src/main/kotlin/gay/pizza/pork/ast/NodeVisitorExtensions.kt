@@ -31,6 +31,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is Continue -> visitContinue(node)
     is NoneLiteral -> visitNoneLiteral(node)
     is Native -> visitNative(node)
+    is IndexedBy -> visitIndexedBy(node)
   }
 
 fun <T> NodeVisitor<T>.visitNodes(vararg nodes: Node?): List<T> =

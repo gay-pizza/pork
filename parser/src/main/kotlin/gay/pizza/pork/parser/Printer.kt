@@ -233,6 +233,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     }
   }
 
+  override fun visitIndexedBy(node: IndexedBy) {
+    visit(node.expression)
+    append("[")
+    visit(node.index)
+    append("]")
+  }
+
   override fun visitCompilationUnit(node: CompilationUnit) {
     for (declaration in node.declarations) {
       visit(declaration)
