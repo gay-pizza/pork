@@ -55,6 +55,10 @@ class AstWorld {
           type.parent = world.typeRegistry.lookup(typeDescription.parent)
         }
 
+        if (typeDescription.namedElementValue != null) {
+          type.namedElementValue = typeDescription.namedElementValue
+        }
+
         if (typeDescription.values != null) {
           type.markHasValues()
           for (value in typeDescription.values) {

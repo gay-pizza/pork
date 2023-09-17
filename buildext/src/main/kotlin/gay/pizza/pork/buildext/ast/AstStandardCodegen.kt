@@ -2,17 +2,12 @@
 package gay.pizza.pork.buildext.ast
 
 import gay.pizza.pork.buildext.codegen.*
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
-import kotlin.io.path.*
+import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 
-class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld) {
-  private fun deleteAllContents() {
-    for (child in outputDirectory.listDirectoryEntries("*.kt")) {
-      child.deleteExisting()
-    }
-  }
-
+class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
+  AstCodegenShared(pkg, outputDirectory, world) {
   fun generate() {
     deleteAllContents()
     for (type in world.typeRegistry.types) {
@@ -247,7 +242,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       val kotlinClass = KotlinClass(pkg, type.name)
       kotlinClassLike = kotlinClass
       if (role == AstTypeRole.RootNode || role == AstTypeRole.HierarchyNode) {
-        kotlinClass.sealed = true
+        kotlinClass.isSealed = true
       }
     }
 
@@ -494,13 +489,6 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
     }
   }
 
-  private fun write(fileName: String, writer: KotlinWriter) {
-    val content = "// GENERATED CODE FROM PORK AST CODEGEN\n$writer"
-    val path = outputDirectory.resolve(fileName)
-    path.deleteIfExists()
-    path.writeText(content, StandardCharsets.UTF_8)
-  }
-
   companion object {
     private const val enableVisitAnyInline = false
 
@@ -508,7 +496,7 @@ class AstCodegen(val pkg: String, val outputDirectory: Path, val world: AstWorld
       if (!outputDirectory.exists()) {
         outputDirectory.createDirectories()
       }
-      val codegen = AstCodegen(pkg, outputDirectory, world)
+      val codegen = AstStandardCodegen(pkg, outputDirectory, world)
       codegen.generate()
     }
   }

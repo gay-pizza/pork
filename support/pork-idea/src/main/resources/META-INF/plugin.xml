@@ -6,7 +6,7 @@
     <vendor>Gay Pizza Specifications</vendor>
     <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="Pork File" language="Pork" extensions="pork" fieldName="INSTANCE"
+        <fileType name="Pork" language="Pork" extensions="pork" fieldName="INSTANCE"
                   implementationClass="gay.pizza.pork.idea.PorkFileType"/>
         <lang.syntaxHighlighterFactory
                 language="Pork"

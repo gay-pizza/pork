@@ -28,5 +28,5 @@ class PsiBuilderTokenSource(val builder: PsiBuilder) : TokenSource {
     return Token(tokenType, builder.currentOffset, builder.tokenText!!)
   }
 
-  class BadCharacterError(val error: String) : RuntimeException(error)
+  class BadCharacterError(error: String) : RuntimeException(error)
 }

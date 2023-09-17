@@ -9,5 +9,5 @@ class PorkFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, PorkL
     return PorkFileType
   }
 
-  override fun toString(): String = "Pork File"
+  override fun toString(): String = "Pork"
 }

@@ -36,6 +36,7 @@ types:
       type: List<Definition>
   LetAssignment:
     parent: Expression
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
@@ -43,6 +44,7 @@ types:
       type: Expression
   VarAssignment:
     parent: Expression
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
@@ -50,6 +52,7 @@ types:
       type: Expression
   SetAssignment:
     parent: Expression
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
@@ -141,6 +144,7 @@ types:
       defaultValue: "false"
   FunctionDefinition:
     parent: Definition
+    namedElementValue: symbol
     values:
     - name: modifiers
       type: DefinitionModifiers
@@ -154,6 +158,7 @@ types:
       type: Native?
   LetDefinition:
     parent: Definition
+    namedElementValue: symbol
     values:
     - name: modifiers
       type: DefinitionModifiers
@@ -251,6 +256,7 @@ types:
       type: String
   SymbolReference:
     parent: Expression
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol

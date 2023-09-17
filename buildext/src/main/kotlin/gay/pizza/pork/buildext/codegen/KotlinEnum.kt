@@ -9,5 +9,6 @@ class KotlinEnum(
   override var inherits: MutableList<String> = mutableListOf(),
   override var members: MutableList<KotlinMember> = mutableListOf(),
   override var functions: MutableList<KotlinFunction> = mutableListOf(),
-  var entries: MutableList<KotlinEnumEntry> = mutableListOf()
+  override var constructorParameters: MutableMap<String, String> = mutableMapOf(),
+  var entries: MutableList<KotlinEnumEntry> = mutableListOf(),
 ) : KotlinClassLike()

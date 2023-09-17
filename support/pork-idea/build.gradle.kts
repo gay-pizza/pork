@@ -1,10 +1,17 @@
+import gay.pizza.pork.buildext.AstCodegenType
+
 plugins {
   id("org.jetbrains.intellij") version "1.15.0"
   id("gay.pizza.pork.module")
+  id("gay.pizza.pork.ast")
 }
 
 dependencies {
   implementation(project(":parser"))
+}
+
+porkAst {
+  astCodegenType.set(AstCodegenType.PorkIdea)
 }
 
 intellij {

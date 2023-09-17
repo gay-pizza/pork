@@ -8,11 +8,26 @@ class KotlinWriter() {
   }
 
   fun writeClass(kotlinClass: KotlinClass): Unit = buffer.run {
-    val classType = when {
-      kotlinClass.sealed -> "sealed class"
-      kotlinClass.isInterface -> "interface"
-      else -> "class"
+    val classType = buildString {
+      if (kotlinClass.isOpen) {
+        append("open ")
+      }
+
+      if (kotlinClass.isAbstract) {
+        append("abstract ")
+      }
+
+      if (kotlinClass.isSealed) {
+        append("sealed ")
+      }
+
+      append(when {
+        kotlinClass.isInterface -> "interface"
+        kotlinClass.isObject -> "object"
+        else -> "class"
+      })
     }
+
     writeClassLike(classType, kotlinClass)
     val members = kotlinClass.members.filter {
       it.abstract || (it.overridden && it.value != null) || it.notInsideConstructor
@@ -134,6 +149,11 @@ class KotlinWriter() {
         if (it.value != null) {
           "$start = ${it.value}"
         } else start
+      }
+      append("(${constructor})")
+    } else if (kotlinClass.constructorParameters.isNotEmpty()) {
+      val constructor = kotlinClass.constructorParameters.entries.joinToString(", ") {
+        "${it.key}: ${it.value}"
       }
       append("(${constructor})")
     }

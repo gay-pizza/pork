@@ -1,10 +1,7 @@
 package gay.pizza.pork.idea
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement
-import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
-import gay.pizza.pork.ast.Node
 import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.parser.TokenType
 

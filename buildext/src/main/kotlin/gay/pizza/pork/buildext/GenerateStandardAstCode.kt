@@ -1,6 +1,6 @@
 package gay.pizza.pork.buildext
 
-import gay.pizza.pork.buildext.ast.AstCodegen
+import gay.pizza.pork.buildext.ast.AstStandardCodegen
 import gay.pizza.pork.buildext.ast.AstGraph
 import gay.pizza.pork.buildext.ast.AstWorld
 import org.gradle.api.DefaultTask
@@ -14,7 +14,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.writeText
 
-open class GenerateAstCode : DefaultTask() {
+open class GenerateStandardAstCode : DefaultTask() {
   @get:InputFile
   var astDescriptionFile: File = project.file("src/main/ast/pork.yml")
 
@@ -30,7 +30,7 @@ open class GenerateAstCode : DefaultTask() {
   @TaskAction
   fun generate() {
     val world = AstWorld.read(astDescriptionFile.toPath())
-    AstCodegen.run(codePackage, world, outputDirectory.toPath())
+    AstStandardCodegen.run(codePackage, world, outputDirectory.toPath())
 
     val typeGraphPath = typeGraphFile.toPath()
     typeGraphPath.deleteIfExists()

@@ -9,7 +9,7 @@ import javax.swing.Icon
 @Suppress("UnstableApiUsage")
 object PorkFileType : LanguageFileType(PorkLanguage) {
   override fun getName(): @NonNls String {
-    return "Pork File"
+    return "Pork"
   }
 
   override fun getDescription(): @NlsContexts.Label String {

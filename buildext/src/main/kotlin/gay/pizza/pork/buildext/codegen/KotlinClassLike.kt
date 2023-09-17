@@ -9,4 +9,5 @@ abstract class KotlinClassLike {
   abstract var inherits: MutableList<String>
   abstract var members: MutableList<KotlinMember>
   abstract var functions: MutableList<KotlinFunction>
+  abstract var constructorParameters: MutableMap<String, String>
 }

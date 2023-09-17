@@ -1,8 +1,10 @@
+import gay.pizza.pork.buildext.AstCodegenType
+
 plugins {
   id("gay.pizza.pork.module")
   id("gay.pizza.pork.ast")
 }
 
-tasks.compileKotlin {
-  dependsOn(tasks.generateAstCode)
+porkAst {
+  astCodegenType.set(AstCodegenType.Standard)
 }

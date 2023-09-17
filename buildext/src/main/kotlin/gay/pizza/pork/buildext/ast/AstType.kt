@@ -1,6 +1,6 @@
 package gay.pizza.pork.buildext.ast
 
-class AstType(val name: String, var parent: AstType? = null) {
+class AstType(val name: String, var parent: AstType? = null, var namedElementValue: String? = null) {
   private var internalValues: MutableList<AstValue>? = null
   private val internalEnums = mutableListOf<AstEnum>()
 
