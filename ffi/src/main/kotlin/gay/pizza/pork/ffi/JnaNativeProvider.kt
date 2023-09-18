@@ -2,7 +2,6 @@ package gay.pizza.pork.ffi
 
 import com.sun.jna.Function
 import com.sun.jna.NativeLibrary
-import com.sun.jna.Pointer
 import gay.pizza.pork.ast.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.NativeProvider
@@ -48,24 +47,23 @@ class JnaNativeProvider : NativeProvider {
     else -> type
   }
 
-  private fun convert(type: String, value: Any?): Any? = when (rewriteType(type)) {
-    "short" -> numberConvert(type, value) { toShort() }
-    "unsigned short" -> numberConvert(type, value) { toShort() }
-    "int" -> numberConvert(type, value) { toInt() }
-    "unsigned int" -> numberConvert(type, value) { toInt() }
-    "long" -> numberConvert(type, value) { toLong() }
-    "unsigned long" -> numberConvert(type, value) { toLong() }
-    "double" -> numberConvert(type, value) { toDouble() }
-    "float" -> numberConvert(type, value) { toFloat() }
-    "char*" -> notNullConvert(type, value) { toString() }
-    "void*" -> nullableConvert(value) {
-      if (value is Long) {
-        Pointer(value)
-      } else {
-        value as Pointer
-      }
+  private fun convert(type: String, value: Any?): Any? {
+    val rewritten = rewriteType(type)
+    val primitive = FfiPrimitiveType.entries.firstOrNull { it.id == rewritten }
+      ?: throw RuntimeException("Unsupported ffi type: $type")
+    if (primitive.numberConvert != null) {
+      return numberConvert(type, value, primitive.numberConvert)
     }
-    else -> throw RuntimeException("Unsupported ffi type: $type")
+
+    if (primitive.notNullConversion != null) {
+      return notNullConvert(type, value, primitive.notNullConversion)
+    }
+
+    if (primitive.nullableConversion != null) {
+      return nullableConvert(value, primitive.nullableConversion)
+    }
+
+    return value
   }
 
   private fun <T> notNullConvert(type: String, value: Any?, into: Any.() -> T): T {
