@@ -82,6 +82,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   val tokenUpgrader: TokenUpgrader? =
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
+  val simpleWantString: String? = manyChars?.text ?: singleChar?.char?.toString()
+
   companion object {
     val AnyOf = entries.filter { item -> item.anyOf != null }
     val ManyChars = entries.filter { item -> item.manyChars != null }

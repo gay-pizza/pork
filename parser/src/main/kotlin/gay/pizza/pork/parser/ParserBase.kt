@@ -5,12 +5,8 @@ import gay.pizza.pork.ast.NodeParser
 import gay.pizza.pork.ast.NodeType
 
 abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribution) : NodeParser {
-  class ExpectedTokenError(got: Token, vararg expectedTypes: TokenType) : ParseError(
-    "Expected one of ${expectedTypes.joinToString(", ")}" +
-      " but got type ${got.type} '${got.text}'"
-  )
-
-  protected fun <T: Node> guarded(type: NodeType? = null, block: () -> T): T =
+  @Suppress("NOTHING_TO_INLINE")
+  protected inline fun <T: Node> guarded(type: NodeType? = null, noinline block: () -> T): T =
     attribution.guarded(type, block)
 
   protected fun <T> collect(
@@ -56,13 +52,17 @@ abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribut
   protected fun expect(vararg types: TokenType): Token {
     val token = next()
     if (!types.contains(token.type)) {
-      throw ExpectedTokenError(token, *types)
+      expectedTokenError(token, *types)
     }
     return token
   }
 
   protected fun <T: Node> expect(vararg types: TokenType, consume: (Token) -> T): T =
     consume(expect(*types))
+
+  protected fun expectedTokenError(token: Token, vararg types: TokenType): Nothing {
+    throw ExpectedTokenError(token, token.sourceIndex, *types)
+  }
 
   protected fun next(): Token {
     while (true) {

@@ -1,11 +1,13 @@
 package gay.pizza.pork.parser
 
-class Token(val type: TokenType, val start: Int, val text: String) {
+class Token(val type: TokenType, val sourceIndex: SourceIndex, val text: String) {
   override fun toString(): String =
-    "$start ${type.name} '${text.replace("\n", "\\n")}'"
+    "$sourceIndex ${type.name} '${text.replace("\n", "\\n")}'"
 
   companion object {
-    fun endOfFile(size: Int): Token =
-      Token(TokenType.EndOfFile, size, "")
+    fun endOfFile(sourceIndex: SourceIndex): Token =
+      Token(TokenType.EndOfFile, sourceIndex, "")
   }
+
+  fun upgrade(upgradedType: TokenType): Token = Token(upgradedType, sourceIndex, text)
 }

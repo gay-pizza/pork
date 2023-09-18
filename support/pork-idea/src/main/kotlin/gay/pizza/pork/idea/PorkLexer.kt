@@ -57,8 +57,8 @@ class PorkLexer : LexerBase() {
     try {
       val currentToken = tokenizer.next()
       currentTokenType = PorkElementTypes.elementTypeFor(currentToken.type)
-      internalTokenStart = currentToken.start
-      internalTokenEnd = currentToken.start + currentToken.text.length
+      internalTokenStart = currentToken.sourceIndex.index
+      internalTokenEnd = currentToken.sourceIndex.index + currentToken.text.length
     } catch (e: ProcessCanceledException) {
       throw e
     } catch (e: Throwable) {

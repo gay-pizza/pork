@@ -7,7 +7,7 @@ class TokenStreamSource(val stream: TokenStream) : TokenSource {
 
   override fun next(): Token {
     if (index == stream.tokens.size) {
-      return Token.endOfFile(stream.tokens.size)
+      return stream.tokens.last()
     }
     val char = stream.tokens[index]
     index++
@@ -16,7 +16,7 @@ class TokenStreamSource(val stream: TokenStream) : TokenSource {
 
   override fun peek(): Token {
     if (index == stream.tokens.size) {
-      return Token.endOfFile(stream.tokens.size)
+      return stream.tokens.last()
     }
     return stream.tokens[index]
   }

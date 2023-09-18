@@ -13,6 +13,7 @@ dependencies {
 application {
   applicationName = "pork"
   mainClass.set("gay.pizza.pork.tool.MainKt")
+  applicationDefaultJvmArgs += "-XstartOnFirstThread"
 }
 
 for (task in arrayOf(tasks.shadowDistTar, tasks.shadowDistZip, tasks.shadowJar)) {

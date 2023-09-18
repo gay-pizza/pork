@@ -12,7 +12,7 @@ class TokenizeCommand : CliktCommand(help = "Tokenize Compilation Unit", name = 
     val tool = FileTool(PlatformFsProvider.resolve(path))
     val tokenStream = tool.tokenize()
     for (token in tokenStream.tokens) {
-      println("${token.start} ${token.type.name} '${sanitize(token.text)}'")
+      println("${token.sourceIndex.index} ${token.type.name} '${sanitize(token.text)}'")
     }
   }
 

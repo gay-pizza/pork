@@ -1,6 +1,7 @@
 package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.*
+import kotlin.math.exp
 
 class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {
@@ -18,7 +19,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
   override fun parseExpression(): Expression = guarded {
     val token = peek()
-    val expression = when (token.type) {
+    var expression = when (token.type) {
       TokenType.NumberLiteral -> parseNumberLiteral()
       TokenType.StringLiteral -> parseStringLiteral()
       TokenType.True, TokenType.False -> parseBooleanLiteral()
@@ -45,43 +46,35 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
 
     if (expression is SymbolReference && peek(TokenType.Equals)) {
-      return@guarded guarded(NodeType.SetAssignment) {
+      val symbolReference = expression as SymbolReference
+      expression = guarded(NodeType.SetAssignment) {
         attribution.adopt(expression)
         expect(TokenType.Equals)
         val value = parseExpression()
-        SetAssignment(expression.symbol, value)
+        SetAssignment(symbolReference.symbol, value)
       }
     }
 
-    return@guarded if (peek(
-        TokenType.Plus,
-        TokenType.Minus,
-        TokenType.Multiply,
-        TokenType.Divide,
-        TokenType.Ampersand,
-        TokenType.Pipe,
-        TokenType.Caret,
-        TokenType.Equality,
-        TokenType.Inequality,
-        TokenType.Mod,
-        TokenType.Rem,
-        TokenType.Lesser,
-        TokenType.Greater,
-        TokenType.LesserEqual,
-        TokenType.GreaterEqual,
-        TokenType.And,
-        TokenType.Or
-      )
-    ) {
+    if (peek(TokenType.LeftBracket)) {
+      expression = guarded(NodeType.IndexedBy) {
+        attribution.adopt(expression)
+        expect(TokenType.LeftBracket)
+        val index = parseExpression()
+        expect(TokenType.RightBracket)
+        IndexedBy(expression, index)
+      }
+    }
+
+    if (peek(
+        TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide, TokenType.Ampersand,
+        TokenType.Pipe, TokenType.Caret, TokenType.Equality, TokenType.Inequality, TokenType.Mod,
+        TokenType.Rem, TokenType.Lesser, TokenType.Greater, TokenType.LesserEqual, TokenType.GreaterEqual,
+        TokenType.And, TokenType.Or)) {
       guarded(NodeType.InfixOperation) {
         val infixToken = next()
         val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
         InfixOperation(expression, infixOperator, parseExpression())
       }
-    } else if (next(TokenType.LeftBracket)) {
-      val index = parseExpression()
-      expect(TokenType.RightBracket)
-      IndexedBy(expression, index)
     } else expression
   }
 
@@ -91,7 +84,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     } else if (next(TokenType.False)) {
       BooleanLiteral(false)
     } else {
-      throw ParseError("Expected ")
+      expectedTokenError(source.peek(), TokenType.True, TokenType.False)
     }
   }
 

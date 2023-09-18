@@ -13,15 +13,15 @@ interface TokenTypeProperty {
     var upgraded: Token? = null
     for (item in TokenType.ManyChars) {
       if (item.manyChars != null && token.text == item.manyChars.text) {
-        upgraded = Token(item, token.start, token.text)
+        upgraded = token.upgrade(item)
         break
       }
     }
 
     if (upgraded == null) {
-      for (item in TokenType.AnyOf) { 
+      for (item in TokenType.AnyOf) {
         if (item.anyOf != null && item.anyOf.strings.contains(token.text)) {
-          upgraded = Token(item, token.start, token.text)
+          upgraded = token.upgrade(item)
           break
         }
       }

@@ -40,7 +40,7 @@ func drawCells(renderer, cells, swap) {
     var ix = 0
     while ix < gridWidth {
       let mask = if swap { 2 } else { 1 }
-      if (java_util_ArrayList_get(cells, i) & mask) == mask {
+      if (cells[i] & mask) == mask {
         let x = ix * cellSize
         let y = iy * cellSize
         SDL_RenderDrawLine(renderer, x, y, x + cellSize, y)
@@ -66,7 +66,7 @@ func createCellGrid() {
 func getCell(cells, swap, x, y) {
   if (x >= 0) and (y >= 0) and (x < gridWidth) and (y < gridHeight) {
     let mask = if swap { 2 } else { 1 }
-    (java_util_ArrayList_get(cells, x + y * gridWidth) & mask) != 0
+    (cells[x + y * gridWidth] & mask) != 0
   } else {
     false
   }
@@ -76,7 +76,7 @@ func setCell(cells, swap, x, y, state) {
   if (x >= 0) and (y >= 0) and (x < gridWidth) and (y < gridHeight) {
     let mask = if swap { 2 } else { 1 }
     let idx = x + y * gridWidth
-    let value = java_util_ArrayList_get(cells, idx)
+    let value = cells[idx]
     if state { java_util_ArrayList_set(cells, idx, value | mask) }
     else     { java_util_ArrayList_set(cells, idx, value & (~mask)) }
   }
@@ -122,8 +122,8 @@ func createGosperGun(cells, swap, x, y) {
     [25, 7], [35, 3], [36, 3], [35, 4], [36, 4]
   ] {
     setCell(cells, false,
-      x + java_util_List_get(i, 0),
-      y + java_util_List_get(i, 1),
+      x + i[0],
+      y + i[1],
       true)
   }
 }

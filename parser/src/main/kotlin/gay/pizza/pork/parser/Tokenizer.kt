@@ -1,16 +1,18 @@
 package gay.pizza.pork.parser
 
 class Tokenizer(val source: CharSource) {
-  private var tokenStart: Int = 0
+  private var startIndex: SourceIndex = SourceIndex.zero()
+  private var currentLineIndex = 1
+  private var currentLineColumn = 0
 
   private fun readBlockComment(firstChar: Char): Token {
     val comment = buildString {
       append(firstChar)
       var endOfComment = false
       while (true) {
-        val char = source.next()
+        val char = nextChar()
         if (char == CharSource.NullChar) {
-          throw ParseError("Unterminated block comment")
+          throw UnterminatedTokenError("block comment", currentSourceIndex())
         }
         append(char)
 
@@ -27,7 +29,7 @@ class Tokenizer(val source: CharSource) {
         }
       }
     }
-    return Token(TokenType.BlockComment, tokenStart, comment)
+    return produceToken(TokenType.BlockComment, comment)
   }
 
   private fun readLineComment(firstChar: Char): Token {
@@ -38,10 +40,10 @@ class Tokenizer(val source: CharSource) {
         if (char == CharSource.NullChar || char == '\n') {
           break
         }
-        append(source.next())
+        append(nextChar())
       }
     }
-    return Token(TokenType.LineComment, tokenStart, comment)
+    return produceToken(TokenType.LineComment, comment)
   }
 
   private fun readStringLiteral(firstChar: Char): Token {
@@ -50,21 +52,21 @@ class Tokenizer(val source: CharSource) {
       while (true) {
         val char = source.peek()
         if (char == CharSource.NullChar) {
-          throw ParseError("Unterminated string.")
+          throw UnterminatedTokenError("string", currentSourceIndex())
         }
-        append(source.next())
+        append(nextChar())
         if (char == '"') {
           break
         }
       }
     }
-    return Token(TokenType.StringLiteral, tokenStart, string)
+    return produceToken(TokenType.StringLiteral, string)
   }
 
   fun next(): Token {
     while (source.peek() != CharSource.NullChar) {
-      tokenStart = source.currentIndex
-      val char = source.next()
+      startIndex = currentSourceIndex()
+      val char = nextChar()
 
       if (char == '/' && source.peek() == '*') {
         return readBlockComment(char)
@@ -89,13 +91,13 @@ class Tokenizer(val source: CharSource) {
             if (source.peek() != promotion.nextChar) {
               continue
             }
-            val nextChar = source.next()
+            val nextChar = nextChar()
             type = promotion.type
             text += nextChar
             promoted = true
           }
         }
-        return Token(type, tokenStart, text)
+        return produceToken(type, text)
       }
 
       var index = 0
@@ -121,10 +123,10 @@ class Tokenizer(val source: CharSource) {
             else
               item.charIndexConsumer!!.isValid(source.peek(), ++index)
           ) {
-            append(source.next())
+            append(nextChar())
           }
         }
-        var token = Token(item, tokenStart, text)
+        var token = produceToken(item, text)
         val tokenUpgrader = item.tokenUpgrader
         if (tokenUpgrader != null) {
           token = tokenUpgrader.maybeUpgrade(token) ?: token
@@ -136,9 +138,9 @@ class Tokenizer(val source: CharSource) {
         return readStringLiteral(char)
       }
 
-      throw ParseError("Failed to parse: (${char}) next ${source.peek()}")
+      throw BadCharacterError(char, startIndex)
     }
-    return Token.endOfFile(source.currentIndex)
+    return Token.endOfFile(startIndex.copy(index = source.currentIndex))
   }
 
   fun tokenize(): TokenStream {
@@ -152,4 +154,19 @@ class Tokenizer(val source: CharSource) {
     }
     return TokenStream(tokens)
   }
+
+  private fun produceToken(type: TokenType, text: String) =
+    Token(type, startIndex, text)
+
+  private fun nextChar(): Char {
+    val char = source.next()
+    if (char == '\n') {
+      currentLineIndex++
+      currentLineColumn = 0
+    }
+    currentLineColumn++
+    return char
+  }
+
+  private fun currentSourceIndex(): SourceIndex = SourceIndex(source.currentIndex, currentLineIndex, currentLineColumn)
 }

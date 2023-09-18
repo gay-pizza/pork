@@ -29,12 +29,8 @@ class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution
       }
       throw PorkParser.ExitParser()
     } catch (e: PorkParser.ExitParser) {
-      if (e.error != null) {
-        marker.error(e.error)
-      } else {
-        marker.done(PorkElementTypes.FailedToParse)
-      }
-      throw PorkParser.ExitParser()
+      marker.done(PorkElementTypes.FailedToParse)
+      throw e
     }
     if (map[result] != null) {
       marker.drop()

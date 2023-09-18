@@ -16,7 +16,7 @@ data class ParserAttributes(val tokens: List<Token>) {
         }
       }
       coalescer.visit(node)
-      all.sortBy { it.start }
+      all.sortBy { it.sourceIndex.index }
       return all
     }
   }
