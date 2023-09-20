@@ -2,24 +2,26 @@
 package gay.pizza.pork.buildext.ast
 
 import gay.pizza.pork.buildext.codegen.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 
 class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
   AstCodegenShared(pkg, outputDirectory, world) {
-  fun generate() {
+  override suspend fun generate(): Unit = coroutineScope {
     deleteAllContents()
     for (type in world.typeRegistry.types) {
-      writeAstType(type)
+      launch { writeAstType(type) }
     }
-    writeNodeExtensions()
-    writeNodeType()
-    writeNodeVisitor()
-    writeNodeCoalescer()
-    writeNodeVisitorExtensions()
-    writeNodeParser()
-    writeNodeParserExtensions()
+    launch { writeNodeExtensions() }
+    launch { writeNodeType() }
+    launch { writeNodeVisitor() }
+    launch { writeNodeCoalescer() }
+    launch { writeNodeVisitorExtensions() }
+    launch { writeNodeParser() }
+    launch { writeNodeParserExtensions() }
   }
 
   private fun writeNodeType() {
@@ -497,7 +499,7 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
         outputDirectory.createDirectories()
       }
       val codegen = AstStandardCodegen(pkg, outputDirectory, world)
-      codegen.generate()
+      codegen.runUntilCompletion()
     }
   }
 }

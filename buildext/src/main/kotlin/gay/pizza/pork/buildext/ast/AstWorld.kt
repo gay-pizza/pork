@@ -1,8 +1,6 @@
 package gay.pizza.pork.buildext.ast
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.charleskorn.kaml.Yaml
 import java.nio.file.Path
 import kotlin.io.path.readText
 
@@ -83,9 +81,7 @@ class AstWorld {
 
     fun read(path: Path): AstWorld {
       val astYamlText = path.readText()
-      val mapper = ObjectMapper(YAMLFactory())
-      mapper.registerModules(KotlinModule.Builder().build())
-      val astDescription = mapper.readValue(astYamlText, AstDescription::class.java)
+      val astDescription =Yaml.default.decodeFromString(AstDescription.serializer(), astYamlText)
       return build(astDescription)
     }
   }

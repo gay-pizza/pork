@@ -1,5 +1,7 @@
+@file:Suppress("UnstableApiUsage")
 plugins {
   `kotlin-dsl`
+  embeddedKotlin("plugin.serialization")
 }
 
 repositories {
@@ -10,10 +12,8 @@ repositories {
 dependencies {
   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
   implementation("org.jetbrains.kotlin:kotlin-serialization:1.9.10")
-
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
-  implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+  implementation("com.charleskorn.kaml:kaml:0.55.0")
 }
 
 gradlePlugin {

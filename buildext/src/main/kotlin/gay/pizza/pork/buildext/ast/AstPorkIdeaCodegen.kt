@@ -4,6 +4,8 @@ import gay.pizza.pork.buildext.codegen.KotlinClass
 import gay.pizza.pork.buildext.codegen.KotlinFunction
 import gay.pizza.pork.buildext.codegen.KotlinParameter
 import gay.pizza.pork.buildext.codegen.KotlinWriter
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
@@ -16,18 +18,18 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
         outputDirectory.createDirectories()
       }
       val codegen = AstPorkIdeaCodegen(pkg, outputDirectory, world)
-      codegen.generate()
+      codegen.runUntilCompletion()
     }
   }
 
-  fun generate() {
+  override suspend fun generate(): Unit = coroutineScope {
     deleteAllContents()
-    writePorkElement()
-    writeNamedElement()
+    launch { writePorkElement() }
+    launch { writeNamedElement() }
     for (type in world.typeRegistry.types) {
-      writePsiElement(type)
+      launch { writePsiElement(type) }
     }
-    writeElementFactory()
+    launch { writeElementFactory() }
   }
 
   fun writePorkElement() {
