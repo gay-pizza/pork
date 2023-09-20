@@ -46,7 +46,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
 
     if (expression is SymbolReference && peek(TokenType.Equals)) {
-      val symbolReference = expression as SymbolReference
+      val symbolReference = expression
       expression = guarded(NodeType.SetAssignment) {
         attribution.adopt(expression)
         expect(TokenType.Equals)
