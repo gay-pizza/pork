@@ -80,8 +80,8 @@ class AstWorld {
     }
 
     fun read(path: Path): AstWorld {
-      val astYamlText = path.readText()
-      val astDescription =Yaml.default.decodeFromString(AstDescription.serializer(), astYamlText)
+      val astYamlString= path.readText()
+      val astDescription = Yaml.default.decodeFromString(AstDescription.serializer(), astYamlString)
       return build(astDescription)
     }
   }

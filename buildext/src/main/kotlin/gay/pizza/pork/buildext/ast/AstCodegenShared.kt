@@ -6,10 +6,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import kotlin.io.path.deleteExisting
-import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
-import kotlin.io.path.writeText
+import kotlin.io.path.writeBytes
 
 abstract class AstCodegenShared(val pkg: String, val outputDirectory: Path, val world: AstWorld) {
   abstract suspend fun generate()
@@ -21,10 +21,17 @@ abstract class AstCodegenShared(val pkg: String, val outputDirectory: Path, val 
   }
 
   protected fun write(fileName: String, writer: KotlinWriter) {
-    val content = "// GENERATED CODE FROM PORK AST CODEGEN\n$writer"
+    writeWithHeader(fileName, writer.buffer)
+  }
+
+  private fun writeWithHeader(fileName: String, content: CharSequence) {
+    val textContent = buildString {
+      append("// GENERATED CODE FROM PORK AST CODEGEN\n")
+      append(content)
+    }
     val path = outputDirectory.resolve(fileName)
-    path.deleteIfExists()
-    path.writeText(content, StandardCharsets.UTF_8)
+    val bytes = textContent.toByteArray(StandardCharsets.UTF_8)
+    path.writeBytes(bytes, StandardOpenOption.CREATE_NEW)
   }
 
   fun runUntilCompletion() {

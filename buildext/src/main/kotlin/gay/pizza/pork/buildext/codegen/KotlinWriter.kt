@@ -1,7 +1,7 @@
 package gay.pizza.pork.buildext.codegen
 
 class KotlinWriter() {
-  private val buffer = StringBuilder()
+  val buffer = StringBuilder()
 
   constructor(writable: Any) : this() {
     write(writable)
@@ -48,21 +48,25 @@ class KotlinWriter() {
         member.protected -> "protected "
         else -> ""
       }
-      val form = if (member.mutable) "${privacy}var" else "${privacy}val"
-      if (member.abstract) {
-        appendLine("  abstract $form ${member.name}: ${member.type}")
-      } else {
-        append("  ")
-        if (member.overridden) {
-          append("override ")
-        }
-        append("$form ${member.name}: ${member.type}")
-        if (member.value != null) {
-          append(" = ")
-          append(member.value)
-        }
-        appendLine()
+      val form = if (member.mutable) "var" else "val"
+      append("  ")
+      if (member.overridden) {
+        append("override ")
       }
+      if (member.abstract) {
+        append("abstract ")
+      }
+      append(privacy)
+      append(form)
+      append(" ")
+      append(member.name)
+      append(": ")
+      append(member.type)
+      if (member.value != null) {
+        append(" = ")
+        append(member.value)
+      }
+      appendLine()
 
       if (index != members.size - 1) {
         appendLine()
@@ -97,7 +101,8 @@ class KotlinWriter() {
     }
 
     for ((index, entry) in kotlinEnum.entries.withIndex()) {
-      append("  ${entry.name}")
+      append("  ")
+      append(entry.name)
       if (entry.parameters.isNotEmpty()) {
         append("(")
         append(entry.parameters.joinToString(", "))
@@ -131,31 +136,54 @@ class KotlinWriter() {
       appendLine("@${annotation}")
     }
 
-    append("$classType ${kotlinClass.name}")
+    append(classType)
+    append(" ")
+    append(kotlinClass.name)
     if (kotlinClass.typeParameters.isNotEmpty()) {
+      append("<")
       val typeParameters = kotlinClass.typeParameters.joinToString(", ")
-      append("<${typeParameters}>")
+      append(typeParameters)
+      append(">")
     }
 
-    val contructedMembers = kotlinClass.members.filter {
-      !it.abstract && !(it.overridden && it.value != null) && !it.notInsideConstructor
+    val constructedMembers = kotlinClass.members.filter {
+      !it.abstract &&
+        !(it.overridden && it.value != null) &&
+        !it.notInsideConstructor
     }
 
-    if (contructedMembers.isNotEmpty()) {
-      val constructor = contructedMembers.joinToString(", ") {
-        val prefix = if (it.overridden) "override " else ""
-        val form = if (it.mutable) "var" else "val"
-        val start = "${prefix}$form ${it.name}: ${it.type}"
-        if (it.value != null) {
-          "$start = ${it.value}"
-        } else start
+    if (constructedMembers.isNotEmpty()) {
+      append("(")
+      for ((index, constructedMember) in constructedMembers.withIndex()) {
+        val prefix = if (constructedMember.overridden) "override " else ""
+        val form = if (constructedMember.mutable) "var" else "val"
+        append(prefix)
+        append(form)
+        append(" ")
+        append(constructedMember.name)
+        append(": ")
+        append(constructedMember.type)
+        if (constructedMember.value != null) {
+          append(" = ")
+          append(constructedMember.value)
+        }
+
+        if (index < constructedMembers.size - 1) {
+          append(", ")
+        }
       }
-      append("(${constructor})")
+      append(")")
     } else if (kotlinClass.constructorParameters.isNotEmpty()) {
-      val constructor = kotlinClass.constructorParameters.entries.joinToString(", ") {
-        "${it.key}: ${it.value}"
+      append("(")
+      for ((index, constructorParameter) in kotlinClass.constructorParameters.entries.withIndex()) {
+        append(constructorParameter.key)
+        append(": ")
+        append(constructorParameter.value)
+        if (index < kotlinClass.constructorParameters.size - 1) {
+          append(", ")
+        }
       }
-      append("(${constructor})")
+      append(")")
     }
 
     if (kotlinClass.inherits.isNotEmpty()) {
@@ -233,7 +261,9 @@ class KotlinWriter() {
       appendLine()
 
       for (item in function.body) {
-        appendLine("$indent  $item")
+        append(indent)
+        append("  ")
+        appendLine(item)
       }
     }
 
