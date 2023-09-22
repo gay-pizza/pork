@@ -308,8 +308,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   override fun parseNative(): Native = guarded(NodeType.Native) {
     expect(TokenType.Native)
     val form = parseSymbol()
-    val definition = parseStringLiteral()
-    Native(form, definition)
+    val definitions = mutableListOf<StringLiteral>()
+    while (peek(TokenType.StringLiteral)) {
+      definitions.add(parseStringLiteral())
+    }
+    Native(form, definitions)
   }
 
   override fun parseNoneLiteral(): NoneLiteral = guarded(NodeType.NoneLiteral) {

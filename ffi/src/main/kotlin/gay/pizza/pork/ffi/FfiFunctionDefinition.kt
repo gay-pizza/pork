@@ -7,21 +7,30 @@ class FfiFunctionDefinition(
   val parameters: List<String>
 ) {
   companion object {
-    fun parse(def: String): FfiFunctionDefinition {
-      val parts = def.split(":", limit = 4)
-      if (parts.size !in arrayOf(3, 4) || parts.any { it.trim().isEmpty() }) {
+    fun parse(library: String, def: String): FfiFunctionDefinition {
+      fun invalid(): Nothing {
         throw RuntimeException(
           "FFI function definition is invalid, " +
-          "accepted format is 'library:function:return-type:(optional)parameters' " +
-          "but '${def}' was specified")
+            "accepted format is 'return-type function-name(parameter, parameter...)' " +
+            "but '${def}' was specified")
       }
-      val (library, function, returnType) = parts
-      val parametersString = if (parts.size == 4) parts[3] else ""
+
+      val parts = def.split(" ", limit = 2)
+      if (parts.size != 2) {
+        invalid()
+      }
+      val (returnType, functionNameAndParameters) = parts
+      var (functionName, parametersAndClosingParentheses) = functionNameAndParameters.split("(", limit = 2)
+      parametersAndClosingParentheses = parametersAndClosingParentheses.trim()
+      if (!parametersAndClosingParentheses.endsWith(")")) {
+        invalid()
+      }
+      val parameterString = parametersAndClosingParentheses.substring(0, parametersAndClosingParentheses.length - 1)
       return FfiFunctionDefinition(
         library,
-        function,
+        functionName,
         returnType,
-        parametersString.split(",")
+        parameterString.split(",").map { it.trim() }
       )
     }
   }

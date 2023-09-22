@@ -82,7 +82,12 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append("native ")
     visit(node.form)
     append(" ")
-    visit(node.definition)
+    for ((index, argument) in node.definitions.withIndex()) {
+      visit(argument)
+      if (index + 1 != node.definitions.size) {
+        append(" ")
+      }
+    }
   }
 
   override fun visitNoneLiteral(node: NoneLiteral) {

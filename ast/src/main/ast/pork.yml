@@ -300,8 +300,8 @@ types:
     values:
     - name: form
       type: Symbol
-    - name: definition
-      type: StringLiteral
+    - name: definitions
+      type: List<StringLiteral>
   IndexedBy:
     parent: Expression
     values:

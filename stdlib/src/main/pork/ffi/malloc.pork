@@ -1,8 +1,8 @@
 export func malloc(size)
-  native ffi "c:malloc:void*:size_t"
+  native ffi "c" "void* malloc(size_t)"
 
 export func calloc(size, count)
-  native ffi "c:calloc:void*:size_t,size_t"
+  native ffi "c" "void* calloc(size_t, size_t)"
 
 export func free(pointer)
-  native ffi "c:free:void:void*"
+  native ffi "c" "void free(void*)"

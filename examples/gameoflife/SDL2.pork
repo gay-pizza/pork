@@ -5,10 +5,10 @@
 export let SDL_INIT_VIDEO = 32
 
 export func SDL_Init(flags)
-  native ffi "SDL2:SDL_Init:int:unsigned int"
+  native ffi "SDL2" "int SDL_Init(unsigned int)"
 
 export func SDL_Quit()
-  native ffi "SDL2:SDL_Quit:void"
+  native ffi "SDL2" "void SDL_Quit()"
 
 // SDL_video.h
 
@@ -23,18 +23,18 @@ export func SDL_WINDOWPOS_CENTERED_DISPLAY(x) { SDL_WINDOWPOS_CENTERED_MASK | x 
 export let SDL_WINDOWPOS_CENTERED = SDL_WINDOWPOS_CENTERED_DISPLAY(0)
 
 export func SDL_CreateWindow(title, x, y, w, h, flags)
-  native ffi "SDL2:SDL_CreateWindow:void*:char*,int,int,int,int,unsigned int"
+  native ffi "SDL2" "void* SDL_CreateWindow(char*, int, int, int, int, unsigned int)"
 
 export func SDL_DestroyWindow(window)
-  native ffi "SDL2:SDL_DestroyWindow:void:void*"
+  native ffi "SDL2" "void SDL_DestroyWindow(void*)"
 
 // SDL_event.h
 
 export func SDL_PumpEvents()
-  native ffi "SDL2:SDL_PumpEvents:void"
+  native ffi "SDL2" "void SDL_PumpEvents()"
 
 export func SDL_WaitEvent(event)
-  native ffi "SDL2:SDL_WaitEvent:int:void*"
+  native ffi "SDL2" "int SDL_WaitEvent(void*)"
 
 
 // SDL_keyboard.h
@@ -54,36 +54,36 @@ export let KMOD_CAPS   = 8192
 export let KMOD_SCROLL = 32768
 
 export func SDL_GetModState()
-  native ffi "SDL2:SDL_GetModState:int"
+  native ffi "SDL2" "int SDL_GetModState()"
 
 // SDL_renderer.h
 
 export let SDL_RENDERER_PRESENTVSYNC = 4
 
 export func SDL_CreateRenderer(window, index, flags)
-  native ffi "SDL2:SDL_CreateRenderer:void*:void*,int,unsigned int"
+  native ffi "SDL2" "void* SDL_CreateRenderer(void*, int, unsigned int)"
 
 export func SDL_DestroyRenderer(renderer)
-  native ffi "SDL2:SDL_DestroyRenderer:void:void*"
+  native ffi "SDL2" "void SDL_DestroyRenderer(void*)"
 
 export func SDL_RenderSetLogicalSize(renderer, w, h)
-  native ffi "SDL2:SDL_RenderSetLogicalSize:int:void*,int,int"
+  native ffi "SDL2" "int SDL_RenderSetLogicalSize(void*,int,int)"
 
 export func SDL_RenderPresent(renderer)
-  native ffi "SDL2:SDL_RenderPresent:void:void*"
+  native ffi "SDL2" "void SDL_RenderPresent(void*)"
 
 export func SDL_SetRenderDrawColor(renderer, r, g, b, a)
-  native ffi "SDL2:SDL_SetRenderDrawColor:int:void*,unsigned int,unsigned int,unsigned int,unsigned int"
+  native ffi "SDL2" "int SDL_SetRenderDrawColor(void*, unsigned int, unsigned int, unsigned int, unsigned int)"
 
 export func SDL_RenderClear(renderer)
-  native ffi "SDL2:SDL_RenderClear:int:void*"
+  native ffi "SDL2" "int SDL_RenderClear(void*)"
 
 export func SDL_RenderDrawLine(renderer, x1, y1, x2, y2)
-  native ffi "SDL2:SDL_RenderDrawLine:int:void*,int,int,int,int"
+  native ffi "SDL2" "int SDL_RenderDrawLine(void*,int,int,int,int)"
 
 // SDL_hints.h
 
 export let SDL_HINT_RENDER_LOGICAL_SIZE_MODE = "SDL_RENDER_LOGICAL_SIZE_MODE"
 
 export func SDL_SetHint(name, value)
-  native ffi "SDL2:SDL_SetHint:int:char*,char*"
+  native ffi "SDL2" "int SDL_SetHint(char*,char*)"

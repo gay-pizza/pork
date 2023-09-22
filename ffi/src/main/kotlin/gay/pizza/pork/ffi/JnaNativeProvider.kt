@@ -8,8 +8,8 @@ import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None
 
 class JnaNativeProvider : NativeProvider {
-  override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
-    val functionDefinition = FfiFunctionDefinition.parse(definition)
+  override fun provideNativeFunction(definitions: List<String>, arguments: List<ArgumentSpec>): CallableFunction {
+    val functionDefinition = FfiFunctionDefinition.parse(definitions[0], definitions[1])
     val library = NativeLibrary.getInstance(functionDefinition.library)
     val function = library.getFunction(functionDefinition.function)
       ?: throw RuntimeException("Failed to find function ${functionDefinition.function} in library ${functionDefinition.library}")

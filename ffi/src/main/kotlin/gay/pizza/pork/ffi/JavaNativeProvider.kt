@@ -10,8 +10,8 @@ import java.lang.invoke.MethodType
 class JavaNativeProvider : NativeProvider {
   private val lookup = MethodHandles.lookup()
 
-  override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
-    val functionDefinition = JavaFunctionDefinition.parse(definition)
+  override fun provideNativeFunction(definitions: List<String>, arguments: List<ArgumentSpec>): CallableFunction {
+    val functionDefinition = JavaFunctionDefinition.parse(definitions)
     val javaClass = lookupClass(functionDefinition.type)
     val returnTypeClass = lookupClass(functionDefinition.returnType)
     val parameterClasses = functionDefinition.parameters.map { lookupClass(it) }

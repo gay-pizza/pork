@@ -10,7 +10,8 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
     "listInitWith" to CallableFunction(::listInitWith)
   )
 
-  override fun provideNativeFunction(definition: String, arguments: List<ArgumentSpec>): CallableFunction {
+  override fun provideNativeFunction(definitions: List<String>, arguments: List<ArgumentSpec>): CallableFunction {
+    val definition = definitions[0]
     return functions[definition] ?: throw RuntimeException("Unknown Internal Function: $definition")
   }
 

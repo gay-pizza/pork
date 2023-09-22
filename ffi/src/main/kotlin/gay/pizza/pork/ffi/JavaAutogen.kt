@@ -155,7 +155,7 @@ class JavaAutogen(val javaClass: Class<*>) {
     )
 
   private fun asNative(functionDefinition: JavaFunctionDefinition): Native =
-    Native(Symbol("java"), StringLiteral(functionDefinition.encode()))
+    Native(Symbol("java"), functionDefinition.encode().map { StringLiteral(it) })
 
   private fun discriminate(parameter: Parameter): String =
     parameter.type.simpleName.lowercase().replace("[]", "_array")
