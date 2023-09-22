@@ -19,7 +19,7 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))
-    val scope = Scope()
+    val scope = Scope.root()
     val main = tool.loadMainFunction(scope, setupEvaluator = {
       addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
       addNativeProvider("ffi", JnaNativeProvider())
@@ -35,7 +35,7 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
     }
 
     maybeLoopAndMeasure(loop, measure) {
-      main.call(Arguments(emptyList()))
+      main.call(emptyList(), CallStack())
     }
   }
 }

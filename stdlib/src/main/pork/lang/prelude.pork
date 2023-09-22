@@ -3,3 +3,9 @@ export func print(values...)
 
 export func println(values...)
   native internal "println"
+
+export func listSet(list, index, value)
+  native internal "listSet"
+
+export func listInitWith(size, value)
+  native internal "listInitWith"

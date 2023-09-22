@@ -1,5 +1,5 @@
 package gay.pizza.pork.evaluator
 
-fun interface BlockFunction {
-  fun call(): Any
+abstract class BlockFunction {
+  abstract fun call(): Any
 }

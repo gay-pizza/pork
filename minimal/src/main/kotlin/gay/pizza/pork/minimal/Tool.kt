@@ -58,6 +58,6 @@ abstract class Tool {
       addNativeProvider("ffi", JnaNativeProvider())
       addNativeProvider("java", JavaNativeProvider())
     })
-    main.call(Arguments(emptyList()))
+    main.call(emptyList(), CallStack())
   }
 }

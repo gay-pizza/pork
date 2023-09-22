@@ -22,7 +22,7 @@ class JavaNativeProvider : NativeProvider {
       returnTypeClass,
       parameterClasses
     )
-    return CallableFunction { functionArguments -> handle.invokeWithArguments(functionArguments.values) ?: None }
+    return CallableFunction { functionArguments, _ -> handle.invokeWithArguments(functionArguments) ?: None }
   }
 
   private fun lookupClass(name: String): Class<*> = when (name) {

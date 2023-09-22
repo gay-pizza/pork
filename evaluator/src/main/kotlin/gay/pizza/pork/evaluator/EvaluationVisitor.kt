@@ -3,7 +3,8 @@ package gay.pizza.pork.evaluator
 import gay.pizza.pork.ast.*
 import kotlin.math.abs
 
-class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
+@Suppress("JavaIoSerializableObjectMustHaveReadResolve")
+class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
   private var currentScope: Scope = root
 
   override fun visitIntegerLiteral(node: IntegerLiteral): Any = node.value
@@ -16,9 +17,15 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       throw RuntimeException("Unable to iterate on value that is not a iterable.")
     }
 
+    var reuseScope: Scope? = null
+
     for (item in value) {
       try {
-        scoped {
+        if (reuseScope == null) {
+          reuseScope = currentScope.fork(name = "ForIn")
+        }
+
+        scoped(reuseScope, node = node) {
           currentScope.define(node.symbol.id, item ?: None)
           result = blockFunction.call()
         }
@@ -28,6 +35,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
         continue
       }
     }
+    reuseScope?.disown()
     return result ?: None
   }
 
@@ -46,7 +54,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitFunctionCall(node: FunctionCall): Any {
     val arguments = node.arguments.map { it.visit(this) }
     val functionValue = currentScope.value(node.symbol.id) as CallableFunction
-    return functionValue.call(Arguments(arguments))
+    return functionValue.call(arguments, stack)
   }
 
   override fun visitLetAssignment(node: LetAssignment): Any {
@@ -71,6 +79,7 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
   override fun visitWhile(node: While): Any {
     val blockFunction = node.block.visit(this) as BlockFunction
     var result: Any? = null
+    var reuseScope: Scope? = null
     while (true) {
       val value = node.condition.visit(this)
       if (value !is Boolean) {
@@ -78,13 +87,17 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
       }
       if (!value) break
       try {
-        scoped { result = blockFunction.call() }
+        if (reuseScope == null) {
+          reuseScope = currentScope.fork(name = "While")
+        }
+        scoped(reuseScope, node = node) { result = blockFunction.call() }
       } catch (_: BreakMarker) {
         break
       } catch (_: ContinueMarker) {
         continue
       }
     }
+    reuseScope?.disown()
     return result ?: None
   }
 
@@ -173,10 +186,10 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     val condition = node.condition.visit(this)
     return if (condition == true) {
       val blockFunction = node.thenBlock.visit(this) as BlockFunction
-      scoped { blockFunction.call() }
+      scoped(node = node) { blockFunction.call() }
     } else if (node.elseBlock != null) {
       val blockFunction = node.elseBlock!!.visit(this) as BlockFunction
-      scoped { blockFunction.call() }
+      scoped(node = node) { blockFunction.call() }
     } else None
   }
 
@@ -350,12 +363,17 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitBlock(node: Block): BlockFunction = BlockFunction {
-    var value: Any? = null
-    for (expression in node.expressions) {
-      value = expression.visit(this)
+  override fun visitBlock(node: Block): BlockFunction {
+    val visitor = this
+    return object : BlockFunction() {
+      override fun call(): Any {
+        var value: Any? = null
+        for (expression in node.expressions) {
+          value = expression.visit(visitor)
+        }
+        return value ?: None
+      }
     }
-    value ?: None
   }
 
   override fun visitFunctionDefinition(node: FunctionDefinition): Any {
@@ -393,12 +411,18 @@ class EvaluationVisitor(root: Scope) : NodeVisitor<Any> {
 
   override fun visitContinue(node: Continue): Any = ContinueMarker
 
-  private inline fun <T> scoped(block: () -> T): T {
-    currentScope = currentScope.fork()
+  private inline fun <T> scoped(reuseScope: Scope? = null, node: Node? = null, block: () -> T): T {
+    val previousScope = currentScope
+    currentScope = reuseScope ?: currentScope.fork(name = node?.type?.name)
     try {
       return block()
     } finally {
-      currentScope = currentScope.leave()
+      if (reuseScope == null) {
+        currentScope = currentScope.leave(disown = true)
+      } else {
+        reuseScope.markForReuse()
+        currentScope = previousScope
+      }
     }
   }
 

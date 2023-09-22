@@ -1,19 +1,25 @@
 package gay.pizza.pork.evaluator
 
 class Scope(
-  val parent: Scope? = null,
-  inherits: List<Scope> = emptyList(),
-  val name: String? = null
+  var parent: Scope? = null,
+  var inherits: List<Scope> = emptyList(),
+  var name: String? = null
 ) {
-  private val inherited = inherits.toMutableList()
+  private var isCurrentlyFree = false
   private val variables = mutableMapOf<String, ValueStore>()
 
   fun define(name: String, value: Any, type: ValueStoreType = ValueStoreType.Let) {
-    val previous = variables.put(name, ValueStore(value, type))
-    if (previous != null) {
-      variables[name] = previous
+    val existing = variables[name]
+    if (existing != null) {
+      if (existing.type == ValueStoreType.ReuseReady) {
+        existing.type = type
+        existing.value = value
+        return
+      }
       throw RuntimeException("Variable '${name}' is already defined")
     }
+    val store = ValueStoreCache.obtain(value, type)
+    variables[name] = store
   }
 
   fun set(name: String, value: Any) {
@@ -40,13 +46,13 @@ class Scope(
     val holder = variables[name]
     if (holder == null) {
       if (parent != null) {
-        val parentMaybeFound = parent.valueHolderOrNotFound(name)
+        val parentMaybeFound = parent!!.valueHolderOrNotFound(name)
         if (parentMaybeFound !== NotFound.Holder) {
           return parentMaybeFound
         }
       }
 
-      for (inherit in inherited) {
+      for (inherit in inherits) {
         val inheritMaybeFound = inherit.valueHolderOrNotFound(name)
         if (inheritMaybeFound !== NotFound.Holder) {
           return inheritMaybeFound
@@ -54,21 +60,29 @@ class Scope(
       }
       return NotFound.Holder
     }
+    if (holder.type == ValueStoreType.ReuseReady) {
+      throw RuntimeException("Attempt to reuse ValueStore in the reused state, prior to definition.")
+    }
     return holder
   }
 
   fun fork(name: String? = null): Scope =
-    Scope(this, name = name)
+    ScopeCache.obtain(this, name = name)
 
   internal fun inherit(scope: Scope) {
-    inherited.add(scope)
+    val copy = inherits.toMutableList()
+    copy.add(scope)
+    inherits = copy
   }
 
-  fun leave(): Scope {
-    if (parent == null) {
-      throw RuntimeException("Attempted to leave the root scope!")
+  fun leave(disown: Boolean = false): Scope {
+    val currentParent = parent ?: throw RuntimeException("Attempted to leave the root scope!")
+
+    if (disown) {
+      disown()
     }
-    return parent
+
+    return currentParent
   }
 
   fun crawlScopePath(
@@ -79,7 +93,7 @@ class Scope(
       block(key, path)
     }
 
-    for (inherit in inherited) {
+    for (inherit in inherits) {
       val mutablePath = path.toMutableList()
       mutablePath.add("inherit ${inherit.name ?: "unknown"}")
       inherit.crawlScopePath(mutablePath, block)
@@ -87,12 +101,56 @@ class Scope(
 
     if (parent != null) {
       val mutablePath = path.toMutableList()
-      mutablePath.add("parent ${parent.name ?: "unknown"}")
-      parent.crawlScopePath(mutablePath, block)
+      mutablePath.add("parent ${parent?.name ?: "unknown"}")
+      parent?.crawlScopePath(mutablePath, block)
     }
+  }
+
+  fun markForReuse() {
+    for (store in variables.values) {
+      store.type = ValueStoreType.ReuseReady
+      store.value = None
+    }
+  }
+
+  fun disown() {
+    for (store in variables.values) {
+      store.disown()
+    }
+
+    name = null
+    parent = null
+    inherits = emptyList()
+    variables.clear()
+    isCurrentlyFree = true
+    ScopeCache.put(this)
+  }
+
+  fun adopt(parent: Scope? = null, inherits: List<Scope>, name: String? = null) {
+    if (!isCurrentlyFree) {
+      throw RuntimeException("Scope is not free, but adopt() was attempted.")
+    }
+    this.parent = parent
+    this.inherits = inherits
+    this.name = name
   }
 
   private object NotFound {
     val Holder = ValueStore(NotFound, ValueStoreType.Let)
+  }
+
+  val path: String
+    get() = buildString {
+      val list = mutableListOf<String?>()
+      var current: Scope? = this@Scope
+      while (current != null) {
+        list.add(current.name ?: "unknown")
+        current = current.parent
+      }
+      append(list.reversed().joinToString(" -> "))
+    }
+
+  companion object {
+    fun root(): Scope = Scope(name = "root")
   }
 }

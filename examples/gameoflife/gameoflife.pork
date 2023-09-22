@@ -1,7 +1,4 @@
 import local SDL2
-import java java.util.List
-import java java.util.ArrayList
-import java java.util.Collections
 
 let cellSize = 16
 let gridWidth  = 64
@@ -59,8 +56,7 @@ func drawCells(renderer, cells, swap) {
 
 func createCellGrid() {
   let numCells = gridWidth * gridHeight
-  let init = java_util_Collections_nCopies(numCells, 0)
-  java_util_ArrayList_new_collection(init)
+  listInitWith(numCells, 0)
 }
 
 func getCell(cells, swap, x, y) {
@@ -77,8 +73,8 @@ func setCell(cells, swap, x, y, state) {
     let mask = if swap { 2 } else { 1 }
     let idx = x + y * gridWidth
     let value = cells[idx]
-    if state { java_util_ArrayList_set(cells, idx, value | mask) }
-    else     { java_util_ArrayList_set(cells, idx, value & (~mask)) }
+    if state { listSet(cells, idx, value | mask) }
+    else     { listSet(cells, idx, value & (~mask)) }
   }
 }
 
@@ -156,7 +152,7 @@ export func main() {
     drawGrid(rend)
     drawCells(rend, cells, page)
 
-    if (modifiers & KMOD_LSHIFT) == KMOD_LSHIFT {
+    if (modifiers & KMOD_LSHIFT) != KMOD_LSHIFT {
       page = not page
       gameOfLife(cells, page)
     }

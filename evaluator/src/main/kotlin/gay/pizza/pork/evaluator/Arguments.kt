@@ -1,3 +1,3 @@
 package gay.pizza.pork.evaluator
 
-class Arguments(val values: List<Any>)
+typealias ArgumentList = List<Any>

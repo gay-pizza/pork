@@ -13,17 +13,17 @@ class JnaNativeProvider : NativeProvider {
     val library = NativeLibrary.getInstance(functionDefinition.library)
     val function = library.getFunction(functionDefinition.function)
       ?: throw RuntimeException("Failed to find function ${functionDefinition.function} in library ${functionDefinition.library}")
-    return CallableFunction { functionArgs ->
+    return CallableFunction { functionArgs, _ ->
       val ffiArgs = mutableListOf<Any?>()
       for ((index, spec) in arguments.withIndex()) {
         val ffiType = functionDefinition.parameters[index]
         if (spec.multiple) {
-          val variableArguments = functionArgs.values
-            .subList(index, functionArgs.values.size)
+          val variableArguments = functionArgs
+            .subList(index, functionArgs.size)
           ffiArgs.addAll(variableArguments)
           break
         } else {
-          val converted = convert(ffiType, functionArgs.values[index])
+          val converted = convert(ffiType, functionArgs[index])
           ffiArgs.add(converted)
         }
       }

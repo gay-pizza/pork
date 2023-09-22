@@ -3,6 +3,8 @@ package gay.pizza.pork.evaluator
 import gay.pizza.pork.ast.FunctionDefinition
 
 class FunctionContext(val compilationUnitContext: CompilationUnitContext, val node: FunctionDefinition) : CallableFunction {
+  val name: String = "${compilationUnitContext.name} ${node.symbol.id}"
+
   private fun resolveMaybeNative(): CallableFunction? = if (node.native == null) {
     null
   } else {
@@ -14,19 +16,19 @@ class FunctionContext(val compilationUnitContext: CompilationUnitContext, val no
 
   private val nativeCached by lazy { resolveMaybeNative() }
 
-  override fun call(arguments: Arguments): Any {
+  override fun call(arguments: ArgumentList, stack: CallStack): Any {
     if (nativeCached != null) {
-      return nativeCached!!.call(arguments)
+      return nativeCached!!.call(arguments, stack)
     }
 
-    val scope = compilationUnitContext.internalScope.fork()
+    val scope = compilationUnitContext.internalScope.fork(node.symbol.id)
     for ((index, spec) in node.arguments.withIndex()) {
       if (spec.multiple) {
-        val list = arguments.values.subList(index, arguments.values.size - 1)
+        val list = arguments.subList(index, arguments.size - 1)
         scope.define(spec.symbol.id, list)
         break
       } else {
-        scope.define(spec.symbol.id, arguments.values[index])
+        scope.define(spec.symbol.id, arguments[index])
       }
     }
 
@@ -34,8 +36,19 @@ class FunctionContext(val compilationUnitContext: CompilationUnitContext, val no
       throw RuntimeException("Native or Block is required for FunctionDefinition")
     }
 
-    val visitor = EvaluationVisitor(scope)
+    val visitor = EvaluationVisitor(scope, stack)
+    stack.push(this)
     val blockFunction = visitor.visitBlock(node.block!!)
-    return blockFunction.call()
+    try {
+      return blockFunction.call()
+    } catch (e: PorkError) {
+      throw e
+    } catch (e: Exception) {
+      val stackForError = stack.copy()
+      throw PorkError(e, stackForError)
+    } finally {
+      scope.disown()
+      stack.pop()
+    }
   }
 }

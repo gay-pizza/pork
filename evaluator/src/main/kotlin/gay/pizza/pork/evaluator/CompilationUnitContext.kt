@@ -7,7 +7,7 @@ class CompilationUnitContext(
   val compilationUnit: CompilationUnit,
   val evaluator: Evaluator,
   rootScope: Scope,
-  name: String = "unknown"
+  val name: String = "unknown"
 ) {
   val internalScope = rootScope.fork("internal $name")
   val externalScope = rootScope.fork("external $name")
@@ -40,7 +40,7 @@ class CompilationUnitContext(
   private fun definitionValue(definition: Definition): Any = when (definition) {
     is FunctionDefinition -> FunctionContext(this, definition)
     is LetDefinition -> {
-      EvaluationVisitor(internalScope.fork("let ${definition.symbol.id}"))
+      EvaluationVisitor(internalScope.fork("let ${definition.symbol.id}"), CallStack())
         .visit(definition.value)
     }
   }
