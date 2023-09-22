@@ -2,6 +2,9 @@
 package gay.pizza.pork.ast
 
 class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
+  override fun visitArgumentSpec(node: ArgumentSpec): Unit =
+    handle(node)
+
   override fun visitBlock(node: Block): Unit =
     handle(node)
 
@@ -21,6 +24,9 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
     handle(node)
 
   override fun visitForIn(node: ForIn): Unit =
+    handle(node)
+
+  override fun visitForInItem(node: ForInItem): Unit =
     handle(node)
 
   override fun visitFunctionCall(node: FunctionCall): Unit =

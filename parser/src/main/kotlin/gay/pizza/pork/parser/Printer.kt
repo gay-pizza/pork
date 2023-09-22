@@ -30,11 +30,15 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
 
   override fun visitForIn(node: ForIn) {
     append("for ")
-    visit(node.symbol)
+    visit(node.item)
     append(" in ")
     visit(node.expression)
     append(" ")
     visit(node.block)
+  }
+
+  override fun visitForInItem(node: ForInItem) {
+    node.symbol.visit(this)
   }
 
   override fun visitStringLiteral(node: StringLiteral) {
@@ -189,10 +193,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
     append("(")
     for ((index, argument) in node.arguments.withIndex()) {
-      visit(argument.symbol)
-      if (argument.multiple) {
-        append("...")
-      }
+      argument.visit(this)
       if (index + 1 != node.arguments.size) {
         append(", ")
       }
@@ -204,6 +205,13 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
 
     if (node.native != null) {
       visit(node.native!!)
+    }
+  }
+
+  override fun visitArgumentSpec(node: ArgumentSpec) {
+    node.symbol.visit(this)
+    if (node.multiple) {
+      append("...")
     }
   }
 

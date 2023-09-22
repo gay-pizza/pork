@@ -2,6 +2,8 @@
 package gay.pizza.pork.ast
 
 interface NodeVisitor<T> {
+  fun visitArgumentSpec(node: ArgumentSpec): T
+
   fun visitBlock(node: Block): T
 
   fun visitBooleanLiteral(node: BooleanLiteral): T
@@ -15,6 +17,8 @@ interface NodeVisitor<T> {
   fun visitDoubleLiteral(node: DoubleLiteral): T
 
   fun visitForIn(node: ForIn): T
+
+  fun visitForInItem(node: ForInItem): T
 
   fun visitFunctionCall(node: FunctionCall): T
 

@@ -4,6 +4,11 @@ import gay.pizza.pork.ast.*
 
 class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {
+  override fun parseArgumentSpec(): ArgumentSpec = guarded(NodeType.ArgumentSpec) {
+    val symbol = parseSymbol()
+    ArgumentSpec(symbol, next(TokenType.DotDotDot))
+  }
+
   override fun parseBlock(): Block = guarded(NodeType.Block) {
     expect(TokenType.LeftCurly)
     val items = collect(TokenType.RightCurly) {
@@ -177,11 +182,15 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
   override fun parseForIn(): ForIn = guarded(NodeType.ForIn) {
     expect(TokenType.For)
-    val symbol = parseSymbol()
+    val forInItem = parseForInItem()
     expect(TokenType.In)
     val value = parseExpression()
     val block = parseBlock()
-    ForIn(symbol, value, block)
+    ForIn(forInItem, value, block)
+  }
+
+  override fun parseForInItem(): ForInItem = guarded(NodeType.ForInItem) {
+    ForInItem(parseSymbol())
   }
 
   override fun parseFunctionCall(): FunctionCall = guarded(NodeType.FunctionCall) {
@@ -200,12 +209,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     val name = parseSymbol()
     expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
-      val symbol = parseSymbol()
-      var multiple = false
-      if (next(TokenType.DotDotDot)) {
-        multiple = true
-      }
-      ArgumentSpec(symbol, multiple)
+      parseArgumentSpec()
     }
     expect(TokenType.RightParentheses)
 

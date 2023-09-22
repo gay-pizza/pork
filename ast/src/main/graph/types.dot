@@ -31,6 +31,7 @@ digraph A {
   type_StringLiteral [shape=box,label="StringLiteral"]
   type_SymbolReference [shape=box,label="SymbolReference"]
   type_While [shape=box,label="While"]
+  type_ForInItem [shape=box,label="ForInItem"]
   type_ForIn [shape=box,label="ForIn"]
   type_Break [shape=box,label="Break"]
   type_Continue [shape=box,label="Continue"]
@@ -43,6 +44,8 @@ digraph A {
   type_Node -> type_Definition
   type_Node -> type_Block
   type_Node -> type_CompilationUnit
+  type_Node -> type_ArgumentSpec
+  type_Node -> type_ForInItem
   type_Node -> type_Native
   type_Expression -> type_LetAssignment
   type_Expression -> type_VarAssignment
@@ -105,7 +108,8 @@ digraph A {
   type_SymbolReference -> type_Symbol [style=dotted]
   type_While -> type_Expression [style=dotted]
   type_While -> type_Block [style=dotted]
-  type_ForIn -> type_Symbol [style=dotted]
+  type_ForInItem -> type_Symbol [style=dotted]
+  type_ForIn -> type_ForInItem [style=dotted]
   type_ForIn -> type_Expression [style=dotted]
   type_ForIn -> type_Block [style=dotted]
   type_Native -> type_Symbol [style=dotted]

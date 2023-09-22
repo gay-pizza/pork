@@ -10,7 +10,7 @@ class FunctionDefinition(override val modifiers: DefinitionModifiers, override v
   override val type: NodeType = NodeType.FunctionDefinition
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
-    visitor.visitAll(listOf(symbol), listOf(block), listOf(native))
+    visitor.visitAll(listOf(symbol), arguments, listOf(block), listOf(native))
 
   override fun <T> visit(visitor: NodeVisitor<T>): T =
     visitor.visitFunctionDefinition(this)

@@ -26,7 +26,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
         }
 
         scoped(reuseScope, node = node) {
-          currentScope.define(node.symbol.id, item ?: None)
+          currentScope.define(node.item.symbol.id, item ?: None)
           result = blockFunction.call()
         }
       } catch (_: BreakMarker) {
@@ -38,6 +38,9 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     reuseScope?.disown()
     return result ?: None
   }
+
+  override fun visitForInItem(node: ForInItem): Any =
+    throw RuntimeException("Visiting ForInItem is not supported.")
 
   override fun visitStringLiteral(node: StringLiteral): Any = node.text
   override fun visitBooleanLiteral(node: BooleanLiteral): Any = node.value
@@ -362,6 +365,9 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
       PrefixOperator.BinaryNot -> binaryNot(convert(value))
     }
   }
+
+  override fun visitArgumentSpec(node: ArgumentSpec): Any =
+    throw RuntimeException("Visiting ArgumentSpec is not supported.")
 
   override fun visitBlock(node: Block): BlockFunction {
     val visitor = this

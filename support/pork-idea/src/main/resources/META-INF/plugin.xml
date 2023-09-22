@@ -20,6 +20,9 @@
         <lang.braceMatcher
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkBraceMatcher"/>
+        <lang.refactoringSupport
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkRefactoringSupportProvider"/>
         <psi.declarationProvider implementation="gay.pizza.pork.idea.PorkSymbolDeclarationProvider"/>
     </extensions>
 

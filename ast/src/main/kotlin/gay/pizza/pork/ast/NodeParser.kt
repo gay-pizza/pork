@@ -2,6 +2,8 @@
 package gay.pizza.pork.ast
 
 interface NodeParser {
+  fun parseArgumentSpec(): ArgumentSpec
+
   fun parseBlock(): Block
 
   fun parseExpression(): Expression
@@ -21,6 +23,8 @@ interface NodeParser {
   fun parseDoubleLiteral(): DoubleLiteral
 
   fun parseForIn(): ForIn
+
+  fun parseForInItem(): ForInItem
 
   fun parseFunctionCall(): FunctionCall
 

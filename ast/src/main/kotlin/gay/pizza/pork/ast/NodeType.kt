@@ -3,6 +3,7 @@ package gay.pizza.pork.ast
 
 enum class NodeType(val parent: NodeType? = null) {
   Node,
+  ArgumentSpec(Node),
   Block(Node),
   Expression(Node),
   BooleanLiteral(Expression),
@@ -13,6 +14,7 @@ enum class NodeType(val parent: NodeType? = null) {
   Definition(Node),
   DoubleLiteral(Expression),
   ForIn(Expression),
+  ForInItem(Node),
   FunctionCall(Expression),
   FunctionDefinition(Definition),
   If(Expression),

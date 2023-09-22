@@ -26,9 +26,6 @@ object PorkElementHelpers {
 
   fun referenceOfElement(element: PorkElement, type: NodeType): PsiReference? {
     val textRangeOfSymbolInElement = element.childrenOfType<SymbolElement>().firstOrNull()?.textRangeInParent ?: return null
-    if (type == NodeType.FunctionDefinition) {
-      return PorkFunctionReference(element, textRangeOfSymbolInElement)
-    }
-    return null
+    return PorkIdentifierReference(element, textRangeOfSymbolInElement)
   }
 }

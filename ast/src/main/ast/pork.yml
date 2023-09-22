@@ -52,7 +52,6 @@ types:
       type: Expression
   SetAssignment:
     parent: Expression
-    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
@@ -138,6 +137,8 @@ types:
     - name: arguments
       type: List<Expression>
   ArgumentSpec:
+    parent: Node
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
@@ -270,11 +271,17 @@ types:
       type: Expression
     - name: block
       type: Block
-  ForIn:
-    parent: Expression
+  ForInItem:
+    parent: Node
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol
+  ForIn:
+    parent: Expression
+    values:
+    - name: item
+      type: ForInItem
     - name: expression
       type: Expression
     - name: block

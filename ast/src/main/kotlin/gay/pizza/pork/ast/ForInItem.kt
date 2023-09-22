@@ -5,24 +5,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("argumentSpec")
-class ArgumentSpec(val symbol: Symbol, val multiple: Boolean = false) : Node() {
-  override val type: NodeType = NodeType.ArgumentSpec
+@SerialName("forInItem")
+class ForInItem(val symbol: Symbol) : Node() {
+  override val type: NodeType = NodeType.ForInItem
 
   override fun <T> visitChildren(visitor: NodeVisitor<T>): List<T> =
     visitor.visitNodes(symbol)
 
   override fun <T> visit(visitor: NodeVisitor<T>): T =
-    visitor.visitArgumentSpec(this)
+    visitor.visitForInItem(this)
 
   override fun equals(other: Any?): Boolean {
-    if (other !is ArgumentSpec) return false
-    return other.symbol == symbol && other.multiple == multiple
+    if (other !is ForInItem) return false
+    return other.symbol == symbol
   }
 
   override fun hashCode(): Int {
     var result = symbol.hashCode()
-    result = 31 * result + multiple.hashCode()
     result = 31 * result + type.hashCode()
     return result
   }
