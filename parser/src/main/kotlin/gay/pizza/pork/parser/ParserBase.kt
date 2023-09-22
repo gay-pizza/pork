@@ -4,7 +4,9 @@ import gay.pizza.pork.ast.Node
 import gay.pizza.pork.ast.NodeParser
 import gay.pizza.pork.ast.NodeType
 
-abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribution) : NodeParser {
+abstract class ParserBase(source: TokenSource, val attribution: NodeAttribution) : NodeParser {
+  val source: TokenSource = source.ignoringParserIgnoredTypes()
+
   @Suppress("NOTHING_TO_INLINE")
   protected inline fun <T: Node> guarded(type: NodeType? = null, noinline block: () -> T): T =
     attribution.guarded(type, block)
@@ -64,31 +66,8 @@ abstract class ParserBase(val source: TokenSource, val attribution: NodeAttribut
     throw ExpectedTokenError(token, token.sourceIndex, *types)
   }
 
-  protected fun next(): Token {
-    while (true) {
-      val token = source.next()
-      if (ignoredByParser(token.type)) {
-        continue
-      }
-      return token
-    }
-  }
-
-  protected fun peek(): Token {
-    while (true) {
-      val token = source.peek()
-      if (ignoredByParser(token.type)) {
-        source.next()
-        continue
-      }
-      return token
-    }
-  }
-
-  private fun ignoredByParser(type: TokenType): Boolean = when (type) {
-    TokenType.BlockComment -> true
-    TokenType.LineComment -> true
-    TokenType.Whitespace -> true
-    else -> false
-  }
+  protected fun next(): Token = source.next()
+  protected fun peek(): Token = source.peek()
+  protected fun peek(ahead: Int): TokenType = source.peekTypeAhead(ahead)
+  protected fun peek(ahead: Int, vararg types: TokenType): Boolean = types.contains(source.peekTypeAhead(ahead))
 }

@@ -1,13 +1,9 @@
 package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.*
-import kotlin.math.exp
 
 class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {
-  private var storedSymbol: Symbol? = null
-  private var storedDefinitionModifiers: DefinitionModifiers? = null
-
   override fun parseBlock(): Block = guarded(NodeType.Block) {
     expect(TokenType.LeftCurly)
     val items = collect(TokenType.RightCurly) {
@@ -100,16 +96,15 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
     while (!peek(TokenType.EndOfFile)) {
       if (declarationAccepted) {
-        val definition = maybeParseDefinition()
-        if (definition != null) {
-          declarationAccepted = false
-          definitions.add(definition)
+        val declaration = parseDeclarationMaybe()
+        if (declaration != null) {
+          declarations.add(declaration)
           continue
+        } else {
+          declarationAccepted = false
         }
-        declarations.add(parseDeclaration())
-      } else {
-        definitions.add(parseDefinition())
       }
+      definitions.add(parseDefinition())
     }
 
     CompilationUnit(declarations, definitions)
@@ -135,34 +130,46 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     return modifiers
   }
 
-  private fun maybeParseDefinition(): Definition? {
-    try {
-      storedDefinitionModifiers = parseDefinitionModifiers()
-      val token = peek()
-      return when (token.type) {
-        TokenType.Func -> parseFunctionDefinition()
-        TokenType.Let -> parseLetDefinition()
-        else -> null
+  fun peekAheadUntilNotIn(vararg types: TokenType): TokenType {
+    var i = 0
+    while (true) {
+      val token = peek(i)
+      if (!types.contains(token)) {
+        return token
       }
-    } finally {
-      storedDefinitionModifiers = null
+      i++
     }
   }
 
-  override fun parseDeclaration(): Declaration = guarded {
+  private fun parseDeclarationMaybe(): Declaration? {
     val token = peek()
-    return@guarded when (token.type) {
+    return when (token.type) {
       TokenType.Import -> parseImportDeclaration()
-      else -> throw ParseError(
+      else -> null
+    }
+  }
+
+  override fun parseDeclaration(): Declaration {
+    val declaration = parseDeclarationMaybe()
+    if (declaration == null) {
+      val token = peek()
+      throw ParseError(
         "Failed to parse token: ${token.type} '${token.text}' as" +
           " declaration (index ${source.currentIndex})"
       )
     }
+    return declaration
   }
 
-  override fun parseDefinition(): Definition = guarded {
-    maybeParseDefinition() ?: throw ParseError("Unable to parse definition")
-  }
+  override fun parseDefinition(): Definition =
+    when (val type = peekAheadUntilNotIn(*TokenType.DeclarationModifiers)) {
+      TokenType.Func -> parseFunctionDefinition()
+      TokenType.Let -> parseLetDefinition()
+      else -> throw ParseError(
+        "Failed to parse token: ${type.name} as" +
+          " declaration (index ${source.currentIndex})"
+      )
+    }
 
   override fun parseDoubleLiteral(): DoubleLiteral = guarded(NodeType.DoubleLiteral) {
     DoubleLiteral(expect(TokenType.NumberLiteral).text.toDouble())
@@ -177,11 +184,9 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     ForIn(symbol, value, block)
   }
 
-  override fun parseFunctionCall(): FunctionCall =
-    parseFunctionCall(null)
-
-  fun parseFunctionCall(target: Symbol?): FunctionCall = guarded(NodeType.FunctionCall) {
-    val symbol = target ?: parseSymbol()
+  override fun parseFunctionCall(): FunctionCall = guarded(NodeType.FunctionCall) {
+    val symbol = parseSymbol()
+    expect(TokenType.LeftParentheses)
     val arguments = collect(TokenType.RightParentheses, TokenType.Comma) {
       parseExpression()
     }
@@ -190,7 +195,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   }
 
   override fun parseFunctionDefinition(): FunctionDefinition = guarded(NodeType.FunctionDefinition) {
-    val modifiers = storedDefinitionModifiers ?: parseDefinitionModifiers()
+    val modifiers = parseDefinitionModifiers()
     expect(TokenType.Func)
     val name = parseSymbol()
     expect(TokenType.LeftParentheses)
@@ -275,7 +280,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   }
 
   override fun parseLetDefinition(): LetDefinition = guarded(NodeType.LetDefinition) {
-    val definitionModifiers = storedDefinitionModifiers ?: parseDefinitionModifiers()
+    val definitionModifiers = parseDefinitionModifiers()
     expect(TokenType.Let)
     val name = parseSymbol()
     expect(TokenType.Equals)
@@ -322,7 +327,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   }
 
   override fun parseSetAssignment(): SetAssignment = guarded(NodeType.SetAssignment) {
-    val symbol = storedSymbol ?: parseSymbol()
+    val symbol = parseSymbol()
     expect(TokenType.Equals)
     val value = parseExpression()
     SetAssignment(symbol, value)
@@ -343,17 +348,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   }
 
   private fun parseSymbolCases(): Expression = guarded {
-    val symbol = parseSymbol()
-    if (next(TokenType.LeftParentheses)) {
-      parseFunctionCall(symbol)
-    } else {
-      val reference = SymbolReference(symbol)
-      if (peek(TokenType.PlusPlus, TokenType.MinusMinus)) {
-        expect(TokenType.PlusPlus, TokenType.MinusMinus) {
-          SuffixOperation(ParserHelpers.convertSuffixOperator(it), reference)
-        }
-      } else reference
-    }
+    if (peek(1, TokenType.LeftParentheses)) {
+      parseFunctionCall()
+    } else if (peek(1, TokenType.PlusPlus, TokenType.MinusMinus)) {
+      parseSuffixOperation()
+    } else parseSymbolReference()
   }
 
   override fun parseSymbol(): Symbol = guarded(NodeType.Symbol) {

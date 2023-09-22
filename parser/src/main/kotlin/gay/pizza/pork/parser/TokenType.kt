@@ -90,5 +90,15 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     val SingleChars = entries.filter { item -> item.singleChar != null }
     val CharConsumers = entries.filter { item ->
       item.charConsumer != null || item.charIndexConsumer != null }
+
+    val ParserIgnoredTypes: Array<TokenType> = arrayOf(
+      Whitespace,
+      BlockComment,
+      LineComment
+    )
+
+    val DeclarationModifiers: Array<TokenType> = arrayOf(
+      Export
+    )
   }
 }

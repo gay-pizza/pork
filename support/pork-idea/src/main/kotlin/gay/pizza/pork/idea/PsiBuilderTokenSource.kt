@@ -4,6 +4,7 @@ import com.intellij.lang.PsiBuilder
 import gay.pizza.pork.parser.SourceIndex
 import gay.pizza.pork.parser.Token
 import gay.pizza.pork.parser.TokenSource
+import gay.pizza.pork.parser.TokenType
 import com.intellij.psi.TokenType as PsiTokenType
 
 @Suppress("UnstableApiUsage")
@@ -28,6 +29,19 @@ class PsiBuilderTokenSource(val builder: PsiBuilder) : TokenSource {
       throw RuntimeException("Lexing failure: ${elementType.debugName}")
     return Token(tokenType, SourceIndex.indexOnly(builder.currentOffset), builder.tokenText!!)
   }
+
+  override fun peekTypeAhead(ahead: Int): TokenType {
+    if (builder.eof()) {
+      return TokenType.EndOfFile
+    }
+    val elementType = builder.lookAhead(ahead)
+    if (elementType == null || elementType == PsiTokenType.BAD_CHARACTER) {
+      return TokenType.EndOfFile
+    }
+    return PorkElementTypes.tokenTypeFor(elementType) ?: TokenType.EndOfFile
+  }
+
+  override fun ignoringParserIgnoredTypes(): TokenSource = this
 
   class BadCharacterError(error: String) : RuntimeException(error)
 }
