@@ -61,10 +61,12 @@ class PorkLexer : LexerBase() {
       internalTokenEnd = currentToken.sourceIndex.index + currentToken.text.length
     } catch (e: ProcessCanceledException) {
       throw e
-    } catch (e: Throwable) {
+    } catch (e: BadCharacterError) {
       currentTokenType = PsiTokenType.BAD_CHARACTER
       internalTokenEnd = bufferEnd
-      log.warn(Tokenizer::class.java.name, e)
+    } catch (e: UnterminatedTokenError) {
+      currentTokenType = PsiTokenType.BAD_CHARACTER
+      internalTokenEnd = bufferEnd
     }
   }
 

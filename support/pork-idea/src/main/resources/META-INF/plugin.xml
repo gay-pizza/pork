@@ -17,6 +17,9 @@
         <lang.commenter
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkCommenter"/>
+        <lang.braceMatcher
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkBraceMatcher"/>
         <psi.declarationProvider implementation="gay.pizza.pork.idea.PorkSymbolDeclarationProvider"/>
     </extensions>
 

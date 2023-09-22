@@ -130,6 +130,8 @@ types:
       type: Boolean
   FunctionCall:
     parent: Expression
+    referencedElementValue: symbol
+    referencedElementType: FunctionDefinition
     values:
     - name: symbol
       type: Symbol
@@ -256,7 +258,8 @@ types:
       type: String
   SymbolReference:
     parent: Expression
-    namedElementValue: symbol
+    referencedElementValue: symbol
+    referencedElementType: Node
     values:
     - name: symbol
       type: Symbol

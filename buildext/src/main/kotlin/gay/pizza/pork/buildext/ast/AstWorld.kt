@@ -57,6 +57,14 @@ class AstWorld {
           type.namedElementValue = typeDescription.namedElementValue
         }
 
+        if (typeDescription.referencedElementValue != null) {
+          type.referencedElementValue = typeDescription.referencedElementValue
+        }
+
+        if (typeDescription.referencedElementType != null) {
+          type.referencedElementType = typeDescription.referencedElementType
+        }
+
         if (typeDescription.values != null) {
           type.markHasValues()
           for (value in typeDescription.values) {

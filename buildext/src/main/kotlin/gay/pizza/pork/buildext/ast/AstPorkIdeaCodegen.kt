@@ -76,15 +76,14 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
 
     if (baseType == "PorkNamedElement") {
       kotlinClass.imports.add(0, "com.intellij.psi.PsiElement")
-      kotlinClass.imports.add("gay.pizza.pork.ast.NodeType")
-      kotlinClass.imports.add("gay.pizza.pork.idea.PorkElementTypes")
+      kotlinClass.imports.add("gay.pizza.pork.idea.psi.PorkElementHelpers")
       val getNameFunction = KotlinFunction(
         "getName",
         overridden = true,
         returnType = "String?",
         isImmediateExpression = true
       )
-      getNameFunction.body.add("node.findChildByType(PorkElementTypes.elementTypeFor(NodeType.${type.name}))?.text")
+      getNameFunction.body.add("PorkElementHelpers.nameOfNamedElement(this)")
       kotlinClass.functions.add(getNameFunction)
 
       val setNameFunction = KotlinFunction(
@@ -96,8 +95,32 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
           KotlinParameter("name", "String")
         )
       )
-      setNameFunction.body.add("this")
+      setNameFunction.body.add("PorkElementHelpers.setNameOfNamedElement(this, name)")
       kotlinClass.functions.add(setNameFunction)
+
+      val getNameIdentifierFunction = KotlinFunction(
+        "getNameIdentifier",
+        overridden = true,
+        returnType = "PsiElement?",
+        isImmediateExpression = true
+      )
+      getNameIdentifierFunction.body.add("PorkElementHelpers.nameIdentifierOfNamedElement(this)")
+      kotlinClass.functions.add(getNameIdentifierFunction)
+    }
+
+    if (type.referencedElementValue != null && type.referencedElementType != null) {
+      kotlinClass.imports.add(0, "com.intellij.psi.PsiReference")
+      kotlinClass.imports.add("gay.pizza.pork.ast.NodeType")
+      kotlinClass.imports.add("gay.pizza.pork.idea.psi.PorkElementHelpers")
+
+      val getReferenceFunction = KotlinFunction(
+        "getReference",
+        overridden = true,
+        returnType = "PsiReference?",
+        isImmediateExpression = true
+      )
+      getReferenceFunction.body.add("PorkElementHelpers.referenceOfElement(this, NodeType.${type.referencedElementType})")
+      kotlinClass.functions.add(getReferenceFunction)
     }
 
     write("${type.name}Element.kt", KotlinWriter(kotlinClass))
@@ -153,10 +176,12 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
       ),
       inherits = mutableListOf(
         "PorkElement(node)",
-        "PsiNamedElement"
+        "PsiNamedElement",
+        "PsiNameIdentifierOwner"
       ),
       imports = mutableListOf(
         "com.intellij.lang.ASTNode",
+        "com.intellij.psi.PsiNameIdentifierOwner",
         "com.intellij.psi.PsiNamedElement"
       )
     )
