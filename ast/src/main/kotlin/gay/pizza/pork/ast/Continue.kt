@@ -12,10 +12,8 @@ class Continue : Expression() {
   override fun <T> visit(visitor: NodeVisitor<T>): T =
     visitor.visitContinue(this)
 
-  override fun equals(other: Any?): Boolean {
-    if (other !is Continue) return false
-    return true
-  }
+  override fun equals(other: Any?): Boolean =
+    other is Continue
 
   override fun hashCode(): Int =
     31 * type.hashCode()

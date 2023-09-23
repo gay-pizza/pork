@@ -12,10 +12,8 @@ class Break : Expression() {
   override fun <T> visit(visitor: NodeVisitor<T>): T =
     visitor.visitBreak(this)
 
-  override fun equals(other: Any?): Boolean {
-    if (other !is Break) return false
-    return true
-  }
+  override fun equals(other: Any?): Boolean =
+    other is Break
 
   override fun hashCode(): Int =
     31 * type.hashCode()

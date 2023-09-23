@@ -421,9 +421,10 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
     visitSelfFunction.body.add("visitor.visit${type.name}(this)")
     kotlinClassLike.functions.add(visitSelfFunction)
 
-    val equalsAndHashCodeMembers = kotlinClassLike.members.map {
+    val hashCodeMembers = kotlinClassLike.members.map {
       it.name
     }.sortedBy { it == "type" }
+    val equalsMembers = hashCodeMembers.filterNot { it == "type" }
     val equalsFunction = KotlinFunction(
       "equals",
       returnType = "Boolean",
@@ -433,14 +434,19 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
       "other",
       "Any?"
     ))
-    equalsFunction.body.add("if (other !is ${type.name}) return false")
-    var predicate = equalsAndHashCodeMembers.mapNotNull {
-      if (it == "type") null else "other.${it} == $it"
-    }.joinToString(" && ")
-    if (predicate.isEmpty()) {
-      predicate = "true"
+    if (equalsMembers.isNotEmpty()) {
+      equalsFunction.body.add("if (other !is ${type.name}) return false")
+      var predicate = equalsMembers.joinToString(" && ") {
+        "other.${it} == $it"
+      }
+      if (predicate.isEmpty()) {
+        predicate = "true"
+      }
+      equalsFunction.body.add("return $predicate")
+    } else {
+      equalsFunction.isImmediateExpression = true
+      equalsFunction.body.add("other is ${type.name}")
     }
-    equalsFunction.body.add("return $predicate")
     kotlinClassLike.functions.add(equalsFunction)
 
     val hashCodeFunction = KotlinFunction(
@@ -449,12 +455,12 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
       overridden = true
     )
 
-    if (equalsAndHashCodeMembers.size == 1) {
-      val member = equalsAndHashCodeMembers.single()
+    if (hashCodeMembers.size == 1) {
+      val member = hashCodeMembers.single()
       hashCodeFunction.isImmediateExpression = true
       hashCodeFunction.body.add("31 * ${member}.hashCode()")
     } else {
-      for ((index, value) in equalsAndHashCodeMembers.withIndex()) {
+      for ((index, value) in hashCodeMembers.withIndex()) {
         if (index == 0) {
           hashCodeFunction.body.add("var result = ${value}.hashCode()")
         } else {

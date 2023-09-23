@@ -12,10 +12,8 @@ class NoneLiteral : Expression() {
   override fun <T> visit(visitor: NodeVisitor<T>): T =
     visitor.visitNoneLiteral(this)
 
-  override fun equals(other: Any?): Boolean {
-    if (other !is NoneLiteral) return false
-    return true
-  }
+  override fun equals(other: Any?): Boolean =
+    other is NoneLiteral
 
   override fun hashCode(): Int =
     31 * type.hashCode()
