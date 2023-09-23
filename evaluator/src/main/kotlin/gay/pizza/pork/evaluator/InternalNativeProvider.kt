@@ -1,6 +1,7 @@
 package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.ast.ArgumentSpec
+import gay.pizza.pork.common.unused
 
 class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   private val functions = mutableMapOf(
@@ -16,18 +17,21 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   }
 
   private fun printValues(arguments: ArgumentList, stack: CallStack): Any {
+    unused(stack)
     if (quiet || arguments.isEmpty()) return None
     print(arguments.joinToString(" "))
     return None
   }
 
   private fun printLine(arguments: ArgumentList, stack: CallStack): Any {
+    unused(stack)
     if (quiet) return None
     println(arguments.joinToString(" "))
     return None
   }
 
   private fun setInList(arguments: ArgumentList, stack: CallStack): Any {
+    unused(stack)
     @Suppress("UNCHECKED_CAST")
     val list = arguments[0] as MutableList<Any>
     val value = arguments[2]
@@ -36,6 +40,7 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   }
 
   private fun listInitWith(arguments: ArgumentList, stack: CallStack): Any {
+    unused(stack)
     val size = (arguments[0] as Number).toInt()
     return MutableList(size) { arguments[1] }
   }

@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.childrenOfType
 import com.intellij.util.PlatformIcons
 import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.common.unused
 import gay.pizza.pork.idea.PorkElementTypes
 import gay.pizza.pork.idea.PorkLanguage
 import gay.pizza.pork.idea.psi.gen.*
@@ -44,6 +45,7 @@ object PorkElementHelpers {
   }
 
   fun referenceOfElement(element: PorkElement, type: NodeType): PsiReference? {
+    unused(type)
     val textRangeOfSymbolInElement = element.childrenOfType<SymbolElement>().firstOrNull()?.textRangeInParent ?: return null
     return PorkIdentifierReference(element, textRangeOfSymbolInElement)
   }
