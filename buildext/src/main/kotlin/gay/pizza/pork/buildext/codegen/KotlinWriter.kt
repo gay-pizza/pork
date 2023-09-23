@@ -195,7 +195,7 @@ class KotlinWriter() {
     appendLine("package $pkg")
     appendLine()
 
-    for (import in imports) {
+    for (import in imports.toSortedSet()) {
       appendLine("import $import")
     }
 

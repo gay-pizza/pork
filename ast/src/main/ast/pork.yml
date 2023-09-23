@@ -261,6 +261,7 @@ types:
     parent: Expression
     referencedElementValue: symbol
     referencedElementType: Node
+    namedElementValue: symbol
     values:
     - name: symbol
       type: Symbol

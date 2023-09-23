@@ -23,7 +23,9 @@
         <lang.refactoringSupport
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkRefactoringSupportProvider"/>
-        <psi.declarationProvider implementation="gay.pizza.pork.idea.PorkSymbolDeclarationProvider"/>
+        <lang.elementManipulator
+                implementationClass="gay.pizza.pork.idea.PorkElementManipulator"
+                forClass="gay.pizza.pork.idea.psi.gen.PorkElement"/>
     </extensions>
 
     <applicationListeners>
