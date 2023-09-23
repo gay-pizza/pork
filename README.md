@@ -12,7 +12,7 @@ func fib(n) {
   }
 }
 
-func main() {
+export func main() {
   let result = fib(20)
   println(result)
 }
