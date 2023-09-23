@@ -30,7 +30,10 @@ class FfiFunctionDefinition(
         library,
         functionName,
         returnType,
-        parameterString.split(",").map { it.trim() }
+        parameterString.splitToSequence(",")
+          .map { it.trim() }
+          .filter { it.isNotEmpty() }
+          .toList()
       )
     }
   }

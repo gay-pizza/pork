@@ -5,6 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class PorkModulePlugin : Plugin<Project> {
@@ -16,13 +17,17 @@ open class PorkModulePlugin : Plugin<Project> {
     target.repositories.maven(url = "https://gitlab.com/api/v4/projects/49101454/packages/maven")
 
     target.extensions.getByType<JavaPluginExtension>().apply {
-      val javaVersion = JavaVersion.toVersion(17)
+      val javaVersion = JavaVersion.toVersion(21)
       sourceCompatibility = javaVersion
       targetCompatibility = javaVersion
     }
 
     target.tasks.withType<KotlinCompile> {
-      kotlinOptions.jvmTarget = "17"
+      kotlinOptions.jvmTarget = "21"
+    }
+
+    target.extensions.getByType<KotlinJvmProjectExtension>().apply {
+      jvmToolchain(21)
     }
 
     target.dependencies {

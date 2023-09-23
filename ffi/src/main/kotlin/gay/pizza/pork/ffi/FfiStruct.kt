@@ -9,6 +9,6 @@ class FfiStruct : FfiType {
     fields.add(FfiStructField(field, type))
   }
 
-  override val size: Int
+  override val size: Long
     get() = fields.sumOf { it.type.size }
 }

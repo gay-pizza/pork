@@ -14,6 +14,7 @@ application {
   applicationName = "pork"
   mainClass.set("gay.pizza.pork.tool.MainKt")
   applicationDefaultJvmArgs += "-XstartOnFirstThread"
+  applicationDefaultJvmArgs += "--enable-native-access=ALL-UNNAMED"
 }
 
 for (task in arrayOf(tasks.shadowDistTar, tasks.shadowDistZip, tasks.shadowJar)) {

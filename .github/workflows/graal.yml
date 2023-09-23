@@ -9,7 +9,7 @@ jobs:
     - name: Set up GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'graalvm'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
@@ -33,7 +33,7 @@ jobs:
     - name: Set up GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'graalvm'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
@@ -57,7 +57,7 @@ jobs:
     - name: Set up GraalVM
       uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'graalvm'
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2

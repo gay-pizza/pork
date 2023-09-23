@@ -6,8 +6,8 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.evaluator.*
+import gay.pizza.pork.ffi.FfiNativeProvider
 import gay.pizza.pork.ffi.JavaNativeProvider
-import gay.pizza.pork.ffi.JnaNativeProvider
 import gay.pizza.pork.minimal.FileTool
 
 class RunCommand : CliktCommand(help = "Run Program", name = "run") {
@@ -22,7 +22,7 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
     val scope = Scope.root()
     val main = tool.loadMainFunction(scope, setupEvaluator = {
       addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
-      addNativeProvider("ffi", JnaNativeProvider())
+      addNativeProvider("ffi", FfiNativeProvider())
       addNativeProvider("java", JavaNativeProvider())
     })
 
