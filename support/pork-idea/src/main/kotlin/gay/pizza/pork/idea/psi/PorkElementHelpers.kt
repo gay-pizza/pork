@@ -1,6 +1,7 @@
 package gay.pizza.pork.idea.psi
 
 import com.intellij.lang.ASTNode
+import com.intellij.model.Symbol
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
@@ -11,28 +12,30 @@ import com.intellij.psi.util.childrenOfType
 import com.intellij.util.PlatformIcons
 import gay.pizza.pork.ast.NodeType
 import gay.pizza.pork.common.unused
+import gay.pizza.pork.idea.PorkDeclarationSymbol
 import gay.pizza.pork.idea.PorkElementTypes
 import gay.pizza.pork.idea.PorkLanguage
 import gay.pizza.pork.idea.psi.gen.*
 import javax.swing.Icon
 
+@Suppress("UnstableApiUsage")
 object PorkElementHelpers {
   private val symbolElementType = PorkElementTypes.elementTypeFor(NodeType.Symbol)
 
   fun nameOfNamedElement(element: PorkNamedElement): String? {
-    val child = symbolOf(element) ?: return null
+    val child = symbolElementOf(element) ?: return null
     return child.text
   }
 
   fun setNameOfNamedElement(element: PorkNamedElement, name: String): PsiElement {
-    val child = symbolOf(element) ?: return element
+    val child = symbolElementOf(element) ?: return element
     val factory = PsiFileFactory.getInstance(element.project) as PsiFileFactoryImpl
     val created = factory.createElementFromText(name, PorkLanguage, child.elementType, element.context) as PorkElement
     element.node.replaceChild(child, created.node)
     return element
   }
 
-  fun symbolOf(element: PorkElement): ASTNode? {
+  fun symbolElementOf(element: PorkElement): ASTNode? {
     var child = element.node.findChildByType(symbolElementType)
     if (child == null) {
       child = PsiTreeUtil.collectElementsOfType(element, SymbolElement::class.java).firstOrNull()?.node
@@ -41,7 +44,7 @@ object PorkElementHelpers {
   }
 
   fun nameIdentifierOfNamedElement(element: PorkNamedElement): PsiElement? {
-    return symbolOf(element)?.psi
+    return symbolElementOf(element)?.psi
   }
 
   fun referenceOfElement(element: PorkElement, type: NodeType): PsiReference? {
@@ -71,6 +74,15 @@ object PorkElementHelpers {
       return PorkPresentable(element.name, icon)
     }
 
+    return null
+  }
+
+  fun psiSymbolFor(element: PorkElement): Symbol? {
+    val symbolElement = symbolElementOf(element) ?: return null
+    val module = element.containingFile?.virtualFile?.path ?: element.containingFile?.name ?: return null
+    if (element is FunctionDefinitionElement || element is LetDefinitionElement) {
+      return PorkDeclarationSymbol(module, symbolElement.text)
+    }
     return null
   }
 }
