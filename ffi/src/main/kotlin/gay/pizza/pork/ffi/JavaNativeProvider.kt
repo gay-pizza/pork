@@ -1,6 +1,6 @@
 package gay.pizza.pork.ffi
 
-import gay.pizza.pork.ast.ArgumentSpec
+import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None

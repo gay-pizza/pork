@@ -2,7 +2,7 @@ package gay.pizza.pork.ffi
 
 import com.sun.jna.Function
 import com.sun.jna.NativeLibrary
-import gay.pizza.pork.ast.ArgumentSpec
+import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None

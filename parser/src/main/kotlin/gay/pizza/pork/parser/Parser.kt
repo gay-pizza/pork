@@ -1,6 +1,6 @@
 package gay.pizza.pork.parser
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.gen.*
 
 class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {

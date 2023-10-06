@@ -19,10 +19,10 @@ open class GenerateStandardAstCode : DefaultTask() {
   var astDescriptionFile: File = project.file("src/main/ast/pork.yml")
 
   @get:Input
-  var codePackage: String = "gay.pizza.pork.ast"
+  var codePackage: String = "gay.pizza.pork.ast.gen"
 
   @get:OutputDirectory
-  var outputDirectory: File = project.file("src/main/kotlin/gay/pizza/pork/ast")
+  var outputDirectory: File = project.file("src/main/kotlin/gay/pizza/pork/ast/gen")
 
   @get:OutputFile
   var typeGraphFile: File = project.file("src/main/graph/types.dot")

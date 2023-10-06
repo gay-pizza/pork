@@ -5,8 +5,8 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
-import gay.pizza.pork.ast.NodeType
-import gay.pizza.pork.ast.parse
+import gay.pizza.pork.ast.gen.NodeType
+import gay.pizza.pork.ast.gen.parse
 import gay.pizza.pork.parser.Parser
 
 class PorkParser : PsiParser {

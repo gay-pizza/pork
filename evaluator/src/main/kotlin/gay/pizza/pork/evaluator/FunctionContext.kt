@@ -1,6 +1,6 @@
 package gay.pizza.pork.evaluator
 
-import gay.pizza.pork.ast.FunctionDefinition
+import gay.pizza.pork.ast.gen.FunctionDefinition
 
 class FunctionContext(val compilationUnitContext: CompilationUnitContext, val node: FunctionDefinition) : CallableFunction {
   val name: String = "${compilationUnitContext.name} ${node.symbol.id}"

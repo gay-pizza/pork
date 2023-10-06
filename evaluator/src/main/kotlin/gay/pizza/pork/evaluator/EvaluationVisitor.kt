@@ -1,6 +1,6 @@
 package gay.pizza.pork.evaluator
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.gen.*
 import kotlin.math.abs
 
 @Suppress("JavaIoSerializableObjectMustHaveReadResolve")

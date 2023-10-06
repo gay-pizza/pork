@@ -1,6 +1,6 @@
 package gay.pizza.pork.parser
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.gen.*
 import gay.pizza.pork.common.IndentPrinter
 
 class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {

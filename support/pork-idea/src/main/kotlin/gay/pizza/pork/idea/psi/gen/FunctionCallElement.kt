@@ -4,7 +4,7 @@ package gay.pizza.pork.idea.psi.gen
 import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiReference
-import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.idea.psi.PorkElementHelpers
 import javax.swing.Icon
 

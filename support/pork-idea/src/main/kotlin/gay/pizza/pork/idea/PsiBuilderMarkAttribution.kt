@@ -1,8 +1,8 @@
 package gay.pizza.pork.idea
 
 import com.intellij.lang.PsiBuilder
-import gay.pizza.pork.ast.Node
-import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.ast.gen.Node
+import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.parser.ParseError
 import gay.pizza.pork.parser.ParserNodeAttribution
 

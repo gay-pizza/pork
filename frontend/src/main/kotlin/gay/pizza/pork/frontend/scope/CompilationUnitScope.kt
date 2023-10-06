@@ -1,7 +1,7 @@
 package gay.pizza.pork.frontend.scope
 
-import gay.pizza.pork.ast.CompilationUnit
-import gay.pizza.pork.ast.Symbol
+import gay.pizza.pork.ast.gen.CompilationUnit
+import gay.pizza.pork.ast.gen.Symbol
 
 class CompilationUnitScope(val worldScope: WorldScope, val unit: CompilationUnit) {
   val externalSymbols = mutableSetOf<ScopeSymbol>()

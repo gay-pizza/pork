@@ -10,7 +10,7 @@ import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.childrenOfType
 import com.intellij.util.PlatformIcons
-import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.common.unused
 import gay.pizza.pork.idea.PorkDeclarationSymbol
 import gay.pizza.pork.idea.PorkElementTypes

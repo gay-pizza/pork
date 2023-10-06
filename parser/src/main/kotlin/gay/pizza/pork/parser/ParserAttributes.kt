@@ -1,9 +1,9 @@
 package gay.pizza.pork.parser
 
-import gay.pizza.pork.ast.Node
-import gay.pizza.pork.ast.NodeCoalescer
-import gay.pizza.pork.ast.data
-import gay.pizza.pork.ast.visit
+import gay.pizza.pork.ast.gen.Node
+import gay.pizza.pork.ast.gen.NodeCoalescer
+import gay.pizza.pork.ast.gen.data
+import gay.pizza.pork.ast.gen.visit
 
 data class ParserAttributes(val tokens: List<Token>) {
   companion object {

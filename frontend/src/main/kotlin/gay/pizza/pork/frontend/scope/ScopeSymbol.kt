@@ -1,7 +1,7 @@
 package gay.pizza.pork.frontend.scope
 
-import gay.pizza.pork.ast.Definition
-import gay.pizza.pork.ast.Node
+import gay.pizza.pork.ast.gen.Definition
+import gay.pizza.pork.ast.gen.Node
 
 class ScopeSymbol(
   val compilationUnit: Node,

@@ -1,6 +1,6 @@
 package gay.pizza.pork.ffi
 
-import gay.pizza.pork.ast.*
+import gay.pizza.pork.ast.gen.*
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.lang.reflect.Parameter

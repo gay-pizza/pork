@@ -1,6 +1,6 @@
 package gay.pizza.pork.parser
 
-import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.ast.gen.NodeType
 
 class ParserStackAnalysis(private val stack: Array<StackTraceElement>) {
   constructor(throwable: Throwable) : this(throwable.stackTrace)

@@ -1,6 +1,6 @@
 package gay.pizza.pork.ffi
 
-import gay.pizza.pork.ast.visit
+import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.parser.CharSource
 import gay.pizza.pork.parser.Printer

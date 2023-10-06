@@ -112,7 +112,7 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
 
     if (type.referencedElementValue != null && type.referencedElementType != null) {
       kotlinClass.imports.add(0, "com.intellij.psi.PsiReference")
-      kotlinClass.imports.add("gay.pizza.pork.ast.NodeType")
+      kotlinClass.imports.add("gay.pizza.pork.ast.gen.NodeType")
 
       val getReferenceFunction = KotlinFunction(
         "getReference",
@@ -157,7 +157,7 @@ class AstPorkIdeaCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
         "com.intellij.extapi.psi.ASTWrapperPsiElement",
         "com.intellij.lang.ASTNode",
         "com.intellij.psi.PsiElement",
-        "gay.pizza.pork.ast.NodeType",
+        "gay.pizza.pork.ast.gen.NodeType",
         "gay.pizza.pork.idea.PorkElementTypes"
       )
     )

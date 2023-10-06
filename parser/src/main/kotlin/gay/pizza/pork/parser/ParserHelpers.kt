@@ -1,8 +1,8 @@
 package gay.pizza.pork.parser
 
-import gay.pizza.pork.ast.InfixOperator
-import gay.pizza.pork.ast.PrefixOperator
-import gay.pizza.pork.ast.SuffixOperator
+import gay.pizza.pork.ast.gen.InfixOperator
+import gay.pizza.pork.ast.gen.PrefixOperator
+import gay.pizza.pork.ast.gen.SuffixOperator
 
 internal object ParserHelpers {
   fun convertInfixOperator(token: Token): InfixOperator = when (token.type) {

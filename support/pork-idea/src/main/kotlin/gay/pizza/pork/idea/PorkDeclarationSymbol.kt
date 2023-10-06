@@ -2,17 +2,11 @@ package gay.pizza.pork.idea
 
 import com.intellij.model.Pointer
 import com.intellij.model.Symbol
-import com.intellij.navigation.ItemPresentation
 import com.intellij.navigation.NavigatableSymbol
-import com.intellij.navigation.PsiElementNavigationItem
 import com.intellij.openapi.project.Project
 import com.intellij.platform.backend.navigation.NavigationRequest
-import com.intellij.platform.backend.navigation.NavigationRequests
 import com.intellij.platform.backend.navigation.NavigationTarget
 import com.intellij.platform.backend.presentation.TargetPresentation
-import com.intellij.psi.PsiElement
-import gay.pizza.pork.idea.psi.PorkElementHelpers
-import gay.pizza.pork.idea.psi.PorkReferencable
 import gay.pizza.pork.idea.psi.gen.PorkElement
 
 @Suppress("UnstableApiUsage")

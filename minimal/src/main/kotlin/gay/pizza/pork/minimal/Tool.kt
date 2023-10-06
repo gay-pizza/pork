@@ -1,8 +1,8 @@
 package gay.pizza.pork.minimal
 
-import gay.pizza.pork.ast.CompilationUnit
-import gay.pizza.pork.ast.NodeVisitor
-import gay.pizza.pork.ast.visit
+import gay.pizza.pork.ast.gen.CompilationUnit
+import gay.pizza.pork.ast.gen.NodeVisitor
+import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.ffi.JavaAutogenContentSource
 import gay.pizza.pork.ffi.JavaNativeProvider

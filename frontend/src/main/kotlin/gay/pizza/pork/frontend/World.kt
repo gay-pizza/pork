@@ -1,7 +1,7 @@
 package gay.pizza.pork.frontend
 
-import gay.pizza.pork.ast.CompilationUnit
-import gay.pizza.pork.ast.ImportDeclaration
+import gay.pizza.pork.ast.gen.CompilationUnit
+import gay.pizza.pork.ast.gen.ImportDeclaration
 import gay.pizza.pork.parser.DiscardNodeAttribution
 import gay.pizza.pork.parser.Parser
 import gay.pizza.pork.parser.TokenStreamSource

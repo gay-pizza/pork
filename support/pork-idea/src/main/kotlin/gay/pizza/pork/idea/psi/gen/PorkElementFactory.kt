@@ -4,7 +4,7 @@ package gay.pizza.pork.idea.psi.gen
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
-import gay.pizza.pork.ast.NodeType
+import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.idea.PorkElementTypes
 
 object PorkElementFactory {

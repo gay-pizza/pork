@@ -1,6 +1,6 @@
 package gay.pizza.pork.evaluator
 
-import gay.pizza.pork.ast.ArgumentSpec
+import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.common.unused
 
 class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {

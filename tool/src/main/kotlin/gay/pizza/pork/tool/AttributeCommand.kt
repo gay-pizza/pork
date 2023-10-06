@@ -3,8 +3,8 @@ package gay.pizza.pork.tool
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import gay.pizza.dough.fs.PlatformFsProvider
-import gay.pizza.pork.ast.NodeCoalescer
-import gay.pizza.pork.ast.visit
+import gay.pizza.pork.ast.gen.NodeCoalescer
+import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.minimal.FileTool
 import gay.pizza.pork.parser.ParserAttributes
 import gay.pizza.pork.parser.ParserNodeAttribution

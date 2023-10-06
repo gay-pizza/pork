@@ -1,6 +1,6 @@
 package gay.pizza.pork.frontend.scope
 
-import gay.pizza.pork.ast.CompilationUnit
+import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.frontend.World
 
 class WorldScope(val world: World) {
