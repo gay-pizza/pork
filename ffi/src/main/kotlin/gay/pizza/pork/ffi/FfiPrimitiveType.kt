@@ -1,10 +1,11 @@
 package gay.pizza.pork.ffi
 
 import gay.pizza.pork.evaluator.None
+import java.lang.foreign.MemorySegment
 
 enum class FfiPrimitiveType(
   val id: kotlin.String,
-  override val size: kotlin.Int,
+  override val size: kotlin.Long,
   val numberConvert: (Number.() -> Number)? = null,
   val nullableConversion: (Any?.() -> Any)? = null,
   val notNullConversion: (Any.() -> Any)? = null
@@ -22,9 +23,10 @@ enum class FfiPrimitiveType(
   String("char*", 8, nullableConversion = { toString() }),
   Pointer("void*", 8, nullableConversion = {
     if (this is kotlin.Long) {
-      com.sun.jna.Pointer(this)
+      MemorySegment.ofAddress(this)
     } else if (this == None) {
-      com.sun.jna.Pointer.NULL
-    } else this as com.sun.jna.Pointer
-  })
+      MemorySegment.NULL
+    } else this as MemorySegment
+  }),
+  Void("void", 0)
 }

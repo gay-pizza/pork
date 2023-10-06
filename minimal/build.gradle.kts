@@ -18,6 +18,8 @@ dependencies {
 application {
   applicationName = "pork-rt"
   mainClass.set("gay.pizza.pork.minimal.MainKt")
+  applicationDefaultJvmArgs += "-XstartOnFirstThread"
+  applicationDefaultJvmArgs += "--enable-native-access=ALL-UNNAMED"
 }
 
 for (task in arrayOf(tasks.shadowDistTar, tasks.shadowDistZip, tasks.shadowJar)) {

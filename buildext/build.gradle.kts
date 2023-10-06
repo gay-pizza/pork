@@ -1,4 +1,6 @@
 @file:Suppress("UnstableApiUsage")
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   `kotlin-dsl`
   embeddedKotlin("plugin.serialization")
@@ -16,8 +18,25 @@ dependencies {
   implementation("com.charleskorn.kaml:kaml:0.55.0")
 }
 
+java {
+  sourceCompatibility = JavaVersion.toVersion(17)
+  targetCompatibility = JavaVersion.toVersion(17)
+}
+
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "17"
+}
+
 gradlePlugin {
   plugins {
+    create("pork_root") {
+      id = "gay.pizza.pork.root"
+      implementationClass = "gay.pizza.pork.buildext.PorkRootPlugin"
+
+      displayName = "Pork Root"
+      description = "Root convention for pork"
+    }
+
     create("pork_ast") {
       id = "gay.pizza.pork.ast"
       implementationClass = "gay.pizza.pork.buildext.PorkAstPlugin"

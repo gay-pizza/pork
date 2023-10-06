@@ -4,9 +4,9 @@ import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.ast.gen.NodeVisitor
 import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.evaluator.*
+import gay.pizza.pork.ffi.FfiNativeProvider
 import gay.pizza.pork.ffi.JavaAutogenContentSource
 import gay.pizza.pork.ffi.JavaNativeProvider
-import gay.pizza.pork.ffi.JnaNativeProvider
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.DynamicImportSource
@@ -55,7 +55,7 @@ abstract class Tool {
   fun run(scope: Scope, quiet: Boolean = false) {
     val main = loadMainFunction(scope, setupEvaluator = {
       addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
-      addNativeProvider("ffi", JnaNativeProvider())
+      addNativeProvider("ffi", FfiNativeProvider())
       addNativeProvider("java", JavaNativeProvider())
     })
     main.call(emptyList(), CallStack())
