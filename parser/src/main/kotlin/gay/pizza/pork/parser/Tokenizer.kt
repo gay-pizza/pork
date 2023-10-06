@@ -102,27 +102,14 @@ class Tokenizer(val source: CharSource) {
 
       var index = 0
       for (item in TokenType.CharConsumers) {
-        if (item.charConsumer != null) {
-          if (!item.charConsumer.isValid(char)) {
-            continue
-          }
-        } else if (item.charIndexConsumer != null) {
-          if (!item.charIndexConsumer.isValid(char, index)) {
-            continue
-          }
-        } else {
-          throw ParseError("Unknown Char Consumer")
+        if (!item.charConsumer!!.matcher.valid(char, index)) {
+          continue
         }
 
         val text = buildString {
           append(char)
 
-          while (
-            if (item.charConsumer != null)
-              item.charConsumer.isValid(source.peek())
-            else
-              item.charIndexConsumer!!.isValid(source.peek(), ++index)
-          ) {
+          while (item.charConsumer.matcher.valid(source.peek(), ++index)) {
             append(nextChar())
           }
         }
@@ -168,5 +155,6 @@ class Tokenizer(val source: CharSource) {
     return char
   }
 
-  private fun currentSourceIndex(): SourceIndex = SourceIndex(source.currentIndex, currentLineIndex, currentLineColumn)
+  private fun currentSourceIndex(): SourceIndex =
+    SourceIndex(source.currentIndex, currentLineIndex, currentLineColumn)
 }

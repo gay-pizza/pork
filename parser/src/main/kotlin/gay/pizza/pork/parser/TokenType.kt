@@ -1,16 +1,21 @@
 package gay.pizza.pork.parser
 
+import gay.pizza.pork.parser.CharMatcher.*
 import gay.pizza.pork.parser.TokenTypeProperty.*
 import gay.pizza.pork.parser.TokenFamily.*
+import gay.pizza.pork.parser.TokenTypeProperty.AnyOf
 
 enum class TokenType(vararg properties: TokenTypeProperty) {
-  NumberLiteral(NumericLiteralFamily, CharIndexConsumer { it, index ->
-    (it in '0'..'9') || (index > 0 && it == '.') }),
-  Symbol(SymbolFamily, CharConsumer {
-    (it in 'a'..'z') ||
-      (it in 'A'..'Z') ||
-      (it == '_') ||
-      (it in '0' .. '9')}, KeywordUpgrader),
+  NumberLiteral(NumericLiteralFamily, CharConsumer(CharMatcher.AnyOf(
+    MatchRange('0'..'9'),
+    NotAtIndex(0, MatchSingle('.'))
+  ))),
+  Symbol(SymbolFamily, CharConsumer(CharMatcher.AnyOf(
+    MatchRange('a'..'z'),
+    MatchRange('A'..'Z'),
+    MatchRange('0' .. '9'),
+    MatchSingle('_')
+  )), KeywordUpgrader),
   StringLiteral(StringLiteralFamily),
   Equality(OperatorFamily),
   Inequality(ManyChars("!="), OperatorFamily),
@@ -61,7 +66,12 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Native(ManyChars("native"), KeywordFamily),
   Let(ManyChars("let"), KeywordFamily),
   Var(ManyChars("var"), KeywordFamily),
-  Whitespace(CharConsumer { it == ' ' || it == '\r' || it == '\n' || it == '\t' }),
+  Whitespace(CharConsumer(CharMatcher.AnyOf(
+    MatchSingle(' '),
+    MatchSingle('\r'),
+    MatchSingle('\n'),
+    MatchSingle('\t')
+  ))),
   BlockComment(CommentFamily),
   LineComment(CommentFamily),
   EndOfFile;
@@ -77,8 +87,6 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   val family: TokenFamily =
     properties.filterIsInstance<TokenFamily>().singleOrNull() ?: OtherFamily
   val charConsumer: CharConsumer? = properties.filterIsInstance<CharConsumer>().singleOrNull()
-  val charIndexConsumer: CharIndexConsumer? =
-    properties.filterIsInstance<CharIndexConsumer>().singleOrNull()
   val tokenUpgrader: TokenUpgrader? =
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
@@ -89,7 +97,7 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     val ManyChars = entries.filter { item -> item.manyChars != null }
     val SingleChars = entries.filter { item -> item.singleChar != null }
     val CharConsumers = entries.filter { item ->
-      item.charConsumer != null || item.charIndexConsumer != null }
+      item.charConsumer != null }
 
     val ParserIgnoredTypes: Array<TokenType> = arrayOf(
       Whitespace,

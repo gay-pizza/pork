@@ -11,14 +11,25 @@ class IndentPrinter(
     append(indentLevelText)
   }
 
+  fun emitIndentedLine(line: String) {
+    emitIndent()
+    appendLine(line)
+  }
+
   fun increaseIndent() {
     indentLevel++
-    indentLevelText = indent.repeat(indentLevel)
+    indentLevelText += indent
   }
 
   fun decreaseIndent() {
     indentLevel--
     indentLevelText = indent.repeat(indentLevel)
+  }
+
+  inline fun indented(block: IndentPrinter.() -> Unit) {
+    increaseIndent()
+    block(this)
+    decreaseIndent()
   }
 
   override fun toString(): String = buffer.toString()

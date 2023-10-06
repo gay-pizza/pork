@@ -11,9 +11,8 @@ import gay.pizza.pork.idea.psi.gen.PorkElement
 class PorkSymbolDeclaration(val element: PorkElement) : PsiSymbolDeclaration {
   override fun getDeclaringElement(): PsiElement = element
   override fun getRangeInDeclaringElement(): TextRange {
-    val textRangeOfSymbol = PorkElementHelpers.symbolElementOf(element)?.psi?.textRangeInParent
+    return PorkElementHelpers.symbolElementOf(element)?.psi?.textRangeInParent
       ?: throw RuntimeException("Unable to get symbol of element: $element")
-    return textRangeOfSymbol
   }
 
   override fun getSymbol(): Symbol = PorkElementHelpers.psiSymbolFor(element) ?:
