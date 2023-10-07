@@ -32,7 +32,7 @@ class FfiNativeProvider : NativeProvider {
     val invoker = Invoker.getInstance()
     return CallableFunction { functionArguments, _ ->
       val buffer = HeapInvocationBuffer(context)
-      val freeStringList = mutableListOf<FfiStringWrapper>()
+      val freeStringList = mutableListOf<FfiString>()
       for ((index, spec) in arguments.withIndex()) {
         val ffiType = ffiTypeRegistry.lookup(functionDefinition.parameters[index]) ?:
           throw RuntimeException("Unknown ffi type: ${functionDefinition.parameters[index]}")
@@ -42,18 +42,19 @@ class FfiNativeProvider : NativeProvider {
           variableArguments.forEach {
             var value = it
             if (value is String) {
-              value = FfiStringWrapper(value)
+              value = FfiString.allocate(value)
               freeStringList.add(value)
             }
-            put(buffer, value)
+            FfiPrimitiveType.push(buffer, value)
           }
           break
         } else {
-          val converted = convert(ffiType, functionArguments[index])
-          if (converted is FfiStringWrapper) {
-            freeStringList.add(converted)
+          var argumentValue = functionArguments[index]
+          if (argumentValue is String) {
+            argumentValue = FfiString.allocate(argumentValue)
+            freeStringList.add(argumentValue)
           }
-          put(buffer, converted)
+          ffiType.put(buffer, argumentValue)
         }
       }
 
@@ -100,60 +101,6 @@ class FfiNativeProvider : NativeProvider {
     }
     return FfiPlatforms.current.platform.findLibrary(name)
       ?: throw RuntimeException("Unable to find library: $name")
-  }
-
-  private fun convert(type: FfiType, value: Any?): Any {
-    if (type !is FfiPrimitiveType) {
-      return value ?: FfiAddress.Null
-    }
-
-    if (type.numberConvert != null) {
-      return numberConvert(type.id, value, type.numberConvert)
-    }
-
-    if (type.notNullConversion != null) {
-      return notNullConvert(type.id, value, type.notNullConversion)
-    }
-
-    if (type.nullableConversion != null) {
-      return nullableConvert(value, type.nullableConversion) ?: FfiAddress.Null
-    }
-    return value ?: FfiAddress.Null
-  }
-
-  private fun <T> notNullConvert(type: String, value: Any?, into: Any.() -> T): T {
-    if (value == null) {
-      throw RuntimeException("Null values cannot be used for converting to type $type")
-    }
-    return into(value)
-  }
-
-  private fun <T> nullableConvert(value: Any?, into: Any.() -> T): T? {
-    if (value == null || value == None) {
-      return null
-    }
-    return into(value)
-  }
-
-  private fun <T> numberConvert(type: String, value: Any?, into: Number.() -> T): T {
-    if (value == null || value == None) {
-      throw RuntimeException("Null values cannot be used for converting to numeric type $type")
-    }
-
-    if (value !is Number) {
-      throw RuntimeException("Cannot convert value '$value' into type $type")
-    }
-    return into(value)
-  }
-
-  private fun put(buffer: InvocationBuffer, value: Any): Unit = when (value) {
-    is Byte -> buffer.putByte(value.toInt())
-    is Short -> buffer.putShort(value.toInt())
-    is Int -> buffer.putInt(value)
-    is Long -> buffer.putLong(value)
-    is FfiAddress -> buffer.putAddress(value.location)
-    is FfiStringWrapper -> buffer.putAddress(value.address)
-    else -> throw RuntimeException("Unknown buffer insertion: $value (${value.javaClass.name})")
   }
 
   private fun invoke(invoker: Invoker, function: Function, buffer: HeapInvocationBuffer, type: FfiType): Any = when (type) {
