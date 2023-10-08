@@ -194,6 +194,11 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
       inherits = mutableListOf("NodeVisitor<Unit>"),
       members = mutableListOf(
         KotlinMember(
+          "followChildren",
+          "Boolean",
+          value = "true"
+        ),
+        KotlinMember(
           "handler",
           "(Node) -> Unit"
         )
@@ -227,7 +232,9 @@ class AstStandardCodegen(pkg: String, outputDirectory: Path, world: AstWorld) :
       )
     )
     handleFunction.body.add("handler(node)")
-    handleFunction.body.add("node.visitChildren(this)")
+    handleFunction.body.add("if (followChildren) {")
+    handleFunction.body.add("  node.visitChildren(this)")
+    handleFunction.body.add("}")
     coalescerClass.functions.add(handleFunction)
 
     write("NodeCoalescer.kt", KotlinWriter(coalescerClass))

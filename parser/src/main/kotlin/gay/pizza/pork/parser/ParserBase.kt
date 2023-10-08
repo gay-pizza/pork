@@ -11,6 +11,12 @@ abstract class ParserBase(source: TokenSource, val attribution: NodeAttribution)
   protected inline fun <T: Node> guarded(type: NodeType? = null, noinline block: () -> T): T =
     attribution.guarded(type, block)
 
+  @Suppress("NOTHING_TO_INLINE")
+  protected inline fun <T: Node> expect(type: NodeType? = null, vararg tokenTypes: TokenType, noinline block: (Token) -> T): T =
+    guarded(type) {
+      block(expect(*tokenTypes))
+    }
+
   protected fun <T> collect(
     peeking: TokenType,
     consuming: TokenType? = null,
@@ -66,7 +72,11 @@ abstract class ParserBase(source: TokenSource, val attribution: NodeAttribution)
     throw ExpectedTokenError(token, token.sourceIndex, *types)
   }
 
-  protected fun next(): Token = source.next()
+  protected fun next(): Token {
+    val token = source.next()
+    attribution.push(token)
+    return token
+  }
   protected fun peek(): Token = source.peek()
   protected fun peek(ahead: Int): TokenType = source.peekTypeAhead(ahead)
   protected fun peek(ahead: Int, vararg types: TokenType): Boolean = types.contains(source.peekTypeAhead(ahead))

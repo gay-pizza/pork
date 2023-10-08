@@ -9,8 +9,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     ArgumentSpec(symbol, next(TokenType.DotDotDot))
   }
 
-  override fun parseBlock(): Block = guarded(NodeType.Block) {
-    expect(TokenType.LeftCurly)
+  override fun parseBlock(): Block = expect(NodeType.Block, TokenType.LeftCurly) {
     val items = collect(TokenType.RightCurly) {
       parseExpression()
     }
@@ -18,7 +17,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     Block(items)
   }
 
-  override fun parseExpression(): Expression = guarded {
+  override fun parseExpression(): Expression {
     val token = peek()
     var expression = when (token.type) {
       TokenType.NumberLiteral -> parseNumberLiteral()
@@ -66,7 +65,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       }
     }
 
-    if (peek(
+    return if (peek(
         TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide, TokenType.Ampersand,
         TokenType.Pipe, TokenType.Caret, TokenType.Equality, TokenType.Inequality, TokenType.Mod,
         TokenType.Rem, TokenType.Lesser, TokenType.Greater, TokenType.LesserEqual, TokenType.GreaterEqual,
@@ -176,12 +175,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       )
     }
 
-  override fun parseDoubleLiteral(): DoubleLiteral = guarded(NodeType.DoubleLiteral) {
-    DoubleLiteral(expect(TokenType.NumberLiteral).text.toDouble())
+  override fun parseDoubleLiteral(): DoubleLiteral = expect(NodeType.DoubleLiteral, TokenType.NumberLiteral) {
+    DoubleLiteral(it.text.toDouble())
   }
 
-  override fun parseForIn(): ForIn = guarded(NodeType.ForIn) {
-    expect(TokenType.For)
+  override fun parseForIn(): ForIn = expect(NodeType.ForIn, TokenType.For) {
     val forInItem = parseForInItem()
     expect(TokenType.In)
     val value = parseExpression()
@@ -223,8 +221,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     FunctionDefinition(modifiers, name, arguments, block, native)
   }
 
-  override fun parseIf(): If = guarded(NodeType.If) {
-    expect(TokenType.If)
+  override fun parseIf(): If = expect(NodeType.If, TokenType.If) {
     val condition = parseExpression()
     val thenBlock = parseBlock()
     var elseBlock: Block? = null
@@ -234,8 +231,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     If(condition, thenBlock, elseBlock)
   }
 
-  override fun parseImportDeclaration(): ImportDeclaration = guarded(NodeType.ImportDeclaration) {
-    expect(TokenType.Import)
+  override fun parseImportDeclaration(): ImportDeclaration = expect(NodeType.ImportDeclaration, TokenType.Import) {
     val form = parseSymbol()
     val components = oneAndContinuedBy(TokenType.Dot) {
       parseSymbol()
@@ -257,13 +253,13 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     InfixOperation(parseExpression(), infixOperator, parseExpression())
   }
 
-  private fun parseNumberLiteral(): Expression = guarded {
+  private fun parseNumberLiteral(): Expression {
     val token = peek()
     if (token.type != TokenType.NumberLiteral) {
       expect(TokenType.NumberLiteral)
     }
 
-    when {
+    return when {
       token.text.contains(".") -> parseDoubleLiteral()
       token.text.toIntOrNull() != null -> parseIntegerLiteral()
       token.text.toLongOrNull() != null -> parseLongLiteral()
@@ -271,12 +267,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
   }
 
-  override fun parseIntegerLiteral(): IntegerLiteral = guarded(NodeType.IntegerLiteral) {
-    IntegerLiteral(expect(TokenType.NumberLiteral).text.toInt())
+  override fun parseIntegerLiteral(): IntegerLiteral = expect(NodeType.IntegerLiteral, TokenType.NumberLiteral) {
+    IntegerLiteral(it.text.toInt())
   }
 
-  override fun parseLetAssignment(): LetAssignment = guarded(NodeType.LetAssignment) {
-    expect(TokenType.Let)
+  override fun parseLetAssignment(): LetAssignment = expect(NodeType.LetAssignment, TokenType.Let) {
     val symbol = parseSymbol()
     expect(TokenType.Equals)
     val value = parseExpression()
@@ -292,8 +287,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     LetDefinition(definitionModifiers, name, value)
   }
 
-  override fun parseListLiteral(): ListLiteral = guarded(NodeType.ListLiteral) {
-    expect(TokenType.LeftBracket)
+  override fun parseListLiteral(): ListLiteral = expect(NodeType.ListLiteral, TokenType.LeftBracket) {
     val items = collect(TokenType.RightBracket, TokenType.Comma) {
       parseExpression()
     }
@@ -301,12 +295,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     ListLiteral(items)
   }
 
-  override fun parseLongLiteral(): LongLiteral = guarded(NodeType.LongLiteral) {
-    LongLiteral(expect(TokenType.NumberLiteral).text.toLong())
+  override fun parseLongLiteral(): LongLiteral = expect(NodeType.LongLiteral, TokenType.NumberLiteral) {
+    LongLiteral(it.text.toLong())
   }
 
-  override fun parseNative(): Native = guarded(NodeType.Native) {
-    expect(TokenType.Native)
+  override fun parseNative(): Native = expect(NodeType.Native, TokenType.Native) {
     val form = parseSymbol()
     val definitions = mutableListOf<StringLiteral>()
     while (peek(TokenType.StringLiteral)) {
@@ -315,22 +308,22 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     Native(form, definitions)
   }
 
-  override fun parseNoneLiteral(): NoneLiteral = guarded(NodeType.NoneLiteral) {
-    expect(TokenType.None)
+  override fun parseNoneLiteral(): NoneLiteral = expect(NodeType.NoneLiteral, TokenType.None) {
     NoneLiteral()
   }
 
-  override fun parseParentheses(): Parentheses = guarded(NodeType.Parentheses) {
-    expect(TokenType.LeftParentheses)
+  override fun parseParentheses(): Parentheses = expect(NodeType.Parentheses, TokenType.LeftParentheses) {
     val expression = parseExpression()
     expect(TokenType.RightParentheses)
     Parentheses(expression)
   }
 
-  override fun parsePrefixOperation(): PrefixOperation = guarded(NodeType.PrefixOperation) {
-    expect(TokenType.Not, TokenType.Plus, TokenType.Minus, TokenType.Tilde) {
-      PrefixOperation(ParserHelpers.convertPrefixOperator(it), parseExpression())
-    }
+  override fun parsePrefixOperation(): PrefixOperation = expect(
+    NodeType.PrefixOperation,
+    TokenType.Not, TokenType.Plus,
+    TokenType.Minus, TokenType.Tilde
+  ) {
+    PrefixOperation(ParserHelpers.convertPrefixOperator(it), parseExpression())
   }
 
   override fun parseSetAssignment(): SetAssignment = guarded(NodeType.SetAssignment) {
@@ -340,11 +333,9 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     SetAssignment(symbol, value)
   }
 
-  override fun parseStringLiteral(): StringLiteral = guarded(NodeType.StringLiteral) {
-    expect(TokenType.StringLiteral) {
-      val content = StringEscape.unescape(StringEscape.unquote(it.text))
-      StringLiteral(content)
-    }
+  override fun parseStringLiteral(): StringLiteral = expect(NodeType.StringLiteral, TokenType.StringLiteral) {
+    val content = StringEscape.unescape(StringEscape.unquote(it.text))
+    StringLiteral(content)
   }
 
   override fun parseSuffixOperation(): SuffixOperation = guarded(NodeType.SuffixOperation) {
@@ -354,32 +345,30 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
   }
 
-  private fun parseSymbolCases(): Expression = guarded {
-    if (peek(1, TokenType.LeftParentheses)) {
+  private fun parseSymbolCases(): Expression {
+    return if (peek(1, TokenType.LeftParentheses)) {
       parseFunctionCall()
     } else if (peek(1, TokenType.PlusPlus, TokenType.MinusMinus)) {
       parseSuffixOperation()
     } else parseSymbolReference()
   }
 
-  override fun parseSymbol(): Symbol = guarded(NodeType.Symbol) {
-    expect(TokenType.Symbol) { Symbol(it.text) }
+  override fun parseSymbol(): Symbol = expect(NodeType.Symbol, TokenType.Symbol) {
+    Symbol(it.text)
   }
 
   override fun parseSymbolReference(): SymbolReference = guarded(NodeType.SymbolReference) {
     SymbolReference(parseSymbol())
   }
 
-  override fun parseVarAssignment(): VarAssignment = guarded(NodeType.VarAssignment) {
-    expect(TokenType.Var)
+  override fun parseVarAssignment(): VarAssignment = expect(NodeType.VarAssignment, TokenType.Var) {
     val symbol = parseSymbol()
     expect(TokenType.Equals)
     val value = parseExpression()
     VarAssignment(symbol, value)
   }
 
-  override fun parseWhile(): While = guarded(NodeType.While) {
-    expect(TokenType.While)
+  override fun parseWhile(): While = expect(NodeType.While, TokenType.While) {
     val condition = parseExpression()
     val block = parseBlock()
     While(condition, block)

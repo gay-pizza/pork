@@ -6,12 +6,13 @@ class StringCharSource(
   val endIndex: Int = input.length - 1
 ) : CharSource {
   private var index = startIndex
+
   override val currentIndex: Int
     get() = index
 
   override fun next(): Char {
     if (index == endIndex) {
-      return CharSource.NullChar
+      return CharSource.EndOfFile
     }
     val char = input[index]
     index++
@@ -20,8 +21,16 @@ class StringCharSource(
 
   override fun peek(): Char {
     if (index == endIndex) {
-      return CharSource.NullChar
+      return CharSource.EndOfFile
     }
     return input[index]
+  }
+
+  override fun peek(index: Int): Char {
+    val target = this.index + index
+    if (target >= endIndex) {
+      return CharSource.EndOfFile
+    }
+    return input[target]
   }
 }

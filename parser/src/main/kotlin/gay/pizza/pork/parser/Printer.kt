@@ -1,10 +1,10 @@
 package gay.pizza.pork.parser
 
 import gay.pizza.pork.ast.gen.*
-import gay.pizza.pork.common.IndentPrinter
+import gay.pizza.pork.common.IndentBuffer
 
 class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
-  private val out = IndentPrinter(buffer)
+  private val out = IndentBuffer(buffer)
   private var autoIndentState = false
 
   private fun append(text: String) {

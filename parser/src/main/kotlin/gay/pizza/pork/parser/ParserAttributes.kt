@@ -7,6 +7,14 @@ import gay.pizza.pork.ast.gen.visit
 
 data class ParserAttributes(val tokens: List<Token>) {
   companion object {
+    fun recallOwnedTokens(node: Node): List<Token> {
+      val attributes = node.data<ParserAttributes>()
+      if (attributes != null) {
+        return attributes.tokens
+      }
+      return emptyList()
+    }
+
     fun recallAllTokens(node: Node): List<Token> {
       val all = mutableListOf<Token>()
       val coalescer = NodeCoalescer { item ->

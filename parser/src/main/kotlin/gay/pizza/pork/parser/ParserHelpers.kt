@@ -23,7 +23,7 @@ internal object ParserHelpers {
     TokenType.GreaterEqual -> InfixOperator.GreaterEqual
     TokenType.And -> InfixOperator.BooleanAnd
     TokenType.Or -> InfixOperator.BooleanOr
-    else -> throw ParseError("Unknown Infix Operator")
+    else -> throw ParseError("Unknown infix operator: ${token.type}")
   }
 
   fun convertPrefixOperator(token: Token): PrefixOperator = when (token.type) {
@@ -31,12 +31,12 @@ internal object ParserHelpers {
     TokenType.Plus -> PrefixOperator.UnaryPlus
     TokenType.Minus -> PrefixOperator.UnaryMinus
     TokenType.Tilde -> PrefixOperator.BinaryNot
-    else -> throw ParseError("Unknown Prefix Operator")
+    else -> throw ParseError("Unknown prefix operator: ${token.type}")
   }
 
   fun convertSuffixOperator(token: Token): SuffixOperator = when (token.type) {
     TokenType.PlusPlus -> SuffixOperator.Increment
     TokenType.MinusMinus -> SuffixOperator.Decrement
-    else -> throw ParseError("Unknown Suffix Operator")
+    else -> throw ParseError("Unknown suffix operator: ${token.type}")
   }
 }

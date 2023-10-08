@@ -1,80 +1,22 @@
 package gay.pizza.pork.parser
 
-class Tokenizer(val source: CharSource) {
+class Tokenizer(source: CharSource) {
+  val source: SourceIndexCharSource = SourceIndexCharSource(source)
+
   private var startIndex: SourceIndex = SourceIndex.zero()
-  private var currentLineIndex = 1
-  private var currentLineColumn = 0
-
-  private fun readBlockComment(firstChar: Char): Token {
-    val comment = buildString {
-      append(firstChar)
-      var endOfComment = false
-      while (true) {
-        val char = nextChar()
-        if (char == CharSource.NullChar) {
-          throw UnterminatedTokenError("block comment", currentSourceIndex())
-        }
-        append(char)
-
-        if (endOfComment) {
-          if (char != '/') {
-            endOfComment = false
-            continue
-          }
-          break
-        }
-
-        if (char == '*') {
-          endOfComment = true
-        }
-      }
-    }
-    return produceToken(TokenType.BlockComment, comment)
-  }
-
-  private fun readLineComment(firstChar: Char): Token {
-    val comment = buildString {
-      append(firstChar)
-      while (true) {
-        val char = source.peek()
-        if (char == CharSource.NullChar || char == '\n') {
-          break
-        }
-        append(nextChar())
-      }
-    }
-    return produceToken(TokenType.LineComment, comment)
-  }
-
-  private fun readStringLiteral(firstChar: Char): Token {
-    val string = buildString {
-      append(firstChar)
-      while (true) {
-        val char = source.peek()
-        if (char == CharSource.NullChar) {
-          throw UnterminatedTokenError("string", currentSourceIndex())
-        }
-        append(nextChar())
-        if (char == '"') {
-          break
-        }
-      }
-    }
-    return produceToken(TokenType.StringLiteral, string)
-  }
 
   fun next(): Token {
-    while (source.peek() != CharSource.NullChar) {
-      startIndex = currentSourceIndex()
-      val char = nextChar()
+    while (source.peek() != CharSource.EndOfFile) {
+      startIndex = source.currentSourceIndex()
 
-      if (char == '/' && source.peek() == '*') {
-        return readBlockComment(char)
+      for (item in TokenType.CharConsumes) {
+        val text = item.charConsume!!.consumer.consume(item, this)
+        if (text != null) {
+          return produceToken(item, text)
+        }
       }
 
-      if (char == '/' && source.peek() == '/') {
-        return readLineComment(char)
-      }
+      val char = source.next()
 
       for (item in TokenType.SingleChars) {
         val itemChar = item.singleChar!!.char
@@ -91,7 +33,7 @@ class Tokenizer(val source: CharSource) {
             if (source.peek() != promotion.nextChar) {
               continue
             }
-            val nextChar = nextChar()
+            val nextChar = source.next()
             type = promotion.type
             text += nextChar
             promoted = true
@@ -101,16 +43,16 @@ class Tokenizer(val source: CharSource) {
       }
 
       var index = 0
-      for (item in TokenType.CharConsumers) {
-        if (!item.charConsumer!!.matcher.valid(char, index)) {
+      for (item in TokenType.CharMatches) {
+        if (!item.charMatch!!.matcher.valid(char, index)) {
           continue
         }
 
         val text = buildString {
           append(char)
 
-          while (item.charConsumer.matcher.valid(source.peek(), ++index)) {
-            append(nextChar())
+          while (item.charMatch.matcher.valid(source.peek(), ++index)) {
+            append(source.next())
           }
         }
         var token = produceToken(item, text)
@@ -119,10 +61,6 @@ class Tokenizer(val source: CharSource) {
           token = tokenUpgrader.maybeUpgrade(token) ?: token
         }
         return token
-      }
-
-      if (char == '"') {
-        return readStringLiteral(char)
       }
 
       throw BadCharacterError(char, startIndex)
@@ -142,19 +80,23 @@ class Tokenizer(val source: CharSource) {
     return TokenStream(tokens)
   }
 
-  private fun produceToken(type: TokenType, text: String) =
+  internal fun produceToken(type: TokenType, text: String) =
     Token(type, startIndex, text)
 
-  private fun nextChar(): Char {
-    val char = source.next()
-    if (char == '\n') {
-      currentLineIndex++
-      currentLineColumn = 0
+  internal fun peek(what: CharSequence): Boolean {
+    var current = 0
+    for (c in what) {
+      if (source.peek(current) != c) {
+        return false
+      }
+      current++
     }
-    currentLineColumn++
-    return char
+    return true
   }
 
-  private fun currentSourceIndex(): SourceIndex =
-    SourceIndex(source.currentIndex, currentLineIndex, currentLineColumn)
+  internal fun read(count: Int, buffer: StringBuilder) {
+    for (i in 1..count) {
+      buffer.append(source.next())
+    }
+  }
 }

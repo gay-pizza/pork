@@ -337,7 +337,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
       InfixOperator.Minus -> subtract(convert(left), convert(right))
       InfixOperator.Multiply -> multiply(convert(left), convert(right))
       InfixOperator.Divide -> divide(convert(left), convert(right))
-      InfixOperator.Equals, InfixOperator.NotEquals, InfixOperator.BooleanAnd, InfixOperator.BooleanOr -> throw RuntimeException("Unable to handle operation $op")
       InfixOperator.BinaryAnd -> binaryAnd(convert(left), convert(right))
       InfixOperator.BinaryOr -> binaryOr(convert(left), convert(right))
       InfixOperator.BinaryExclusiveOr -> binaryExclusiveOr(convert(left), convert(right))
@@ -347,6 +346,8 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
       InfixOperator.Greater -> greater(convert(left), convert(right))
       InfixOperator.LesserEqual -> lesserEqual(convert(left), convert(right))
       InfixOperator.GreaterEqual -> greaterEqual(convert(left), convert(right))
+      InfixOperator.Equals, InfixOperator.NotEquals, InfixOperator.BooleanAnd, InfixOperator.BooleanOr ->
+        throw RuntimeException("Unable to handle operation $op")
     }
   }
 

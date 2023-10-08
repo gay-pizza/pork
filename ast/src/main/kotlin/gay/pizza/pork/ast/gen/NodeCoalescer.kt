@@ -1,7 +1,7 @@
 // GENERATED CODE FROM PORK AST CODEGEN
 package gay.pizza.pork.ast.gen
 
-class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
+class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> Unit) : NodeVisitor<Unit> {
   override fun visitArgumentSpec(node: ArgumentSpec): Unit =
     handle(node)
 
@@ -97,6 +97,8 @@ class NodeCoalescer(val handler: (Node) -> Unit) : NodeVisitor<Unit> {
 
   fun handle(node: Node) {
     handler(node)
-    node.visitChildren(this)
+    if (followChildren) {
+      node.visitChildren(this)
+    }
   }
 }

@@ -8,6 +8,8 @@ plugins {
 dependencies {
   api(project(":minimal"))
   api("com.github.ajalt.clikt:clikt:4.2.0")
+
+  implementation(project(":common"))
 }
 
 application {

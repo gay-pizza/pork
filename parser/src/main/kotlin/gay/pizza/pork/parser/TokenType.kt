@@ -1,22 +1,23 @@
 package gay.pizza.pork.parser
 
 import gay.pizza.pork.parser.CharMatcher.*
+import gay.pizza.pork.parser.MatchedCharConsumer.Options.AllowEofTermination
 import gay.pizza.pork.parser.TokenTypeProperty.*
 import gay.pizza.pork.parser.TokenFamily.*
 import gay.pizza.pork.parser.TokenTypeProperty.AnyOf
 
 enum class TokenType(vararg properties: TokenTypeProperty) {
-  NumberLiteral(NumericLiteralFamily, CharConsumer(CharMatcher.AnyOf(
+  NumberLiteral(NumericLiteralFamily, CharMatch(CharMatcher.AnyOf(
     MatchRange('0'..'9'),
     NotAtIndex(0, MatchSingle('.'))
   ))),
-  Symbol(SymbolFamily, CharConsumer(CharMatcher.AnyOf(
+  Symbol(SymbolFamily, CharMatch(CharMatcher.AnyOf(
     MatchRange('a'..'z'),
     MatchRange('A'..'Z'),
     MatchRange('0' .. '9'),
     MatchSingle('_')
   )), KeywordUpgrader),
-  StringLiteral(StringLiteralFamily),
+  StringLiteral(StringLiteralFamily, CharConsume(StringCharConsumer)),
   Equality(OperatorFamily),
   Inequality(ManyChars("!="), OperatorFamily),
   ExclamationPoint(SingleChar('!'), Promotion('=', Inequality)),
@@ -66,14 +67,14 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   Native(ManyChars("native"), KeywordFamily),
   Let(ManyChars("let"), KeywordFamily),
   Var(ManyChars("var"), KeywordFamily),
-  Whitespace(CharConsumer(CharMatcher.AnyOf(
+  Whitespace(CharMatch(CharMatcher.AnyOf(
     MatchSingle(' '),
     MatchSingle('\r'),
     MatchSingle('\n'),
     MatchSingle('\t')
   ))),
-  BlockComment(CommentFamily),
-  LineComment(CommentFamily),
+  BlockComment(CharConsume(MatchedCharConsumer("/*", "*/")), CommentFamily),
+  LineComment(CharConsume(MatchedCharConsumer("//", "\n", AllowEofTermination)), CommentFamily),
   EndOfFile;
 
   val promotions: List<Promotion> =
@@ -86,7 +87,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     properties.filterIsInstance<SingleChar>().singleOrNull()
   val family: TokenFamily =
     properties.filterIsInstance<TokenFamily>().singleOrNull() ?: OtherFamily
-  val charConsumer: CharConsumer? = properties.filterIsInstance<CharConsumer>().singleOrNull()
+  val charMatch: CharMatch? = properties.filterIsInstance<CharMatch>().singleOrNull()
+  val charConsume: CharConsume? = properties.filterIsInstance<CharConsume>().singleOrNull()
   val tokenUpgrader: TokenUpgrader? =
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
 
@@ -96,8 +98,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     val AnyOf = entries.filter { item -> item.anyOf != null }
     val ManyChars = entries.filter { item -> item.manyChars != null }
     val SingleChars = entries.filter { item -> item.singleChar != null }
-    val CharConsumers = entries.filter { item ->
-      item.charConsumer != null }
+    val CharMatches = entries.filter { item -> item.charMatch != null }
+    val CharConsumes = entries.filter { item -> item.charConsume != null }
 
     val ParserIgnoredTypes: Array<TokenType> = arrayOf(
       Whitespace,
