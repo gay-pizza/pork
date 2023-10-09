@@ -28,7 +28,7 @@ open class ParserNodeAttribution : NodeAttribution {
     current = store
     stack.add(store)
     val node = block()
-    store = stack.removeLast()
+    store = stack.removeAt(stack.size - 1)
     current = stack.lastOrNull()
     node.data = ParserAttributes(store)
     return node
