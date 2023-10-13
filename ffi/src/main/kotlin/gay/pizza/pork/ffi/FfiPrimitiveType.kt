@@ -1,6 +1,7 @@
 package gay.pizza.pork.ffi
 
 import com.kenai.jffi.InvocationBuffer
+import com.kenai.jffi.MemoryIO
 import gay.pizza.pork.evaluator.None
 
 enum class FfiPrimitiveType(
@@ -87,6 +88,21 @@ enum class FfiPrimitiveType(
       return content
     }
     return ffi
+  }
+
+  override fun read(address: FfiAddress, offset: kotlin.Int): Any {
+    val actual = address.location + offset
+    return when (this) {
+      UnsignedByte, Byte -> MemoryIO.getInstance().getByte(actual)
+      UnsignedShort, Short -> MemoryIO.getInstance().getShort(actual)
+      UnsignedInt, Int -> MemoryIO.getInstance().getInt(actual)
+      UnsignedLong, Long -> MemoryIO.getInstance().getLong(actual)
+      Float -> MemoryIO.getInstance().getFloat(actual)
+      Double -> MemoryIO.getInstance().getDouble(actual)
+      Pointer -> MemoryIO.getInstance().getAddress(actual)
+      String -> FfiString(FfiAddress(actual))
+      Void -> None
+    }
   }
 
   companion object {

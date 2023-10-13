@@ -19,6 +19,7 @@ enum class NodeType(val parent: NodeType? = null) {
   FunctionDefinition(Definition),
   If(Expression),
   ImportDeclaration(Declaration),
+  ImportPath(Node),
   IndexedBy(Expression),
   InfixOperation(Expression),
   IntegerLiteral(Expression),

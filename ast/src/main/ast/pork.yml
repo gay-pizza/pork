@@ -178,13 +178,20 @@ types:
       type: Block
     - name: elseBlock
       type: Block?
+  ImportPath:
+    parent: Node
+    referencedElementValue: components
+    referencedElementType: CompilationUnit
+    values:
+    - name: components
+      type: List<Symbol>
   ImportDeclaration:
     parent: Declaration
     values:
     - name: form
       type: Symbol
-    - name: components
-      type: List<Symbol>
+    - name: path
+      type: ImportPath
   IntegerLiteral:
     parent: Expression
     values:

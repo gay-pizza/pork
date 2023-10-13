@@ -2,73 +2,100 @@ package gay.pizza.pork.parser
 
 class Tokenizer(source: CharSource) {
   val source: SourceIndexCharSource = SourceIndexCharSource(source)
-
   private var startIndex: SourceIndex = SourceIndex.zero()
+  private var state = TokenizerState.Normal
 
-  fun next(): Token {
-    while (source.peek() != CharSource.EndOfFile) {
-      startIndex = source.currentSourceIndex()
-
-      for (item in TokenType.CharConsumes) {
-        val text = item.charConsume!!.consumer.consume(item, this)
-        if (text != null) {
-          return produceToken(item, text)
-        }
-      }
-
-      val char = source.next()
-
-      for (item in TokenType.SingleChars) {
-        val itemChar = item.singleChar!!.char
-        if (itemChar != char) {
-          continue
-        }
-
-        var type = item
-        var text = itemChar.toString()
-        var promoted = true
-        while (promoted) {
-          promoted = false
-          for (promotion in type.promotions) {
-            if (source.peek() != promotion.nextChar) {
-              continue
-            }
-            val nextChar = source.next()
-            type = promotion.type
-            text += nextChar
-            promoted = true
-          }
-        }
-        return produceToken(type, text)
-      }
-
-      var index = 0
-      for (item in TokenType.CharMatches) {
-        if (!item.charMatch!!.matcher.valid(char, index)) {
-          continue
-        }
-
-        val text = buildString {
-          append(char)
-
-          while (item.charMatch.matcher.valid(source.peek(), ++index)) {
-            append(source.next())
-          }
-        }
-        var token = produceToken(item, text)
-        val tokenUpgrader = item.tokenUpgrader
-        if (tokenUpgrader != null) {
-          token = tokenUpgrader.maybeUpgrade(token) ?: token
-        }
-        return token
-      }
-
-      throw BadCharacterError(char, startIndex)
+  private fun nextTokenOrNull(): Token? {
+    if (source.peek() == CharSource.EndOfFile) {
+      source.next()
+      return Token.endOfFile(source.currentSourceIndex())
     }
-    return Token.endOfFile(startIndex.copy(index = source.currentIndex))
+
+    startIndex = source.currentSourceIndex()
+
+    for (item in TokenType.CharConsumes) {
+      if (!item.validStates.contains(state)) {
+        continue
+      }
+      val text = item.charConsume!!.consumer.consume(item, this)
+      if (text != null) {
+        return produceToken(item, text)
+      }
+    }
+
+    val char = source.next()
+
+    for (item in TokenType.SingleChars) {
+      if (!item.validStates.contains(state)) {
+        continue
+      }
+
+      val itemChar = item.singleChar!!.char
+      if (itemChar != char) {
+        continue
+      }
+
+      var type = item
+      var text = itemChar.toString()
+      var promoted = true
+      while (promoted) {
+        promoted = false
+        for (promotion in type.promotions) {
+          if (source.peek() != promotion.nextChar) {
+            continue
+          }
+          val nextChar = source.next()
+          type = promotion.type
+          text += nextChar
+          promoted = true
+        }
+      }
+      return produceToken(type, text)
+    }
+
+    var index = 0
+    for (item in TokenType.CharMatches) {
+      if (!item.validStates.contains(state)) {
+        continue
+      }
+
+      if (!item.charMatch!!.matcher.valid(char, index)) {
+        continue
+      }
+
+      val text = buildString {
+        append(char)
+
+        while (item.charMatch.matcher.valid(source.peek(), ++index)) {
+          append(source.next())
+        }
+      }
+      var token = produceToken(item, text)
+      val tokenUpgrader = item.tokenUpgrader
+      if (tokenUpgrader != null) {
+        token = tokenUpgrader.maybeUpgrade(token) ?: token
+      }
+      return token
+    }
+    return null
   }
 
-  fun tokenize(): TokenStream {
+  fun next(): Token {
+    val what = source.peek()
+    val token = nextTokenOrNull()
+    if (token != null) {
+      for (transition in state.transitions) {
+        if (transition.produced == token.type) {
+          state = transition.enter
+          break
+        }
+      }
+      return token
+    }
+    throw BadCharacterError(what, source.currentSourceIndex(), state)
+  }
+
+  fun stream(): TokenStream {
     val tokens = mutableListOf<Token>()
     while (true) {
       val token = next()

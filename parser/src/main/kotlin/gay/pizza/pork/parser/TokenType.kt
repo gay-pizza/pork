@@ -6,7 +6,7 @@ import gay.pizza.pork.parser.TokenTypeProperty.*
 import gay.pizza.pork.parser.TokenFamily.*
 import gay.pizza.pork.parser.TokenTypeProperty.AnyOf
 
-enum class TokenType(vararg properties: TokenTypeProperty) {
+enum class TokenType(vararg val properties: TokenTypeProperty) {
   NumberLiteral(NumericLiteralFamily, CharMatch(CharMatcher.AnyOf(
     MatchRange('0'..'9'),
     NotAtIndex(0, MatchSingle('.'))
@@ -17,7 +17,8 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
     MatchRange('0' .. '9'),
     MatchSingle('_')
   )), KeywordUpgrader),
-  StringLiteral(StringLiteralFamily, CharConsume(StringCharConsumer)),
+  Quote(StringLiteralFamily, SingleChar('"'), InsideStates(TokenizerState.Normal, TokenizerState.StringLiteralEnd)),
+  StringLiteral(StringLiteralFamily, CharConsume(StringCharConsumer), InsideStates(TokenizerState.StringLiteralStart)),
   Equality(OperatorFamily),
   Inequality(ManyChars("!="), OperatorFamily),
   ExclamationPoint(SingleChar('!'), Promotion('=', Inequality)),
@@ -91,6 +92,11 @@ enum class TokenType(vararg properties: TokenTypeProperty) {
   val charConsume: CharConsume? = properties.filterIsInstance<CharConsume>().singleOrNull()
   val tokenUpgrader: TokenUpgrader? =
     properties.filterIsInstance<TokenUpgrader>().singleOrNull()
+  val validStates: List<TokenizerState> by lazy {
+    properties
+      .filterIsInstance<InsideStates>()
+      .singleOrNull()?.states?.toList() ?: listOf(TokenizerState.Normal)
+  }
 
   val simpleWantString: String? = manyChars?.text ?: singleChar?.char?.toString()
 

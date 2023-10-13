@@ -238,6 +238,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append("import ")
     visit(node.form)
     append(" ")
+    visit(node.path)
+  }
+
+  override fun visitImportPath(node: ImportPath) {
     for ((index, component) in node.components.withIndex()) {
       visit(component)
       if (index != node.components.size - 1) {

@@ -23,6 +23,7 @@ object PorkElementFactory {
       NodeType.FunctionDefinition -> FunctionDefinitionElement(node)
       NodeType.LetDefinition -> LetDefinitionElement(node)
       NodeType.If -> IfElement(node)
+      NodeType.ImportPath -> ImportPathElement(node)
       NodeType.ImportDeclaration -> ImportDeclarationElement(node)
       NodeType.IntegerLiteral -> IntegerLiteralElement(node)
       NodeType.LongLiteral -> LongLiteralElement(node)

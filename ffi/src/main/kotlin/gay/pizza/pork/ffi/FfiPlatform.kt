@@ -1,7 +1,5 @@
 package gay.pizza.pork.ffi
 
-import java.nio.file.Path
-
 enum class FfiPlatforms(val id: String, val platform: FfiPlatform) {
   Mac("macOS", FfiMacPlatform),
   Windows("Windows", FfiWindowsPlatform),
@@ -20,5 +18,5 @@ enum class FfiPlatforms(val id: String, val platform: FfiPlatform) {
 }
 
 interface FfiPlatform {
-  fun findLibrary(name: String): Path?
+  fun findLibrary(name: String): String?
 }

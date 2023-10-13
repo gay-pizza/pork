@@ -24,4 +24,13 @@ class ParserStackAnalysis(private val stack: Array<StackTraceElement>) {
     }
     return parseDescentPaths.reversed()
   }
+
+  fun buildDescentPathAddendum(): String {
+    val descentPath = findDescentPath()
+    if (descentPath.isEmpty()) {
+      return ""
+    }
+
+    return "\nParser descent path: ${descentPath.joinToString(", ")}"
+  }
 }

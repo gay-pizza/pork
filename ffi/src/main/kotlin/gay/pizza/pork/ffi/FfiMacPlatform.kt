@@ -1,6 +1,5 @@
 package gay.pizza.pork.ffi
 
-import java.nio.file.Path
 import kotlin.io.path.*
 
 object FfiMacPlatform : FfiPlatform {
@@ -8,18 +7,23 @@ object FfiMacPlatform : FfiPlatform {
     "/Library/Frameworks"
   )
 
-  override fun findLibrary(name: String): Path? {
+  override fun findLibrary(name: String): String? {
     val frameworksToCheck = frameworksDirectories.map { frameworkDirectory ->
       Path("$frameworkDirectory/$name.framework/$name")
     }
     for (framework in frameworksToCheck) {
       if (!framework.exists()) continue
       return if (framework.isSymbolicLink()) {
-        return framework.parent.resolve(framework.readSymbolicLink()).absolute()
+        return framework.parent.resolve(framework.readSymbolicLink()).absolutePathString()
       } else {
-        framework.absolute()
+        framework.absolutePathString()
       }
     }
+
+    if (name == "c") {
+      return "libSystem.dylib"
+    }
+
     return null
   }
 }

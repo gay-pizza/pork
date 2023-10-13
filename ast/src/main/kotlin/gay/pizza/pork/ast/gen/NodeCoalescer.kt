@@ -41,6 +41,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitImportDeclaration(node: ImportDeclaration): Unit =
     handle(node)
 
+  override fun visitImportPath(node: ImportPath): Unit =
+    handle(node)
+
   override fun visitIndexedBy(node: IndexedBy): Unit =
     handle(node)
 

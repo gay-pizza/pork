@@ -26,6 +26,15 @@
         <lang.elementManipulator
                 implementationClass="gay.pizza.pork.idea.PorkElementManipulator"
                 forClass="gay.pizza.pork.idea.psi.gen.PorkElement"/>
+        <codeInsight.parameterNameHints
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkInlayParameterHintsProvider"/>
+        <lang.quoteHandler
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkQuoteHandler"/>
+<!--        <codeInsight.parameterInfo
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkParameterInfoHandler"/>-->
         <psi.declarationProvider implementation="gay.pizza.pork.idea.PorkSymbolDeclarationProvider"/>
     </extensions>
 

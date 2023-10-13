@@ -19,6 +19,7 @@ fun NodeParser.parse(type: NodeType): Node =
     NodeType.FunctionDefinition -> parseFunctionDefinition()
     NodeType.LetDefinition -> parseLetDefinition()
     NodeType.If -> parseIf()
+    NodeType.ImportPath -> parseImportPath()
     NodeType.ImportDeclaration -> parseImportDeclaration()
     NodeType.IntegerLiteral -> parseIntegerLiteral()
     NodeType.LongLiteral -> parseLongLiteral()

@@ -35,6 +35,10 @@ object PorkElementTypes {
     elementTypeFor(TokenType.StringLiteral)
   )
 
+  val QuoteSet = TokenSet.create(
+    elementTypeFor(TokenType.Quote)
+  )
+
   fun tokenTypeFor(elementType: IElementType): TokenType? =
     elementTypeToTokenType[elementType]
 

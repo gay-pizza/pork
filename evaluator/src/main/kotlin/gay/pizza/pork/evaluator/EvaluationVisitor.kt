@@ -391,6 +391,10 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     topLevelUsedError("ImportDeclaration", "CompilationUnitContext")
   }
 
+  override fun visitImportPath(node: ImportPath): Any {
+    topLevelUsedError("ImportPath", "CompilationUnitContext")
+  }
+
   override fun visitIndexedBy(node: IndexedBy): Any {
     val value = node.expression.visit(this)
     val index = node.index.visit(this)

@@ -28,6 +28,8 @@ interface NodeVisitor<T> {
 
   fun visitImportDeclaration(node: ImportDeclaration): T
 
+  fun visitImportPath(node: ImportPath): T
+
   fun visitIndexedBy(node: IndexedBy): T
 
   fun visitInfixOperation(node: InfixOperation): T

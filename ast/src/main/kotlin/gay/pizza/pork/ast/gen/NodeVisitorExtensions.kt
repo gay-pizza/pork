@@ -16,6 +16,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is FunctionDefinition -> visitFunctionDefinition(node)
     is LetDefinition -> visitLetDefinition(node)
     is If -> visitIf(node)
+    is ImportPath -> visitImportPath(node)
     is ImportDeclaration -> visitImportDeclaration(node)
     is IntegerLiteral -> visitIntegerLiteral(node)
     is LongLiteral -> visitLongLiteral(node)

@@ -54,7 +54,7 @@ class CompilationUnitContext(
   }
 
   private fun processImport(import: ImportDeclaration) {
-    val importPath = import.components.joinToString("/") { it.id } + ".pork"
+    val importPath = import.path.components.joinToString("/") { it.id } + ".pork"
     val importLocator = ImportLocator(import.form.id, importPath)
     val evaluationContext = evaluator.context(importLocator)
     internalScope.inherit(evaluationContext.externalScope)
@@ -67,9 +67,11 @@ class CompilationUnitContext(
   companion object {
     private val preludeImport = ImportDeclaration(
       Symbol("std"),
-      listOf(
-        Symbol("lang"),
-        Symbol("prelude")
+      ImportPath(
+        listOf(
+          Symbol("lang"),
+          Symbol("prelude")
+        )
       )
     )
   }

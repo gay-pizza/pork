@@ -18,6 +18,7 @@ digraph A {
   type_FunctionDefinition [shape=box,label="FunctionDefinition"]
   type_LetDefinition [shape=box,label="LetDefinition"]
   type_If [shape=box,label="If"]
+  type_ImportPath [shape=box,label="ImportPath"]
   type_ImportDeclaration [shape=box,label="ImportDeclaration"]
   type_IntegerLiteral [shape=box,label="IntegerLiteral"]
   type_LongLiteral [shape=box,label="LongLiteral"]
@@ -45,6 +46,7 @@ digraph A {
   type_Node -> type_Block
   type_Node -> type_CompilationUnit
   type_Node -> type_ArgumentSpec
+  type_Node -> type_ImportPath
   type_Node -> type_ForInItem
   type_Node -> type_Native
   type_Expression -> type_LetAssignment
@@ -98,7 +100,9 @@ digraph A {
   type_LetDefinition -> type_Expression [style=dotted]
   type_If -> type_Expression [style=dotted]
   type_If -> type_Block [style=dotted]
+  type_ImportPath -> type_Symbol [style=dotted]
   type_ImportDeclaration -> type_Symbol [style=dotted]
+  type_ImportDeclaration -> type_ImportPath [style=dotted]
   type_ListLiteral -> type_Expression [style=dotted]
   type_Parentheses -> type_Expression [style=dotted]
   type_PrefixOperation -> type_PrefixOperator [style=dotted]

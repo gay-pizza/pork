@@ -21,7 +21,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     val token = peek()
     var expression = when (token.type) {
       TokenType.NumberLiteral -> parseNumberLiteral()
-      TokenType.StringLiteral -> parseStringLiteral()
+      TokenType.Quote -> parseStringLiteral()
       TokenType.True, TokenType.False -> parseBooleanLiteral()
       TokenType.LeftBracket -> parseListLiteral()
       TokenType.Let -> parseLetAssignment()
@@ -233,10 +233,14 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
   override fun parseImportDeclaration(): ImportDeclaration = expect(NodeType.ImportDeclaration, TokenType.Import) {
     val form = parseSymbol()
+    ImportDeclaration(form, parseImportPath())
+  }
+
+  override fun parseImportPath(): ImportPath = guarded(NodeType.ImportPath) {
     val components = oneAndContinuedBy(TokenType.Dot) {
       parseSymbol()
     }
-    ImportDeclaration(form, components)
+    ImportPath(components)
   }
 
   override fun parseIndexedBy(): IndexedBy = guarded(NodeType.IndexedBy) {
@@ -302,7 +306,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   override fun parseNative(): Native = expect(NodeType.Native, TokenType.Native) {
     val form = parseSymbol()
     val definitions = mutableListOf<StringLiteral>()
-    while (peek(TokenType.StringLiteral)) {
+    while (peek(TokenType.Quote)) {
       definitions.add(parseStringLiteral())
     }
     Native(form, definitions)
@@ -333,8 +337,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     SetAssignment(symbol, value)
   }
 
-  override fun parseStringLiteral(): StringLiteral = expect(NodeType.StringLiteral, TokenType.StringLiteral) {
-    val content = StringEscape.unescape(StringEscape.unquote(it.text))
+  override fun parseStringLiteral(): StringLiteral = guarded(NodeType.StringLiteral) {
+    expect(TokenType.Quote)
+    val stringLiteralToken = expect(TokenType.StringLiteral)
+    expect(TokenType.Quote)
+    val content = StringEscape.unescape(stringLiteralToken.text)
     StringLiteral(content)
   }
 

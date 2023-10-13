@@ -7,4 +7,5 @@ interface FfiType {
 
   fun put(buffer: InvocationBuffer, value: Any?)
   fun value(ffi: Any?): Any
+  fun read(address: FfiAddress, offset: Int): Any
 }

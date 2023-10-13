@@ -23,7 +23,7 @@ abstract class Tool {
     get() = ImportLocator("local", rootFilePath())
 
   fun tokenize(): TokenStream =
-    Tokenizer(createCharSource()).tokenize()
+    Tokenizer(createCharSource()).stream()
 
   fun parse(attribution: NodeAttribution = DiscardNodeAttribution): CompilationUnit =
     Parser(TokenStreamSource(tokenize()), attribution).parseCompilationUnit()

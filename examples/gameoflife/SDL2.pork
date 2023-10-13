@@ -60,6 +60,9 @@ export func SDL_GetModState()
 
 export let SDL_RENDERER_PRESENTVSYNC = 4
 
+export func SDL_PollEvent(event)
+  native ffi "SDL2" "int SDL_PollEvent(struct SDL_Event*)"
+
 export func SDL_CreateRenderer(window, index, flags)
   native ffi "SDL2" "void* SDL_CreateRenderer(void*, int, unsigned int)"
 

@@ -49,7 +49,13 @@ object PorkElementHelpers {
 
   fun referenceOfElement(element: PorkElement, type: NodeType): PsiReference? {
     unused(type)
-    val textRangeOfSymbolInElement = element.childrenOfType<SymbolElement>().firstOrNull()?.textRangeInParent ?: return null
+
+    if (element is ImportPathElement) {
+      return PorkFileReference(element, element.textRange)
+    }
+
+    val symbols = element.childrenOfType<SymbolElement>()
+    val textRangeOfSymbolInElement = symbols.firstOrNull()?.textRangeInParent ?: return null
     return PorkIdentifierReference(element, textRangeOfSymbolInElement)
   }
 

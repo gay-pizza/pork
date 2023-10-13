@@ -1,7 +1,23 @@
-import std ffi.malloc
+import std ffi.struct
+
+export let timeval = ffiStructDefine(
+  "long", "seconds",
+  "unsigned int", "microseconds"
+)
+
+export let timezone = ffiStructDefine(
+  "int", "minutes_greenwich",
+  "int", "dst_time"
+)
+
+func gettimeofday(value, tz)
+  native ffi "c" "int gettimeofday(struct timeval*, struct timezone*)"
 
 export func main() {
-  let pointer = malloc(8192)
-  println(pointer)
-  free(pointer)
+  let time = ffiStructAllocate(timeval)
+  let zone = ffiStructAllocate(timezone)
+  let result = gettimeofday(time, zone)
+  let seconds = ffiStructValue(timeval, "seconds", time)
+  println("Result:", result)
+  println("Seconds:", seconds)
 }

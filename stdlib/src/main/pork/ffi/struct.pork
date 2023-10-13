@@ -1,0 +1,11 @@
+export func ffiStructDefine(items...)
+  native ffi "internal" "ffiStructDefine"
+
+export func ffiStructAllocate(struct)
+  native ffi "internal" "ffiStructAllocate"
+
+export func ffiStructValue(struct, field, value)
+  native ffi "internal" "ffiStructValue"
+
+export func ffiStructBytes(struct, value)
+  native ffi "internal" "ffiStructBytes"

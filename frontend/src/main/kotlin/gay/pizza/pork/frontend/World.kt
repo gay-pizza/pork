@@ -23,7 +23,7 @@ class World(val importSource: ImportSource) {
     }
     val charSource = contentSource.loadAsCharSource(importLocator.path)
     val tokenizer = Tokenizer(charSource)
-    val tokenStream = tokenizer.tokenize()
+    val tokenStream = tokenizer.stream()
     val parser = Parser(TokenStreamSource(tokenStream), DiscardNodeAttribution)
     val unit = parser.parseCompilationUnit()
     internalUnits[stableKey] = unit
@@ -33,7 +33,7 @@ class World(val importSource: ImportSource) {
   private fun resolveAllImports(unit: CompilationUnit): Set<CompilationUnit> {
     val units = mutableSetOf<CompilationUnit>()
     for (declaration in unit.declarations.filterIsInstance<ImportDeclaration>()) {
-      val importPath = declaration.components.joinToString("/") { it.id } + ".pork"
+      val importPath = declaration.path.components.joinToString("/") { it.id } + ".pork"
       val importLocator = ImportLocator(declaration.form.id, importPath)
       val importedUnit = loadOneUnit(importLocator)
       units.add(importedUnit)

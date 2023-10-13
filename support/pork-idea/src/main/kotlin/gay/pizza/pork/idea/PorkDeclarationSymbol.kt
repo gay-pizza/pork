@@ -8,13 +8,14 @@ import com.intellij.platform.backend.navigation.NavigationRequest
 import com.intellij.platform.backend.navigation.NavigationTarget
 import com.intellij.platform.backend.presentation.TargetPresentation
 import gay.pizza.pork.idea.psi.gen.PorkElement
+import gay.pizza.pork.idea.resolution.PorkReferenceResolution
 
 @Suppress("UnstableApiUsage")
 data class PorkDeclarationSymbol(val module: String, val name: String) : Symbol, NavigatableSymbol {
   override fun createPointer(): Pointer<out Symbol> = Pointer { this }
   override fun getNavigationTargets(project: Project): MutableCollection<out NavigationTarget> {
     return PorkReferenceResolution.getAllProjectPorkFiles(project)
-      .flatMap { PorkReferenceResolution.findAnyDefinitions(it) }
+      .flatMap { PorkReferenceResolution.findAnyDefinitions(it.file) }
       .map { PorkNavigationTarget(it) }
       .toMutableList()
   }
