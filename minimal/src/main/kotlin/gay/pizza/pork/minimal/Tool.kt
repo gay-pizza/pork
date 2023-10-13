@@ -22,14 +22,14 @@ abstract class Tool {
   val rootImportLocator: ImportLocator
     get() = ImportLocator("local", rootFilePath())
 
-  fun tokenize(): TokenStream =
-    Tokenizer(createCharSource()).stream()
+  fun tokenize(): LazyTokenSource =
+    LazyTokenSource(Tokenizer(createCharSource()))
 
   fun parse(attribution: NodeAttribution = DiscardNodeAttribution): CompilationUnit =
-    Parser(TokenStreamSource(tokenize()), attribution).parseCompilationUnit()
+    Parser(TokenStreamSource(tokenize().streamAllRemainingTokens()), attribution).parseCompilationUnit()
 
   fun highlight(scheme: HighlightScheme): List<Highlight> =
-    Highlighter(scheme).highlight(tokenize())
+    Highlighter(scheme).highlight(tokenize().streamAllRemainingTokens())
 
   fun reprint(): String = buildString { visit(Printer(this)) }
 

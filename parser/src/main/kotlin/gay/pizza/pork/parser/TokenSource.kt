@@ -14,6 +14,9 @@ interface TokenSource : PeekableSource<Token> {
     return tokens
   }
 
+  fun streamAllRemainingTokens(): TokenStream =
+    TokenStream(consumeAllRemainingTokens().filter { !TokenType.ParserIgnoredTypes.contains(it.type) })
+
   fun ignoringParserIgnoredTypes(): TokenSource =
-    TokenStreamSource(TokenStream(consumeAllRemainingTokens().filter { !TokenType.ParserIgnoredTypes.contains(it.type) }))
+    TokenStreamSource(streamAllRemainingTokens())
 }
