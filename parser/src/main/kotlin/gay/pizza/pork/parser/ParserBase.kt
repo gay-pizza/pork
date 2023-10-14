@@ -5,15 +5,19 @@ import gay.pizza.pork.ast.gen.NodeParser
 import gay.pizza.pork.ast.gen.NodeType
 
 abstract class ParserBase(source: TokenSource, val attribution: NodeAttribution) : NodeParser {
-  val source: TokenSource = source.ignoringParserIgnoredTypes()
+  val source: TokenSource = if (source is ParserAwareTokenSource) {
+    source
+  } else {
+    LazySkippingTokenSource(source, TokenType.ParserIgnoredTypes)
+  }
 
   @Suppress("NOTHING_TO_INLINE")
-  protected inline fun <T: Node> guarded(type: NodeType? = null, noinline block: () -> T): T =
-    attribution.guarded(type, block)
+  protected inline fun <T: Node> produce(type: NodeType, noinline block: () -> T): T =
+    attribution.produce(type, block)
 
   @Suppress("NOTHING_TO_INLINE")
-  protected inline fun <T: Node> expect(type: NodeType? = null, vararg tokenTypes: TokenType, noinline block: (Token) -> T): T =
-    guarded(type) {
+  protected inline fun <T: Node> expect(type: NodeType, vararg tokenTypes: TokenType, noinline block: (Token) -> T): T =
+    produce(type) {
       block(expect(*tokenTypes))
     }
 

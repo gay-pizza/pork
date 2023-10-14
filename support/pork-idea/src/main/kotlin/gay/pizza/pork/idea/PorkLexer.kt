@@ -1,15 +1,15 @@
 package gay.pizza.pork.idea
 
 import com.intellij.lexer.LexerBase
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.psi.tree.IElementType
-import gay.pizza.pork.parser.*
+import gay.pizza.pork.parser.BadCharacterError
+import gay.pizza.pork.parser.StringCharSource
+import gay.pizza.pork.parser.Tokenizer
+import gay.pizza.pork.parser.UnterminatedTokenError
 import com.intellij.psi.TokenType as PsiTokenType
 
 class PorkLexer : LexerBase() {
-  private val log: Logger = Logger.getInstance(PorkLexer::class.java)
-
   private lateinit var source: StringCharSource
   private lateinit var tokenizer: Tokenizer
   private var internalTokenStart: Int = 0

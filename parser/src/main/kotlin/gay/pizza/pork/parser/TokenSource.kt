@@ -2,6 +2,7 @@ package gay.pizza.pork.parser
 
 interface TokenSource : PeekableSource<Token> {
   fun peekTypeAhead(ahead: Int): TokenType
+
   fun consumeAllRemainingTokens(): List<Token> {
     val tokens = mutableListOf<Token>()
     while (true) {
@@ -14,9 +15,5 @@ interface TokenSource : PeekableSource<Token> {
     return tokens
   }
 
-  fun streamAllRemainingTokens(): TokenStream =
-    TokenStream(consumeAllRemainingTokens().filter { !TokenType.ParserIgnoredTypes.contains(it.type) })
-
-  fun ignoringParserIgnoredTypes(): TokenSource =
-    TokenStreamSource(streamAllRemainingTokens())
+  fun stream(): TokenStream = TokenStream(consumeAllRemainingTokens())
 }

@@ -1,7 +1,7 @@
 package gay.pizza.pork.parser
 
 object StringCharConsumer : CharConsumer {
-  override fun consume(type: TokenType, tokenizer: Tokenizer): String? {
+  override fun consume(type: TokenType, tokenizer: Tokenizer): String {
     val buffer = StringBuilder()
     var escape = false
     while (true) {
@@ -13,6 +13,10 @@ object StringCharConsumer : CharConsumer {
 
       if (char == '"' && !escape) {
         break
+      }
+
+      if (escape) {
+        escape = false
       }
 
       buffer.append(tokenizer.source.next())

@@ -107,7 +107,7 @@ enum class TokenType(vararg val properties: TokenTypeProperty) {
     val CharMatches = entries.filter { item -> item.charMatch != null }
     val CharConsumes = entries.filter { item -> item.charConsume != null }
 
-    val ParserIgnoredTypes: Array<TokenType> = arrayOf(
+    val ParserIgnoredTypes: Set<TokenType> = setOf(
       Whitespace,
       BlockComment,
       LineComment

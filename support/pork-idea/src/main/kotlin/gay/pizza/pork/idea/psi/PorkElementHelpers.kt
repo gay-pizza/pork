@@ -3,6 +3,7 @@ package gay.pizza.pork.idea.psi
 import com.intellij.lang.ASTNode
 import com.intellij.model.Symbol
 import com.intellij.navigation.ItemPresentation
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiReference
@@ -51,7 +52,7 @@ object PorkElementHelpers {
     unused(type)
 
     if (element is ImportPathElement) {
-      return PorkFileReference(element, element.textRange)
+      return PorkFileReference(element, TextRange(0, element.textLength))
     }
 
     val symbols = element.childrenOfType<SymbolElement>()
@@ -77,7 +78,7 @@ object PorkElementHelpers {
     }
 
     if (element is LetAssignmentElement || element is VarAssignmentElement) {
-      return PorkPresentable(element.name, icon)
+      return PorkPresentable(element.name, icon, element.containingFile.virtualFile?.name)
     }
 
     return null

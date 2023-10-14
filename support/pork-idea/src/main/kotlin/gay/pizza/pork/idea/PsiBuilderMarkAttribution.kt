@@ -7,10 +7,10 @@ import gay.pizza.pork.parser.ParseError
 import gay.pizza.pork.parser.ParserNodeAttribution
 
 class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution() {
-  override fun <T : Node> guarded(type: NodeType?, block: () -> T): T {
+  override fun <T : Node> produce(type: NodeType, block: () -> T): T {
     val marker = builder.mark()
     val result = try {
-      val item = super.guarded(type, block)
+      val item = super.produce(type, block)
       marker.done(PorkElementTypes.elementTypeFor(item.type))
       item
     } catch (e: PsiBuilderTokenSource.BadCharacterError) {

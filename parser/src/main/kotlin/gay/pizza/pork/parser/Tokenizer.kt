@@ -1,9 +1,40 @@
 package gay.pizza.pork.parser
 
-class Tokenizer(source: CharSource) {
-  val source: SourceIndexCharSource = SourceIndexCharSource(source)
+class Tokenizer(source: CharSource) : TokenSource {
+  internal val source = SourceIndexCharSource(source)
+
   private var startIndex: SourceIndex = SourceIndex.zero()
   private var state = TokenizerState.Normal
+  private var index = 0
+  override val currentIndex: Int
+    get() = index
+
+  private val queue = mutableListOf<Token>()
+
+  override fun next(): Token {
+    val token = readNextToken()
+    index++
+    return token
+  }
+
+  override fun peek(): Token {
+    if (queue.isEmpty()) {
+      val token = readNextToken()
+      queue.add(token)
+      return token
+    }
+    return queue.first()
+  }
+
+  override fun peekTypeAhead(ahead: Int): TokenType {
+    val needed = ahead - (queue.size - 1)
+    if (needed > 0) {
+      for (i in 1..needed) {
+        queue.add(readNextToken())
+      }
+    }
+    return queue[ahead].type
+  }
 
   private fun nextTokenOrNull(): Token? {
     if (source.peek() == CharSource.EndOfFile) {
@@ -80,7 +111,7 @@ class Tokenizer(source: CharSource) {
     return null
   }
 
-  fun next(): Token {
+  private fun readNextToken(): Token {
     val what = source.peek()
     val token = nextTokenOrNull()
     if (token != null) {
@@ -93,18 +124,6 @@ class Tokenizer(source: CharSource) {
       return token
     }
     throw BadCharacterError(what, source.currentSourceIndex(), state)
-  }
-
-  fun stream(): TokenStream {
-    val tokens = mutableListOf<Token>()
-    while (true) {
-      val token = next()
-      tokens.add(token)
-      if (token.type == TokenType.EndOfFile) {
-        break
-      }
-    }
-    return TokenStream(tokens)
   }
 
   internal fun produceToken(type: TokenType, text: String) =

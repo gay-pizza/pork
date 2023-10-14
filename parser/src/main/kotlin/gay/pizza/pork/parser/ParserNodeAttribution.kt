@@ -23,7 +23,7 @@ open class ParserNodeAttribution : NodeAttribution {
     }
   }
 
-  override fun <T : Node> guarded(type: NodeType?, block: () -> T): T {
+  override fun <T : Node> produce(type: NodeType, block: () -> T): T {
     var store = mutableListOf<Token>()
     current = store
     stack.add(store)

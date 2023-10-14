@@ -32,6 +32,9 @@
         <lang.quoteHandler
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkQuoteHandler"/>
+        <annotator
+                language="Pork"
+                implementationClass="gay.pizza.pork.idea.PorkReferenceAnnotator"/>
 <!--        <codeInsight.parameterInfo
                 language="Pork"
                 implementationClass="gay.pizza.pork.idea.PorkParameterInfoHandler"/>-->

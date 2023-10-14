@@ -1,14 +1,11 @@
 package gay.pizza.pork.idea
 
 import com.intellij.lang.PsiBuilder
-import gay.pizza.pork.parser.SourceIndex
-import gay.pizza.pork.parser.Token
-import gay.pizza.pork.parser.TokenSource
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.parser.*
 import com.intellij.psi.TokenType as PsiTokenType
 
 @Suppress("UnstableApiUsage")
-class PsiBuilderTokenSource(val builder: PsiBuilder) : TokenSource {
+class PsiBuilderTokenSource(val builder: PsiBuilder) : ParserAwareTokenSource {
   override val currentIndex: Int = 0
 
   override fun next(): Token {
@@ -40,8 +37,6 @@ class PsiBuilderTokenSource(val builder: PsiBuilder) : TokenSource {
     }
     return PorkElementTypes.tokenTypeFor(elementType) ?: TokenType.EndOfFile
   }
-
-  override fun ignoringParserIgnoredTypes(): TokenSource = this
 
   class BadCharacterError(error: String) : RuntimeException(error)
 }

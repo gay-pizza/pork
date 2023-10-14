@@ -1,5 +1,5 @@
 import std ffi.printf
 
 export func main() {
-  printf("Hello World: %s\n", "Jolk")
+  printf("Hello World: \n", "Jolk")
 }

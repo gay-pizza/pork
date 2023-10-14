@@ -15,7 +15,6 @@ class TokenizeCommand : CliktCommand(help = "Tokenize Compilation Unit", name = 
     while (true) {
       val token = tokenSource.next()
       println("${token.sourceIndex} ${token.type.name} '${sanitize(token.text)}'")
-      tokenSource.peekTypeAhead(5)
       if (token.type == TokenType.EndOfFile) {
         break
       }

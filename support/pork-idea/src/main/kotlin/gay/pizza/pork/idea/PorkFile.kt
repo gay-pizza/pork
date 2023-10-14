@@ -10,8 +10,4 @@ class PorkFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, PorkL
   }
 
   override fun toString(): String = "Pork"
-
-  override fun isPhysical(): Boolean {
-    return super.isPhysical()
-  }
 }
