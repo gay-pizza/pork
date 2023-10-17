@@ -2,9 +2,9 @@ package gay.pizza.pork.ffi
 
 import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.frontend.ContentSource
-import gay.pizza.pork.parser.CharSource
+import gay.pizza.pork.tokenizer.CharSource
 import gay.pizza.pork.parser.Printer
-import gay.pizza.pork.parser.StringCharSource
+import gay.pizza.pork.tokenizer.StringCharSource
 
 object JavaAutogenContentSource : ContentSource {
   override fun loadAsCharSource(path: String): CharSource {

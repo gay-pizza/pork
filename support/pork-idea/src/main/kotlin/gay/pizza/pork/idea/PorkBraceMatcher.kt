@@ -4,7 +4,7 @@ import com.intellij.lang.BracePair
 import com.intellij.lang.PairedBraceMatcher
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.tokenizer.TokenType
 
 class PorkBraceMatcher : PairedBraceMatcher {
   override fun getPairs(): Array<BracePair> = arrayOf(

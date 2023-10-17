@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 enum class TokenizerState(vararg val transitions: Transition) {
   Normal(Transition({ TokenType.Quote }) { StringLiteralStart }),

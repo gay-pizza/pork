@@ -4,6 +4,7 @@ import gay.pizza.pork.ast.gen.Node
 import gay.pizza.pork.ast.gen.NodeCoalescer
 import gay.pizza.pork.ast.gen.data
 import gay.pizza.pork.ast.gen.visit
+import gay.pizza.pork.tokenizer.Token
 
 data class ParserAttributes(val tokens: List<Token>) {
   companion object {

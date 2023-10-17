@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 class TokenStreamSource(val stream: TokenStream) : TokenSource {
   private var index = 0

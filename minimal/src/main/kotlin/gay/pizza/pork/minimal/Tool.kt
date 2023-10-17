@@ -13,6 +13,7 @@ import gay.pizza.pork.frontend.DynamicImportSource
 import gay.pizza.pork.frontend.World
 import gay.pizza.pork.parser.*
 import gay.pizza.pork.stdlib.PorkStdlib
+import gay.pizza.pork.tokenizer.*
 
 abstract class Tool {
   abstract fun createCharSource(): CharSource

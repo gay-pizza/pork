@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 class Tokenizer(source: CharSource) : TokenSource {
   internal val source = SourceIndexCharSource(source)

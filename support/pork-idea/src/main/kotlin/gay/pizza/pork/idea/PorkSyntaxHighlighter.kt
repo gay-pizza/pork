@@ -6,8 +6,8 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import gay.pizza.pork.parser.TokenFamily
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.tokenizer.TokenFamily
+import gay.pizza.pork.tokenizer.TokenType
 
 object PorkSyntaxHighlighter : SyntaxHighlighter {
   override fun getHighlightingLexer(): Lexer {

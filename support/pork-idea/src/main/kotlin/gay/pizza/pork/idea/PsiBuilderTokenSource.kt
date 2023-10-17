@@ -1,7 +1,10 @@
 package gay.pizza.pork.idea
 
 import com.intellij.lang.PsiBuilder
-import gay.pizza.pork.parser.*
+import gay.pizza.pork.parser.ParserAwareTokenSource
+import gay.pizza.pork.tokenizer.SourceIndex
+import gay.pizza.pork.tokenizer.Token
+import gay.pizza.pork.tokenizer.TokenType
 import com.intellij.psi.TokenType as PsiTokenType
 
 @Suppress("UnstableApiUsage")

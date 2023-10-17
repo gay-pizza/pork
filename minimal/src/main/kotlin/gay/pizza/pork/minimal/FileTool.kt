@@ -4,8 +4,8 @@ import gay.pizza.dough.fs.FsPath
 import gay.pizza.dough.fs.readString
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.frontend.FsContentSource
-import gay.pizza.pork.parser.CharSource
-import gay.pizza.pork.parser.StringCharSource
+import gay.pizza.pork.tokenizer.CharSource
+import gay.pizza.pork.tokenizer.StringCharSource
 
 class FileTool(val path: FsPath) : Tool() {
   override fun createCharSource(): CharSource =

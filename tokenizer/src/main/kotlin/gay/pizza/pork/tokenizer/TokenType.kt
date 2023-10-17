@@ -1,10 +1,10 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
-import gay.pizza.pork.parser.CharMatcher.*
-import gay.pizza.pork.parser.MatchedCharConsumer.Options.AllowEofTermination
-import gay.pizza.pork.parser.TokenTypeProperty.*
-import gay.pizza.pork.parser.TokenFamily.*
-import gay.pizza.pork.parser.TokenTypeProperty.AnyOf
+import gay.pizza.pork.tokenizer.CharMatcher.*
+import gay.pizza.pork.tokenizer.MatchedCharConsumer.Options.AllowEofTermination
+import gay.pizza.pork.tokenizer.TokenTypeProperty.*
+import gay.pizza.pork.tokenizer.TokenFamily.*
+import gay.pizza.pork.tokenizer.TokenTypeProperty.AnyOf
 
 enum class TokenType(vararg val properties: TokenTypeProperty) {
   NumberLiteral(NumericLiteralFamily, CharMatch(CharMatcher.AnyOf(

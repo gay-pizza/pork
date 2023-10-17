@@ -11,7 +11,7 @@ import com.intellij.psi.util.elementsAtOffsetUp
 import gay.pizza.pork.idea.psi.gen.ArgumentSpecElement
 import gay.pizza.pork.idea.psi.gen.FunctionCallElement
 import gay.pizza.pork.idea.psi.gen.FunctionDefinitionElement
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.tokenizer.TokenType
 
 @Suppress("UnstableApiUsage")
 class PorkParameterInfoHandler : ParameterInfoHandler<FunctionCallElement, FunctionDefinitionElement> {

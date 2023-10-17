@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 data class SourceIndex(val index: Int, val line: Int, val column: Int, val locationReliable: Boolean = true) {
   companion object {

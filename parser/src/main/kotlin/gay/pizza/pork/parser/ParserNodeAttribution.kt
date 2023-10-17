@@ -3,6 +3,7 @@ package gay.pizza.pork.parser
 import gay.pizza.pork.ast.gen.Node
 import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.ast.gen.data
+import gay.pizza.pork.tokenizer.Token
 
 open class ParserNodeAttribution : NodeAttribution {
   private val stack = mutableListOf<MutableList<Token>>()

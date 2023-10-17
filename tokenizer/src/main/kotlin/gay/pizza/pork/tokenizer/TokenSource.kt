@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 interface TokenSource : PeekableSource<Token> {
   fun peekTypeAhead(ahead: Int): TokenType

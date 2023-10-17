@@ -1,6 +1,6 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
-class ExpectedTokenError(got: Token, sourceIndex: SourceIndex, vararg expectedTypes: TokenType) : ParseError(
+class ExpectedTokenError(got: Token, sourceIndex: SourceIndex, vararg expectedTypes: TokenType) : TokenizeError(
   message(got, sourceIndex, expectedTypes)
 ) {
   companion object {

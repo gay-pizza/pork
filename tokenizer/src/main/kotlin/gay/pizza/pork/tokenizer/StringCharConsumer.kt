@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 object StringCharConsumer : CharConsumer {
   override fun consume(type: TokenType, tokenizer: Tokenizer): String {

@@ -7,7 +7,7 @@ import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.dough.fs.createDirectories
 import gay.pizza.dough.fs.exists
 import gay.pizza.dough.fs.writeString
-import gay.pizza.pork.parser.readToString
+import gay.pizza.pork.tokenizer.readToString
 import gay.pizza.pork.stdlib.PorkStdlib
 
 class CopyStdlibCommand : CliktCommand(help = "Copy Stdlib", name = "copy-stdlib") {

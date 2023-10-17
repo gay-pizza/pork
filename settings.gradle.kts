@@ -4,6 +4,7 @@ includeBuild("buildext")
 
 include(
   ":common",
+  ":tokenizer",
   ":ast",
   ":parser",
   ":frontend",

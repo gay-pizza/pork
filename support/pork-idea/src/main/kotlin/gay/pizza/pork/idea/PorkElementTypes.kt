@@ -3,7 +3,7 @@ package gay.pizza.pork.idea
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 import gay.pizza.pork.ast.gen.NodeType
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.tokenizer.TokenType
 
 object PorkElementTypes {
   private val tokenTypeToElementType = mutableMapOf<TokenType, IElementType>()

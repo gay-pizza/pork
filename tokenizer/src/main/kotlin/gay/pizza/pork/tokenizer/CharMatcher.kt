@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 fun interface CharMatcher {
   fun valid(char: Char, index: Int): Boolean

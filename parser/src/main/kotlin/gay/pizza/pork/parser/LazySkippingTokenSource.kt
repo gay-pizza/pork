@@ -1,5 +1,9 @@
 package gay.pizza.pork.parser
 
+import gay.pizza.pork.tokenizer.Token
+import gay.pizza.pork.tokenizer.TokenSource
+import gay.pizza.pork.tokenizer.TokenType
+
 class LazySkippingTokenSource(val source: TokenSource, val skipping: Set<TokenType>) : ParserAwareTokenSource {
   private var index = 0
   override val currentIndex: Int

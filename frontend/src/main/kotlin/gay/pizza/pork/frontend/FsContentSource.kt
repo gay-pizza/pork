@@ -3,8 +3,8 @@ package gay.pizza.pork.frontend
 import gay.pizza.dough.fs.FsPath
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.dough.fs.readString
-import gay.pizza.pork.parser.CharSource
-import gay.pizza.pork.parser.StringCharSource
+import gay.pizza.pork.tokenizer.CharSource
+import gay.pizza.pork.tokenizer.StringCharSource
 
 class FsContentSource(val root: FsPath) : ContentSource {
   override fun loadAsCharSource(path: String): CharSource =

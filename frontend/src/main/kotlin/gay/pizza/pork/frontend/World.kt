@@ -4,7 +4,7 @@ import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.ast.gen.ImportDeclaration
 import gay.pizza.pork.parser.DiscardNodeAttribution
 import gay.pizza.pork.parser.Parser
-import gay.pizza.pork.parser.Tokenizer
+import gay.pizza.pork.tokenizer.Tokenizer
 
 class World(val importSource: ImportSource) {
   private val internalUnits = mutableMapOf<String, CompilationUnit>()

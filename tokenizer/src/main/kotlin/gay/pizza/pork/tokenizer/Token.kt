@@ -1,4 +1,4 @@
-package gay.pizza.pork.parser
+package gay.pizza.pork.tokenizer
 
 class Token(val type: TokenType, val sourceIndex: SourceIndex, val text: String) {
   override fun toString(): String =

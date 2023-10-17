@@ -11,7 +11,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import gay.pizza.pork.idea.psi.gen.PorkElementFactory
-import gay.pizza.pork.parser.TokenType
+import gay.pizza.pork.tokenizer.TokenType
 
 class PorkParserDefinition : ParserDefinition {
   val fileElementType = IFileElementType(PorkLanguage)

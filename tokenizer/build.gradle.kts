@@ -3,8 +3,5 @@ plugins {
 }
 
 dependencies {
-  api(project(":ast"))
-  api(project(":tokenizer"))
-
   implementation(project(":common"))
 }

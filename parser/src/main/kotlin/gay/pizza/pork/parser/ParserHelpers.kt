@@ -3,6 +3,8 @@ package gay.pizza.pork.parser
 import gay.pizza.pork.ast.gen.InfixOperator
 import gay.pizza.pork.ast.gen.PrefixOperator
 import gay.pizza.pork.ast.gen.SuffixOperator
+import gay.pizza.pork.tokenizer.Token
+import gay.pizza.pork.tokenizer.TokenType
 
 internal object ParserHelpers {
   fun convertInfixOperator(token: Token): InfixOperator = when (token.type) {

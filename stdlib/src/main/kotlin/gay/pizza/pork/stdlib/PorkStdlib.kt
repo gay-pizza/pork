@@ -1,8 +1,8 @@
 package gay.pizza.pork.stdlib
 
 import gay.pizza.pork.frontend.ContentSource
-import gay.pizza.pork.parser.CharSource
-import gay.pizza.pork.parser.StringCharSource
+import gay.pizza.pork.tokenizer.CharSource
+import gay.pizza.pork.tokenizer.StringCharSource
 
 object PorkStdlib : ContentSource {
   private val stdlibClass = PorkStdlib::class.java
