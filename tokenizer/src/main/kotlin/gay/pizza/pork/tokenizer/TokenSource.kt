@@ -15,5 +15,17 @@ interface TokenSource : PeekableSource<Token> {
     return tokens
   }
 
-  fun stream(): TokenStream = TokenStream(consumeAllRemainingTokens())
+  fun sequence(): Sequence<Token> {
+    var endFlag = false
+    return generateSequence {
+      if (endFlag) {
+        return@generateSequence null
+      }
+      val token = next()
+      if (token.type == TokenType.EndOfFile) {
+        endFlag = true
+        token
+      } else token
+    }
+  }
 }

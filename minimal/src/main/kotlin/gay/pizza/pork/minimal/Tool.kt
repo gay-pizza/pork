@@ -29,8 +29,8 @@ abstract class Tool {
   fun parse(attribution: NodeAttribution = DiscardNodeAttribution): CompilationUnit =
     Parser(tokenize(), attribution).parseCompilationUnit()
 
-  fun highlight(scheme: HighlightScheme): List<Highlight> =
-    Highlighter(scheme).highlight(tokenize().stream())
+  fun highlight(scheme: HighlightScheme): Sequence<Highlight> =
+    Highlighter(scheme).highlight(tokenize())
 
   fun reprint(): String = buildString { visit(Printer(this)) }
 
@@ -44,6 +44,13 @@ abstract class Tool {
     return resultingScope.value("main") as CallableFunction
   }
 
+  fun loadMainFunctionStandard(scope: Scope, quiet: Boolean = false): CallableFunction =
+    loadMainFunction(scope, setupEvaluator = {
+      addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
+      addNativeProvider("ffi", FfiNativeProvider())
+      addNativeProvider("java", JavaNativeProvider())
+    })
+
   fun buildWorld(): World {
     val fileContentSource = createContentSource()
     val dynamicImportSource = DynamicImportSource()
@@ -54,11 +61,7 @@ abstract class Tool {
   }
 
   fun run(scope: Scope, quiet: Boolean = false) {
-    val main = loadMainFunction(scope, setupEvaluator = {
-      addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
-      addNativeProvider("ffi", FfiNativeProvider())
-      addNativeProvider("java", JavaNativeProvider())
-    })
+    val main = loadMainFunctionStandard(scope, quiet = quiet)
     main.call(emptyList(), CallStack())
   }
 }
