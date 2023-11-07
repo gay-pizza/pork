@@ -157,8 +157,8 @@ types:
       type: List<ArgumentSpec>
     - name: block
       type: Block?
-    - name: native
-      type: Native?
+    - name: nativeFunctionDescriptor
+      type: NativeFunctionDescriptor?
   LetDefinition:
     parent: Definition
     namedElementValue: symbol
@@ -303,7 +303,7 @@ types:
   NoneLiteral:
     parent: Expression
     values: []
-  Native:
+  NativeFunctionDescriptor:
     parent: Node
     values:
     - name: form

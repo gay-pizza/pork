@@ -65,7 +65,7 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitLongLiteral(node: LongLiteral): Unit =
     handle(node)
 
-  override fun visitNative(node: Native): Unit =
+  override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): Unit =
     handle(node)
 
   override fun visitNoneLiteral(node: NoneLiteral): Unit =

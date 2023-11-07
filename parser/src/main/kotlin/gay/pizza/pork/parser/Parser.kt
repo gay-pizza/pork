@@ -213,10 +213,10 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     }
     expect(TokenType.RightParentheses)
 
-    var native: Native? = null
+    var native: NativeFunctionDescriptor? = null
     var block: Block? = null
     if (peek(TokenType.Native)) {
-      native = parseNative()
+      native = parseNativeFunctionDescriptor()
     } else {
       block = parseBlock()
     }
@@ -305,13 +305,13 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     LongLiteral(it.text.toLong())
   }
 
-  override fun parseNative(): Native = expect(NodeType.Native, TokenType.Native) {
+  override fun parseNativeFunctionDescriptor(): NativeFunctionDescriptor = expect(NodeType.NativeFunctionDescriptor, TokenType.Native) {
     val form = parseSymbol()
     val definitions = mutableListOf<StringLiteral>()
     while (peek(TokenType.Quote)) {
       definitions.add(parseStringLiteral())
     }
-    Native(form, definitions)
+    NativeFunctionDescriptor(form, definitions)
   }
 
   override fun parseNoneLiteral(): NoneLiteral = expect(NodeType.NoneLiteral, TokenType.None) {

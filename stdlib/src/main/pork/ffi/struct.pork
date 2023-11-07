@@ -4,8 +4,8 @@ export func ffiStructDefine(items...)
 export func ffiStructAllocate(struct)
   native ffi "internal" "ffiStructAllocate"
 
-export func ffiStructValue(struct, field, value)
+export func ffiStructValue(def, field, value)
   native ffi "internal" "ffiStructValue"
 
-export func ffiStructBytes(struct, value)
+export func ffiStructBytes(def, value)
   native ffi "internal" "ffiStructBytes"

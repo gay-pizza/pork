@@ -5,10 +5,10 @@ import gay.pizza.pork.ast.gen.FunctionDefinition
 class FunctionContext(val compilationUnitContext: CompilationUnitContext, val node: FunctionDefinition) : CallableFunction {
   val name: String = "${compilationUnitContext.name} ${node.symbol.id}"
 
-  private fun resolveMaybeNative(): CallableFunction? = if (node.native == null) {
+  private fun resolveMaybeNative(): CallableFunction? = if (node.nativeFunctionDescriptor == null) {
     null
   } else {
-    val native = node.native!!
+    val native = node.nativeFunctionDescriptor!!
     val nativeFunctionProvider =
       compilationUnitContext.evaluator.nativeFunctionProvider(native.form.id)
     nativeFunctionProvider.provideNativeFunction(native.definitions.map { it.text }, node.arguments, compilationUnitContext)

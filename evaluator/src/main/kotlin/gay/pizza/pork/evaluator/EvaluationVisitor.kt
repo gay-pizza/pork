@@ -414,8 +414,8 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     topLevelUsedError("CompilationUnit", "CompilationUnitContext")
   }
 
-  override fun visitNative(node: Native): Any {
-    topLevelUsedError("Native", "FunctionContext")
+  override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): Any {
+    topLevelUsedError("NativeFunctionDescriptor", "FunctionContext")
   }
 
   override fun visitNoneLiteral(node: NoneLiteral): Any = None

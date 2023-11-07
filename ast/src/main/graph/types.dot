@@ -37,7 +37,7 @@ digraph A {
   type_Break [shape=box,label="Break"]
   type_Continue [shape=box,label="Continue"]
   type_NoneLiteral [shape=box,label="NoneLiteral"]
-  type_Native [shape=box,label="Native"]
+  type_NativeFunctionDescriptor [shape=box,label="NativeFunctionDescriptor"]
   type_IndexedBy [shape=box,label="IndexedBy"]
   type_Node -> type_Expression
   type_Node -> type_Symbol
@@ -48,7 +48,7 @@ digraph A {
   type_Node -> type_ArgumentSpec
   type_Node -> type_ImportPath
   type_Node -> type_ForInItem
-  type_Node -> type_Native
+  type_Node -> type_NativeFunctionDescriptor
   type_Expression -> type_LetAssignment
   type_Expression -> type_VarAssignment
   type_Expression -> type_SetAssignment
@@ -94,7 +94,7 @@ digraph A {
   type_FunctionDefinition -> type_Symbol [style=dotted]
   type_FunctionDefinition -> type_ArgumentSpec [style=dotted]
   type_FunctionDefinition -> type_Block [style=dotted]
-  type_FunctionDefinition -> type_Native [style=dotted]
+  type_FunctionDefinition -> type_NativeFunctionDescriptor [style=dotted]
   type_LetDefinition -> type_DefinitionModifiers [style=dotted]
   type_LetDefinition -> type_Symbol [style=dotted]
   type_LetDefinition -> type_Expression [style=dotted]
@@ -116,7 +116,7 @@ digraph A {
   type_ForIn -> type_ForInItem [style=dotted]
   type_ForIn -> type_Expression [style=dotted]
   type_ForIn -> type_Block [style=dotted]
-  type_Native -> type_Symbol [style=dotted]
-  type_Native -> type_StringLiteral [style=dotted]
+  type_NativeFunctionDescriptor -> type_Symbol [style=dotted]
+  type_NativeFunctionDescriptor -> type_StringLiteral [style=dotted]
   type_IndexedBy -> type_Expression [style=dotted]
 }

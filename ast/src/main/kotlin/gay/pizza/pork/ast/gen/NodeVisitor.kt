@@ -44,7 +44,7 @@ interface NodeVisitor<T> {
 
   fun visitLongLiteral(node: LongLiteral): T
 
-  fun visitNative(node: Native): T
+  fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): T
 
   fun visitNoneLiteral(node: NoneLiteral): T
 

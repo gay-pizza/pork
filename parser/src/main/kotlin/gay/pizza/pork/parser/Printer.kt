@@ -78,7 +78,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append(node.value.toString())
   }
 
-  override fun visitNative(node: Native) {
+  override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor) {
     append("native ")
     visit(node.form)
     append(" ")
@@ -208,8 +208,8 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
       visit(node.block!!)
     }
 
-    if (node.native != null) {
-      visit(node.native!!)
+    if (node.nativeFunctionDescriptor != null) {
+      visit(node.nativeFunctionDescriptor!!)
     }
   }
 

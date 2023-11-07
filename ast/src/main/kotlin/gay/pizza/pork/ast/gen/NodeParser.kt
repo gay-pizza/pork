@@ -50,7 +50,7 @@ interface NodeParser {
 
   fun parseLongLiteral(): LongLiteral
 
-  fun parseNative(): Native
+  fun parseNativeFunctionDescriptor(): NativeFunctionDescriptor
 
   fun parseNoneLiteral(): NoneLiteral
 
