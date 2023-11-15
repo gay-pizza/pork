@@ -12,7 +12,7 @@ class VirtualMachineProvider(val world: World) : ExecutionContextProvider {
     val compiler = Compiler()
     val slab = world.load(importLocator)
     val compilableSlab = compiler.compilableSlabs.of(slab)
-    val compilableSymbol = compilableSlab.compilableSymbolOf(entryPointSymbol) ?:
+    val compilableSymbol = compilableSlab.resolve(entryPointSymbol) ?:
       throw RuntimeException("Unable to find compilable symbol for entry point '${entryPointSymbol.id}'")
     val compiledWorld = compiler.compile(compilableSymbol)
     return VirtualMachine(compiledWorld)

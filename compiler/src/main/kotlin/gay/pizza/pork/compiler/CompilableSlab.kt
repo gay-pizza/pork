@@ -10,7 +10,7 @@ class CompilableSlab(val compiler: Compiler, val slab: Slab) {
     }
   }
 
-  fun compilableSymbolOf(symbol: Symbol): CompilableSymbol? = compilableSymbols.firstOrNull {
+  fun resolve(symbol: Symbol): CompilableSymbol? = compilableSymbols.firstOrNull {
     it.scopeSymbol.symbol == symbol
   }
 }

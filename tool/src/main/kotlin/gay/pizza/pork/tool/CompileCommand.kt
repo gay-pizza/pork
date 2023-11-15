@@ -17,7 +17,7 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
     val compiler = Compiler()
     val slab = world.load(tool.rootImportLocator)
     val compiledSlab = compiler.compilableSlabs.of(slab)
-    val compiledMain = compiledSlab.compilableSymbolOf(Symbol("main"))
+    val compiledMain = compiledSlab.resolve(Symbol("main"))
       ?: throw RuntimeException("'main' function not found.")
     val compiledWorld = compiler.compile(compiledMain)
     for (symbol in compiledWorld.symbolTable.symbols) {

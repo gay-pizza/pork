@@ -24,7 +24,7 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
     }
     emitter.visit(what)
     emitter.exit()
-    return emitter.ops()
+    return emitter.code.build()
   }
 
   val id: String

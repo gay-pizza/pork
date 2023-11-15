@@ -13,7 +13,7 @@ class Compiler {
 
   fun resolveOrNull(scopeSymbol: ScopeSymbol): CompilableSymbol? {
     val compiledSlab = compilableSlabs.of(scopeSymbol.slabScope.slab)
-    return compiledSlab.compilableSymbolOf(scopeSymbol.symbol)
+    return compiledSlab.resolve(scopeSymbol.symbol)
   }
 
   fun resolve(scopeSymbol: ScopeSymbol): CompilableSymbol = resolveOrNull(scopeSymbol) ?:
