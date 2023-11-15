@@ -1,7 +1,7 @@
 package gay.pizza.pork.frontend
 
 class DynamicImportSource : ImportSource {
-  private val providers = mutableMapOf<String,ContentSource>()
+  private val providers = mutableMapOf<String, ContentSource>()
 
   override fun provideContentSource(form: String): ContentSource {
     return providers[form] ?:

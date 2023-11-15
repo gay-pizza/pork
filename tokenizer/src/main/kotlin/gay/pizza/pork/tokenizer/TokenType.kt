@@ -76,7 +76,6 @@ enum class TokenType(vararg val properties: TokenTypeProperty) {
   ))),
   BlockComment(CharConsume(MatchedCharConsumer("/*", "*/")), CommentFamily),
   LineComment(CharConsume(MatchedCharConsumer("//", "\n", AllowEofTermination)), CommentFamily),
-  Struct(ManyChars("struct"), KeywordFamily),
   EndOfFile;
 
   val promotions: List<Promotion> =

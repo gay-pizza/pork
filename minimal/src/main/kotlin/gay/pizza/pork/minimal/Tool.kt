@@ -36,16 +36,16 @@ abstract class Tool {
 
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
-  fun loadMainFunction(scope: Scope, setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
+  fun loadMainFunction(setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
     val world = buildWorld()
-    val evaluator = Evaluator(world, scope)
+    val evaluator = Evaluator(world)
     setupEvaluator(evaluator)
     val resultingScope = evaluator.evaluate(rootImportLocator)
     return resultingScope.value("main") as CallableFunction
   }
 
-  fun loadMainFunctionStandard(scope: Scope, quiet: Boolean = false): CallableFunction =
-    loadMainFunction(scope, setupEvaluator = {
+  fun loadMainFunctionStandard(quiet: Boolean = false): CallableFunction =
+    loadMainFunction(setupEvaluator = {
       addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
       addNativeProvider("ffi", FfiNativeProvider())
       addNativeProvider("java", JavaNativeProvider())
@@ -60,8 +60,8 @@ abstract class Tool {
     return World(dynamicImportSource)
   }
 
-  fun run(scope: Scope, quiet: Boolean = false) {
-    val main = loadMainFunctionStandard(scope, quiet = quiet)
+  fun run(quiet: Boolean = false) {
+    val main = loadMainFunctionStandard(quiet = quiet)
     main.call(emptyList(), CallStack())
   }
 }

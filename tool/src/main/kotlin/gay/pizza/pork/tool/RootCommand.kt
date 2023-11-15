@@ -17,7 +17,8 @@ class RootCommand : CliktCommand(
       AstCommand(),
       AttributeCommand(),
       ScopeAnalysisCommand(),
-      CopyStdlibCommand()
+      CopyStdlibCommand(),
+      CompileCommand()
     )
   }
 

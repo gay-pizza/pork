@@ -2,7 +2,7 @@ package gay.pizza.pork.ffi
 
 import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
-import gay.pizza.pork.evaluator.CompilationUnitContext
+import gay.pizza.pork.evaluator.SlabContext
 import gay.pizza.pork.evaluator.NativeProvider
 import gay.pizza.pork.evaluator.None
 import java.lang.invoke.MethodHandles
@@ -14,7 +14,7 @@ class JavaNativeProvider : NativeProvider {
   override fun provideNativeFunction(
     definitions: List<String>,
     arguments: List<ArgumentSpec>,
-    inside: CompilationUnitContext
+    inside: SlabContext
   ): CallableFunction {
     val functionDefinition = JavaFunctionDefinition.parse(definitions)
     val javaClass = lookupClass(functionDefinition.type)

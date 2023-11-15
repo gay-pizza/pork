@@ -1,11 +1,9 @@
 package gay.pizza.pork.frontend.scope
 
 import gay.pizza.pork.ast.gen.Definition
-import gay.pizza.pork.ast.gen.Node
+import gay.pizza.pork.ast.gen.Symbol
 
-class ScopeSymbol(
-  val compilationUnit: Node,
-  val definition: Definition
-) {
-  val symbol = definition.symbol
+class ScopeSymbol(val slabScope: SlabScope, val definition: Definition) {
+  val symbol: Symbol = definition.symbol
+  val scope: DefinitionScope by lazy { DefinitionScope(slabScope, definition) }
 }

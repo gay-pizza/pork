@@ -2,16 +2,16 @@ package gay.pizza.pork.evaluator
 
 import gay.pizza.pork.ast.gen.FunctionDefinition
 
-class FunctionContext(val compilationUnitContext: CompilationUnitContext, val node: FunctionDefinition) : CallableFunction {
-  val name: String = "${compilationUnitContext.name} ${node.symbol.id}"
+class FunctionContext(val slabContext: SlabContext, val node: FunctionDefinition) : CallableFunction {
+  val name: String by lazy { "${slabContext.slab.location.commonFriendlyName} ${node.symbol.id}" }
 
   private fun resolveMaybeNative(): CallableFunction? = if (node.nativeFunctionDescriptor == null) {
     null
   } else {
     val native = node.nativeFunctionDescriptor!!
     val nativeFunctionProvider =
-      compilationUnitContext.evaluator.nativeFunctionProvider(native.form.id)
-    nativeFunctionProvider.provideNativeFunction(native.definitions.map { it.text }, node.arguments, compilationUnitContext)
+      slabContext.evaluator.nativeFunctionProvider(native.form.id)
+    nativeFunctionProvider.provideNativeFunction(native.definitions.map { it.text }, node.arguments, slabContext)
   }
 
   private val nativeCached by lazy { resolveMaybeNative() }
@@ -21,7 +21,7 @@ class FunctionContext(val compilationUnitContext: CompilationUnitContext, val no
       return nativeCached!!.call(arguments, stack)
     }
 
-    val scope = compilationUnitContext.internalScope.fork(node.symbol.id)
+    val scope = slabContext.internalScope.fork(node.symbol.id)
     for ((index, spec) in node.arguments.withIndex()) {
       if (spec.multiple) {
         val list = arguments.subList(index, arguments.size - 1)

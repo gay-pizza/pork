@@ -25,7 +25,7 @@ class FfiNativeProvider : NativeProvider {
   override fun provideNativeFunction(
     definitions: List<String>,
     arguments: List<ArgumentSpec>,
-    inside: CompilationUnitContext
+    inside: SlabContext
   ): CallableFunction {
     if (definitions[0] == "internal") {
       val internal = internalFunctions[definitions[1]] ?:
@@ -73,7 +73,7 @@ class FfiNativeProvider : NativeProvider {
     }
   }
 
-  private fun addStructDefs(ffiTypeRegistry: FfiTypeRegistry, types: List<String>, inside: CompilationUnitContext) {
+  private fun addStructDefs(ffiTypeRegistry: FfiTypeRegistry, types: List<String>, inside: SlabContext) {
     for (parameter in types) {
       if (!parameter.startsWith("struct ")) {
         continue

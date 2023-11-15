@@ -34,7 +34,7 @@ object PorkStdlib : ContentSource {
     return StringCharSource(readPorkFile(path))
   }
 
-  override fun stableContentIdentity(path: String): String {
+  override fun stableContentPath(path: String): String {
     return path
   }
 }

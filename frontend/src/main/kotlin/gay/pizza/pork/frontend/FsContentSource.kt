@@ -10,7 +10,7 @@ class FsContentSource(val root: FsPath) : ContentSource {
   override fun loadAsCharSource(path: String): CharSource =
     StringCharSource(asFsPath(path).readString())
 
-  override fun stableContentIdentity(path: String): String =
+  override fun stableContentPath(path: String): String =
     asFsPath(path).fullPathString
 
   private fun asFsPath(path: String): FsPath {

@@ -15,12 +15,12 @@ class ScopeAnalysisCommand : CliktCommand(help = "Run Scope Analysis", name = "s
     val root = world.load(tool.rootImportLocator)
     val scope = WorldScope(world).apply { index(root) }
     val rootScope = scope.scope(root)
-    val visibleScopeSymbols = rootScope.findInternallyVisibleSymbols()
-    for (visibleScopeSymbol in visibleScopeSymbols) {
+    for (visibleScopeSymbol in rootScope.internallyVisibleSymbols) {
       println(
         "symbol ${visibleScopeSymbol.scopeSymbol.symbol.id} " +
         "type=${visibleScopeSymbol.scopeSymbol.definition.type.name} " +
-        "internal=${visibleScopeSymbol.isInternalSymbol}"
+        "internal=${visibleScopeSymbol.isInternalSymbol} " +
+        "slab=${visibleScopeSymbol.scopeSymbol.slab.location.commonFriendlyName}"
       )
     }
   }

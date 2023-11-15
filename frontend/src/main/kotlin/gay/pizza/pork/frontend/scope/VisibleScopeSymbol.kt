@@ -1,8 +1,8 @@
 package gay.pizza.pork.frontend.scope
 
-import gay.pizza.pork.ast.gen.CompilationUnit
+import gay.pizza.pork.frontend.Slab
 
-class VisibleScopeSymbol(val visibleToUnit: CompilationUnit, val scopeSymbol: ScopeSymbol) {
+class VisibleScopeSymbol(val visibleToSlab: Slab, val scopeSymbol: ScopeSymbol) {
   val isInternalSymbol: Boolean
-    get() = visibleToUnit == scopeSymbol.compilationUnit
+    get() = visibleToSlab == scopeSymbol.slabScope.slab
 }

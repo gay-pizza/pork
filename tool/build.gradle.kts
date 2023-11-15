@@ -7,6 +7,8 @@ plugins {
 
 dependencies {
   api(project(":minimal"))
+  api(project(":compiler"))
+  api(project(":vm"))
   api("com.github.ajalt.clikt:clikt:4.2.0")
 
   implementation(project(":common"))

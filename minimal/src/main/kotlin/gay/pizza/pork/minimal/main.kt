@@ -11,5 +11,5 @@ fun main(args: Array<String>) {
   }
   val path = PlatformFsProvider.resolve(args[0])
   val tool = FileTool(path)
-  tool.run(Scope.root())
+  tool.run()
 }

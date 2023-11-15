@@ -1,22 +1,25 @@
 package gay.pizza.pork.frontend
 
-import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.ast.gen.ImportDeclaration
+import gay.pizza.pork.frontend.scope.WorldScope
 import gay.pizza.pork.parser.DiscardNodeAttribution
 import gay.pizza.pork.parser.Parser
 import gay.pizza.pork.tokenizer.Tokenizer
 
 class World(val importSource: ImportSource) {
-  private val internalUnits = mutableMapOf<String, CompilationUnit>()
-  private val importedUnits = mutableMapOf<CompilationUnit, Set<CompilationUnit>>()
+  private val preludeImportLocator = ImportLocator("std", "lang/prelude.pork")
 
-  val units: List<CompilationUnit>
-    get() = internalUnits.values.toList()
+  private val internalSlabs = mutableMapOf<StableSourceKey, Slab>()
 
-  private fun loadOneUnit(importLocator: ImportLocator): CompilationUnit {
+  val slabs: List<Slab>
+    get() = internalSlabs.values.toList()
+
+  val scope: WorldScope by lazy { WorldScope(this) }
+
+  private fun loadOneSlab(importLocator: ImportLocator): Slab {
     val contentSource = pickContentSource(importLocator.form)
-    val stableKey = stableIdentity(importLocator, contentSource = contentSource)
-    val cached = internalUnits[stableKey]
+    val stableKey = stableSourceKey(importLocator, contentSource = contentSource)
+    val cached = internalSlabs[stableKey]
     if (cached != null) {
       return cached
     }
@@ -24,40 +27,39 @@ class World(val importSource: ImportSource) {
     val tokenizer = Tokenizer(charSource)
     val parser = Parser(tokenizer, DiscardNodeAttribution)
     val unit = parser.parseCompilationUnit()
-    internalUnits[stableKey] = unit
-    return unit
+    val slab = Slab(world = this, location = stableKey.asSourceLocation(), compilationUnit = unit)
+    internalSlabs[stableKey] = slab
+    return slab
   }
 
-  private fun resolveAllImports(unit: CompilationUnit): Set<CompilationUnit> {
-    val units = mutableSetOf<CompilationUnit>()
-    for (declaration in unit.declarations.filterIsInstance<ImportDeclaration>()) {
+  internal fun resolveAllImports(slab: Slab): List<Slab> {
+    val slabs = mutableListOf<Slab>()
+    if (slab.location.form != preludeImportLocator.form &&
+      slab.location.filePath != preludeImportLocator.path) {
+      slabs.add(loadOneSlab(preludeImportLocator))
+    }
+    for (declaration in slab.compilationUnit.declarations.filterIsInstance<ImportDeclaration>()) {
       val importPath = declaration.path.components.joinToString("/") { it.id } + ".pork"
       val importLocator = ImportLocator(declaration.form.id, importPath)
-      val importedUnit = loadOneUnit(importLocator)
-      units.add(importedUnit)
+      val importedModule = loadOneSlab(importLocator)
+      slabs.add(importedModule)
     }
-    importedUnits[unit] = units
-    return units
+    return slabs
   }
 
-  fun load(importLocator: ImportLocator): CompilationUnit {
-    val unit = loadOneUnit(importLocator)
-    resolveAllImports(unit)
-    return unit
+  fun load(importLocator: ImportLocator): Slab {
+    return loadOneSlab(importLocator)
   }
-
-  fun importedBy(unit: CompilationUnit): Set<CompilationUnit> =
-    importedUnits[unit] ?: emptySet()
 
   private fun pickContentSource(form: String): ContentSource =
     importSource.provideContentSource(form)
 
-  fun stableIdentity(
+  fun stableSourceKey(
     importLocator: ImportLocator,
     contentSource: ContentSource = pickContentSource(importLocator.form)
-  ): String {
+  ): StableSourceKey {
     val formKey = importLocator.form
-    val stableIdentity = contentSource.stableContentIdentity(importLocator.path)
-    return "[${formKey}][${stableIdentity}]"
+    val stableContentPath = contentSource.stableContentPath(importLocator.path)
+    return StableSourceKey(formKey, stableContentPath)
   }
 }

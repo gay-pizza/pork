@@ -15,5 +15,5 @@ object JavaAutogenContentSource : ContentSource {
     return StringCharSource(content)
   }
 
-  override fun stableContentIdentity(path: String): String = path
+  override fun stableContentPath(path: String): String = path
 }

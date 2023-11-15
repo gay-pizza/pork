@@ -18,7 +18,7 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
   override fun provideNativeFunction(
     definitions: List<String>,
     arguments: List<ArgumentSpec>,
-    inside: CompilationUnitContext
+    inside: SlabContext
   ): CallableFunction {
     val definition = definitions[0]
     return functions[definition] ?: throw RuntimeException("Unknown Internal Function: $definition")

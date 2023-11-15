@@ -1,24 +1,24 @@
 package gay.pizza.pork.frontend.scope
 
-import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.frontend.World
+import gay.pizza.pork.frontend.Slab
 
 class WorldScope(val world: World) {
-  private val compilationUnitScopes = mutableMapOf<CompilationUnit, CompilationUnitScope>()
+  private val slabScopes = mutableMapOf<Slab, SlabScope>()
 
   fun indexAll() {
-    for (unit in world.units) {
-      index(unit)
+    for (module in world.slabs) {
+      index(module)
     }
   }
 
-  fun index(unit: CompilationUnit): CompilationUnitScope =
-    scope(unit).apply {
+  fun index(slab: Slab): SlabScope =
+    scope(slab).apply {
       index()
     }
 
-  fun scope(unit: CompilationUnit): CompilationUnitScope =
-    compilationUnitScopes.computeIfAbsent(unit) {
-      CompilationUnitScope(this, unit)
+  fun scope(slab: Slab): SlabScope =
+    slabScopes.computeIfAbsent(slab) {
+      SlabScope(this, slab)
     }
 }

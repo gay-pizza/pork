@@ -1,10 +1,11 @@
 package gay.pizza.pork.evaluator
 
+import gay.pizza.pork.ast.FunctionLevelVisitor
 import gay.pizza.pork.ast.gen.*
 import kotlin.math.abs
 
 @Suppress("JavaIoSerializableObjectMustHaveReadResolve")
-class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
+class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisitor<Any>() {
   private var currentScope: Scope = root
 
   override fun visitIntegerLiteral(node: IntegerLiteral): Any = node.value
@@ -64,10 +65,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     val value = node.value.visit(this)
     currentScope.define(node.symbol.id, value, ValueStoreType.Let)
     return value
-  }
-
-  override fun visitLetDefinition(node: LetDefinition): Any {
-    topLevelUsedError("LetDefinition", "CompilationUnitContext")
   }
 
   override fun visitSymbolReference(node: SymbolReference): Any =
@@ -383,18 +380,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     }
   }
 
-  override fun visitFunctionDefinition(node: FunctionDefinition): Any {
-    topLevelUsedError("FunctionDefinition", "FunctionContext")
-  }
-
-  override fun visitImportDeclaration(node: ImportDeclaration): Any {
-    topLevelUsedError("ImportDeclaration", "CompilationUnitContext")
-  }
-
-  override fun visitImportPath(node: ImportPath): Any {
-    topLevelUsedError("ImportPath", "CompilationUnitContext")
-  }
-
   override fun visitIndexedBy(node: IndexedBy): Any {
     val value = node.expression.visit(this)
     val index = node.index.visit(this)
@@ -408,14 +393,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
     }
 
     throw RuntimeException("Failed to index '${value}' by '${index}': Unsupported types used.")
-  }
-
-  override fun visitCompilationUnit(node: CompilationUnit): Any {
-    topLevelUsedError("CompilationUnit", "CompilationUnitContext")
-  }
-
-  override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): Any {
-    topLevelUsedError("NativeFunctionDescriptor", "FunctionContext")
   }
 
   override fun visitNoneLiteral(node: NoneLiteral): Any = None
@@ -443,13 +420,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : NodeVisitor<Any> {
 
   private fun floatingPointTypeError(operation: String): Nothing {
     throw RuntimeException("Can't perform $operation between floating point types")
-  }
-
-  private fun topLevelUsedError(name: String, alternative: String): Nothing {
-    throw RuntimeException(
-      "$name cannot be visited in an EvaluationVisitor. " +
-        "Utilize an $alternative instead."
-    )
   }
 
   private object BreakMarker : RuntimeException("Break Marker")

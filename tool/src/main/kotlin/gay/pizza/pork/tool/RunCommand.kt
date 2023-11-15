@@ -6,8 +6,6 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.evaluator.*
-import gay.pizza.pork.ffi.FfiNativeProvider
-import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.minimal.FileTool
 
 class RunCommand : CliktCommand(help = "Run Program", name = "run") {
@@ -19,12 +17,11 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))
-    val scope = Scope.root()
-    val main = tool.loadMainFunctionStandard(scope, quiet = quiet)
+    val main = tool.loadMainFunctionStandard(quiet = quiet)
 
     if (dumpScope) {
       val functionContext = main as FunctionContext
-      val internalScope = functionContext.compilationUnitContext.internalScope
+      val internalScope = functionContext.slabContext.internalScope
       internalScope.crawlScopePath { key, path ->
         println("[scope] $key [${path.joinToString(" -> ")}]")
       }

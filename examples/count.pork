@@ -1,9 +1,11 @@
-let count = 5
-
 export func main() {
   var x = 1
-  while x <= count {
-    println(x)
+  while x <= 5 {
+    if x == 3 {
+      println("The value is 3")
+    } else {
+      println("The value is not 3")
+    }
     x++
   }
 }
