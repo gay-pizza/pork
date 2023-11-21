@@ -7,6 +7,6 @@ import gay.pizza.pork.vm.OpHandler
 
 object CompareEqualOpHandler : OpHandler(Opcode.CompareEqual) {
   override fun handle(machine: InternalMachine, op: Op) {
-    machine.push(machine.pop() == machine.pop())
+    machine.push(machine.popAnyValue() == machine.popAnyValue())
   }
 }

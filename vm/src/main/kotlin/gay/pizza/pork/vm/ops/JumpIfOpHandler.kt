@@ -8,11 +8,7 @@ import gay.pizza.pork.vm.VirtualMachineException
 
 object JumpIfOpHandler : OpHandler(Opcode.JumpIf) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val value = machine.pop()
-    if (value !is Boolean) {
-      throw VirtualMachineException("JumpIf expects a boolean value on the stack.")
-    }
-
+    val value = machine.pop<Boolean>()
     if (value) {
       machine.setNextInst(op.args[0])
     }

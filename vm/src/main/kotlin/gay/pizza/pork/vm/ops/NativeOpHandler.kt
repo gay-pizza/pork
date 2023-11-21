@@ -10,7 +10,7 @@ object NativeOpHandler : OpHandler(Opcode.Native) {
     val countOfNativeDefs = op.args[1].toInt()
     val defs = mutableListOf<Any>()
     for (i in 0 until countOfNativeDefs) {
-      defs.add(String(machine.pop() as ByteArray))
+      defs.add(machine.pop() as String)
     }
   }
 }

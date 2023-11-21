@@ -42,6 +42,6 @@ class Compiler {
     for (used in usedSymbolSet) {
       layout.add(used)
     }
-    return layout.layoutCompiledWorld()
+    return layout.build()
   }
 }

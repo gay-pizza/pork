@@ -2,11 +2,12 @@ package gay.pizza.pork.compiler
 
 import gay.pizza.pork.ast.FunctionLevelVisitor
 import gay.pizza.pork.ast.gen.*
+import gay.pizza.pork.bytecode.ConstantTag
 import gay.pizza.pork.bytecode.MutableRel
 import gay.pizza.pork.bytecode.Opcode
 
 class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : FunctionLevelVisitor<Unit>() {
-  val code = CodeBuilder(symbol)
+  val code: CodeBuilder = CodeBuilder(symbol)
 
   fun allocateOuterScope(definition: FunctionDefinition) {
     val allNormalArguments = definition.arguments.takeWhile { !it.multiple }
@@ -55,7 +56,35 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
   }
 
   override fun visitForIn(node: ForIn) {
-    TODO("ForIn is currently unsupported")
+    val listLocalVar = code.localState.createAnonymousLocal()
+    val sizeLocalVar = code.localState.createAnonymousLocal()
+    val currentIndexVar = code.localState.createAnonymousLocal()
+    val currentValueVar = code.localState.createLocal(node.item.symbol)
+    node.expression.visit(this)
+    code.emit(Opcode.StoreLocal, listOf(listLocalVar.index))
+    load(Loadable(stubVar = listLocalVar))
+    code.emit(Opcode.ListSize)
+    code.emit(Opcode.StoreLocal, listOf(sizeLocalVar.index))
+    code.emit(Opcode.Integer, listOf(0u))
+    code.emit(Opcode.StoreLocal, listOf(currentIndexVar.index))
+    val endOfLoop = MutableRel(0u)
+    val startOfLoop = code.nextOpInst()
+    code.localState.startLoop(startOfLoop, endOfLoop)
+    load(Loadable(stubVar = currentIndexVar))
+    load(Loadable(stubVar = sizeLocalVar))
+    code.emit(Opcode.CompareGreaterEqual)
+    code.patch(Opcode.JumpIf, listOf(0u), 0, symbol, endOfLoop)
+    load(Loadable(stubVar = currentIndexVar))
+    load(Loadable(stubVar = listLocalVar))
+    code.emit(Opcode.Index)
+    code.emit(Opcode.StoreLocal, listOf(currentValueVar.index))
+    node.block.visit(this)
+    code.emit(Opcode.LoadLocal, listOf(currentIndexVar.index))
+    code.emit(Opcode.Integer, listOf(1u))
+    code.emit(Opcode.Add)
+    code.emit(Opcode.StoreLocal, listOf(currentIndexVar.index))
+    code.patch(Opcode.Jump, listOf(0u), 0, symbol, startOfLoop)
+    endOfLoop.rel = code.nextOpInst()
   }
 
   override fun visitFunctionCall(node: FunctionCall) {
@@ -64,10 +93,12 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
     val targetSymbol = compiler.resolve(targetScopeSymbol)
     val functionDefinition = targetSymbol.scopeSymbol.definition as FunctionDefinition
     val retRel = MutableRel(0u)
-    code.patch(Opcode.Integer, listOf(0u), 0, symbol, retRel)
-
     val normalArguments = mutableListOf<Expression>()
     var variableArguments: List<Expression>? = null
+    if (functionDefinition.arguments.any { it.multiple }) {
+      variableArguments = emptyList()
+    }
+
     for ((index, item) in functionDefinition.arguments.zip(node.arguments).withIndex()) {
       val (spec, value) = item
       if (spec.multiple) {
@@ -83,14 +114,15 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
       for (item in variableArguments.reversed()) {
         item.visit(this)
       }
-      code.emit(Opcode.List, listOf(variableArguments.size.toUInt()))
+      code.emit(Opcode.ListMake, listOf(variableArguments.size.toUInt()))
     }
 
     for (item in normalArguments.reversed()) {
       visit(item)
     }
 
-    retRel.rel = code.nextOpInst() + 1u
+    retRel.rel = code.nextOpInst() + 2u
+    code.patch(Opcode.ReturnAddress, listOf(0u), 0, symbol, retRel)
     code.patch(Opcode.Call, listOf(0u), mapOf(0 to targetSymbol))
   }
 
@@ -154,7 +186,7 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
     for (item in node.items) {
       item.visit(this)
     }
-    code.emit(Opcode.List, listOf(count.toUInt()))
+    code.emit(Opcode.ListMake, listOf(count.toUInt()))
   }
 
   override fun visitLongLiteral(node: LongLiteral) {
@@ -190,7 +222,7 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
 
   override fun visitStringLiteral(node: StringLiteral) {
     val bytes = node.text.toByteArray()
-    val constant = compiler.constantPool.assign(bytes)
+    val constant = compiler.constantPool.assign(ConstantTag.String, bytes)
     code.emit(Opcode.Constant, listOf(constant))
   }
 
@@ -243,10 +275,10 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
 
   override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor) {
     for (def in node.definitions) {
-      val defConstant = compiler.constantPool.assign(def.text.toByteArray())
+      val defConstant = compiler.constantPool.assign(ConstantTag.String, def.text.toByteArray())
       code.emit(Opcode.Constant, listOf(defConstant))
     }
-    val formConstant = compiler.constantPool.assign(node.form.id.toByteArray())
+    val formConstant = compiler.constantPool.assign(ConstantTag.String, node.form.id.toByteArray())
     code.emit(Opcode.Native, listOf(formConstant, node.definitions.size.toUInt()))
   }
 

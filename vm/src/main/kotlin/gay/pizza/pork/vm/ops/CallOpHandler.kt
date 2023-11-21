@@ -8,6 +8,7 @@ import gay.pizza.pork.vm.OpHandler
 object CallOpHandler : OpHandler(Opcode.Call) {
   override fun handle(machine: InternalMachine, op: Op) {
     machine.setNextInst(op.args[0])
+    machine.pushCallStack(op.args[0])
     machine.pushScope()
   }
 }

@@ -5,14 +5,14 @@ import gay.pizza.pork.bytecode.Opcode
 import gay.pizza.pork.vm.InternalMachine
 import gay.pizza.pork.vm.OpHandler
 
-object RetOpHandler : OpHandler(Opcode.Return) {
+object ListMakeOpHandler : OpHandler(Opcode.ListMake) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val last = machine.pop()
-    if (last == InternalMachine.EndOfCode) {
-      machine.exit()
-      return
+    val count = op.args[0]
+    val list = mutableListOf<Any>()
+    for (i in 1u..count) {
+      val item = machine.popAnyValue()
+      list.add(item)
     }
-    machine.popScope()
-    machine.setNextInst((last as Int).toUInt())
+    machine.push(list.reversed())
   }
 }

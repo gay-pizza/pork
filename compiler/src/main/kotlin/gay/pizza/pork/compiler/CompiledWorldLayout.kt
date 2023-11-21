@@ -4,13 +4,16 @@ import gay.pizza.pork.bytecode.*
 
 class CompiledWorldLayout(val compiler: Compiler) : StubResolutionContext {
   private val allStubOps = mutableListOf<StubOp>()
+  private val allStubAnnotations = mutableListOf<StubOpAnnotation>()
   private val symbolTable = mutableMapOf<CompilableSymbol, SymbolInfo>()
 
   fun add(symbol: CompilableSymbol) {
     val start = allStubOps.size
-    val stubOps = symbol.compiledStubOps
+    val result = symbol.compiledStubOps
+    val stubOps = result.ops
     symbolTable[symbol] = SymbolInfo(symbol.id, start.toUInt(), stubOps.size.toUInt())
     allStubOps.addAll(stubOps)
+    allStubAnnotations.addAll(result.annotations)
   }
 
   private fun patch(): List<Op> {
@@ -23,16 +26,24 @@ class CompiledWorldLayout(val compiler: Compiler) : StubResolutionContext {
     return ops
   }
 
+  private fun patchAnnotations(): List<OpAnnotation> {
+    val annotations = mutableListOf<OpAnnotation>()
+    for (stub in allStubAnnotations) {
+      val actual = symbolTable[stub.symbol]!!.offset + stub.rel
+      annotations.add(OpAnnotation(actual, stub.text))
+    }
+    return annotations
+  }
+
   override fun resolveJumpTarget(symbol: CompilableSymbol): UInt {
     return symbolTable[symbol]?.offset ?:
       throw RuntimeException("Unable to resolve jump target: ${symbol.scopeSymbol.symbol.id}")
   }
 
-  fun layoutCompiledWorld(): CompiledWorld {
-    val constantPool = mutableListOf<ByteArray>()
-    for (item in compiler.constantPool.all()) {
-      constantPool.add(item.value)
-    }
-    return CompiledWorld(ConstantPool(constantPool), SymbolTable(symbolTable.values.toList()), patch())
-  }
+  fun build(): CompiledWorld = CompiledWorld(
+    constantPool = compiler.constantPool.build(),
+    symbolTable = SymbolTable(symbolTable.values.toList()),
+    code = patch(),
+    annotations = patchAnnotations()
+  )
 }

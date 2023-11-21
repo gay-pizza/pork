@@ -12,10 +12,18 @@ class VirtualMachine(world: CompiledWorld) : ExecutionContext {
     TrueOpHandler,
     FalseOpHandler,
 
-    ListOpHandler,
+    ListMakeOpHandler,
+    ListSizeOpHandler,
+
+    IndexOpHandler,
+
+    AndOpHandler,
+    OrOpHandler,
+    NotOpHandler,
 
     CompareEqualOpHandler,
     CompareLesserEqualOpHandler,
+    CompareGreaterEqualOpHandler,
 
     AddOpHandler,
 
@@ -25,13 +33,16 @@ class VirtualMachine(world: CompiledWorld) : ExecutionContext {
     LoadLocalOpHandler,
     StoreLocalOpHandler,
 
+    ReturnAddressOpHandler,
     CallOpHandler,
-    RetOpHandler,
+    ReturnOpHandler,
 
     NativeOpHandler,
 
     ScopeInOpHandler,
-    ScopeOutOpHandler
+    ScopeOutOpHandler,
+
+    EndOpHandler
   ))
 
   override fun execute() {

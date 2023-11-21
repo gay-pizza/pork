@@ -6,6 +6,7 @@ import gay.pizza.pork.bytecode.Opcode
 
 class CodeBuilder(val symbol: CompilableSymbol) {
   private val ops = mutableListOf<StubOp>()
+  private val annotations = mutableListOf<StubOpAnnotation>()
 
   val localState: LocalState = LocalState(symbol)
 
@@ -39,5 +40,9 @@ class CodeBuilder(val symbol: CompilableSymbol) {
     ops.add(PatchSymOp(Op(code, arguments), patches))
   }
 
-  fun build(): List<StubOp> = ops.toList()
+  fun annotate(text: String) {
+    annotations.add(StubOpAnnotation(symbol, nextOpInst(), text))
+  }
+
+  fun build(): CompiledSymbolResult = CompiledSymbolResult(ops.toList(), annotations.toList())
 }

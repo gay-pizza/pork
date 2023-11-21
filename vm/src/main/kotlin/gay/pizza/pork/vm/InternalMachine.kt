@@ -1,6 +1,7 @@
 package gay.pizza.pork.vm
 
 import gay.pizza.pork.bytecode.CompiledWorld
+import gay.pizza.pork.bytecode.ConstantTag
 
 class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
   private val inlined = world.code.map { op ->
@@ -10,10 +11,12 @@ class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
   }
 
   private var inst: UInt = 0u
-  private val stack = mutableListOf<Any>(EndOfCode)
+  private val stack = mutableListOf<Any>()
   private val locals = mutableListOf<MutableMap<UInt, Any>>(
     mutableMapOf()
   )
+  private val callStack = mutableListOf(0u)
+  private val returnAddressStack = mutableListOf<UInt>()
   private var autoNextInst = true
   private var exitFlag = false
 
@@ -36,7 +39,11 @@ class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
   }
 
   fun loadConstant(id: UInt) {
-    push(world.constantPool.constants[id.toInt()])
+    val constant = world.constantPool.constants[id.toInt()]
+    when (constant.tag) {
+      ConstantTag.String -> push(String(constant.value))
+      else -> throw VirtualMachineException("Unknown Constant Tag: ${constant.tag.name}")
+    }
   }
 
   fun loadLocal(id: UInt) {
@@ -48,7 +55,7 @@ class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
 
   fun storeLocal(id: UInt) {
     val localSet = locals.last()
-    val value = pop()
+    val value = popAnyValue()
     localSet[id] = value
   }
 
@@ -57,24 +64,47 @@ class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
     autoNextInst = false
   }
 
+  fun pushReturnAddress(value: UInt) {
+    returnAddressStack.add(value)
+  }
+
+  fun pushCallStack(value: UInt) {
+    callStack.add(value)
+  }
+
+  fun popCallStack() {
+    callStack.removeLast()
+  }
+
+  fun armReturnAddressIfSet() {
+    val returnAddress = returnAddressStack.removeLastOrNull()
+    if (returnAddress != null) {
+      setNextInst(returnAddress)
+    } else {
+      exit()
+    }
+  }
+
   fun push(item: Any) {
     stack.add(item)
   }
 
-  fun pop(): Any = stack.removeLast()
+  fun popAnyValue(): Any = stack.removeLast()
+
+  inline fun <reified T> pop(): T = popAnyValue() as T
+
   fun exit() {
     exitFlag = true
   }
 
   fun reset() {
     stack.clear()
-    stack.add(EndOfCode)
+    callStack.clear()
+    callStack.add(0u)
     locals.clear()
     locals.add(mutableMapOf())
     inst = 0u
     exitFlag = false
     autoNextInst = true
   }
-
-  data object EndOfCode
 }

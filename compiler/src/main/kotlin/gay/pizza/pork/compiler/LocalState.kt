@@ -31,6 +31,13 @@ class LocalState(val symbol: CompilableSymbol) {
     return variable
   }
 
+  fun createAnonymousLocal(): StubVar {
+    val scope = variables.last()
+    val variable = StubVar(localVarIndex++)
+    scope.add(variable)
+    return variable
+  }
+
   fun pushScope() {
     variables.add(mutableListOf())
   }

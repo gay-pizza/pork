@@ -24,7 +24,12 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
       val code = compiledWorld.code.subList(symbol.offset.toInt(), (symbol.offset + symbol.size).toInt())
       println(symbol.id)
       for ((index, op) in code.withIndex()) {
-        println("  ${symbol.offset + index.toUInt()} ${op.code.name} ${op.args.joinToString(" ")}")
+        var annotation = ""
+        val annotations = compiledWorld.annotations.filter { it.inst == (symbol.offset + index.toUInt()) }
+        if (annotations.isNotEmpty()) {
+          annotation = " ; ${annotations.joinToString(", ") { it.text}}"
+        }
+        println("  ${symbol.offset + index.toUInt()} ${op.code.name} ${op.args.joinToString(" ")}${annotation}")
       }
     }
     val vm = VirtualMachine(compiledWorld)

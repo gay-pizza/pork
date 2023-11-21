@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class CompiledWorld(
   val constantPool: ConstantPool,
   val symbolTable: SymbolTable,
-  val code: List<Op>
+  val code: List<Op>,
+  val annotations: List<OpAnnotation>
 )

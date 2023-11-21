@@ -6,12 +6,12 @@ import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.frontend.scope.ScopeSymbol
 
 class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: ScopeSymbol) {
-  val compiledStubOps: List<StubOp> by lazy { compile() }
+  val compiledStubOps: CompiledSymbolResult by lazy { compile() }
 
   val usedSymbols: List<ScopeSymbol>
     get() = scopeSymbol.scope.usedSymbols
 
-  private fun compile(): List<StubOp> {
+  private fun compile(): CompiledSymbolResult {
     val emitter = StubOpEmitter(compilableSlab.compiler, this)
     emitter.enter()
     val what = if (scopeSymbol.definition is FunctionDefinition) {

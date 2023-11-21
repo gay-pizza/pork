@@ -5,10 +5,10 @@ import gay.pizza.pork.bytecode.Opcode
 import gay.pizza.pork.vm.InternalMachine
 import gay.pizza.pork.vm.OpHandler
 
-object AddOpHandler : OpHandler(Opcode.Add) {
+object IndexOpHandler : OpHandler(Opcode.Index) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val left = machine.pop<Int>()
-    val right = machine.pop<Int>()
-    machine.push(left + right)
+    val list = machine.pop<List<*>>()
+    val index = machine.pop<Number>().toInt()
+    machine.push(list[index] as Any)
   }
 }
