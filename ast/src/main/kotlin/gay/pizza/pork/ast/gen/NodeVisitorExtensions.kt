@@ -32,6 +32,7 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is ForIn -> visitForIn(node)
     is Break -> visitBreak(node)
     is Continue -> visitContinue(node)
+    is Return -> visitReturn(node)
     is NoneLiteral -> visitNoneLiteral(node)
     is NativeFunctionDescriptor -> visitNativeFunctionDescriptor(node)
     is IndexedBy -> visitIndexedBy(node)

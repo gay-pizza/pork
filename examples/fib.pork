@@ -1,6 +1,6 @@
 /* fibonacci sequence */
 func fib(n) {
-  if n < 2 {
+  return if n < 2 {
     n
   } else {
     fib(n - 1) + fib(n - 2)
@@ -8,6 +8,6 @@ func fib(n) {
 }
 
 export func main() {
-  let result = fib(30)
+  let result = fib(20)
   println(result)
 }

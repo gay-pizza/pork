@@ -29,7 +29,7 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
         if (annotations.isNotEmpty()) {
           annotation = " ; ${annotations.joinToString(", ") { it.text}}"
         }
-        println("  ${symbol.offset + index.toUInt()} ${op.code.name} ${op.args.joinToString(" ")}${annotation}")
+        println("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
       }
     }
     val vm = VirtualMachine(compiledWorld)

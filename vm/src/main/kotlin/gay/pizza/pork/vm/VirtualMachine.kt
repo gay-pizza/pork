@@ -12,6 +12,8 @@ class VirtualMachine(world: CompiledWorld) : ExecutionContext {
     TrueOpHandler,
     FalseOpHandler,
 
+    NoneOpHandler,
+
     ListMakeOpHandler,
     ListSizeOpHandler,
 

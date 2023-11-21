@@ -1,5 +1,5 @@
 package gay.pizza.pork.evaluator
 
 abstract class BlockFunction {
-  abstract fun call(): Any
+  abstract fun call(isFunctionContext: Boolean): Any
 }

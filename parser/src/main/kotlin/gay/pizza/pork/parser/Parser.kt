@@ -38,6 +38,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       TokenType.Break -> parseBreak()
       TokenType.Continue -> parseContinue()
       TokenType.None -> parseNoneLiteral()
+      TokenType.Return -> parseReturn()
 
       else -> {
         throw ParseError(
@@ -330,6 +331,10 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     TokenType.Minus, TokenType.Tilde
   ) {
     PrefixOperation(ParserHelpers.convertPrefixOperator(it), parseExpression())
+  }
+
+  override fun parseReturn(): Return = expect(NodeType.Return, TokenType.Return) {
+    Return(parseExpression())
   }
 
   override fun parseSetAssignment(): SetAssignment = produce(NodeType.SetAssignment) {

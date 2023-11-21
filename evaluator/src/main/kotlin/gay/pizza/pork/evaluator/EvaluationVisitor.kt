@@ -28,7 +28,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
 
         scoped(reuseScope, node = node) {
           currentScope.define(node.item.symbol.id, item ?: None)
-          result = blockFunction.call()
+          result = blockFunction.call(false)
         }
       } catch (_: BreakMarker) {
         break
@@ -90,7 +90,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
         if (reuseScope == null) {
           reuseScope = currentScope.fork(name = "While")
         }
-        scoped(reuseScope, node = node) { result = blockFunction.call() }
+        scoped(reuseScope, node = node) { result = blockFunction.call(false) }
       } catch (_: BreakMarker) {
         break
       } catch (_: ContinueMarker) {
@@ -121,6 +121,8 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
       }
     }
   }
+
+  override fun visitReturn(node: Return): Any = ReturnValue(node.value.visit(this))
 
   private fun unaryNumericOperation(node: PrefixOperation, value: Number) = when (value) {
     is Double -> {
@@ -186,10 +188,10 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
     val condition = node.condition.visit(this)
     return if (condition == true) {
       val blockFunction = node.thenBlock.visit(this) as BlockFunction
-      scoped(node = node) { blockFunction.call() }
+      scoped(node = node) { blockFunction.call(false) }
     } else if (node.elseBlock != null) {
       val blockFunction = node.elseBlock!!.visit(this) as BlockFunction
-      scoped(node = node) { blockFunction.call() }
+      scoped(node = node) { blockFunction.call(false) }
     } else None
   }
 
@@ -370,10 +372,13 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
   override fun visitBlock(node: Block): BlockFunction {
     val visitor = this
     return object : BlockFunction() {
-      override fun call(): Any {
+      override fun call(isFunctionContext: Boolean): Any {
         var value: Any? = null
         for (expression in node.expressions) {
           value = expression.visit(visitor)
+          if (isFunctionContext && value is ReturnValue) {
+            return value.value
+          }
         }
         return value ?: None
       }

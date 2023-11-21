@@ -52,6 +52,8 @@ interface NodeVisitor<T> {
 
   fun visitPrefixOperation(node: PrefixOperation): T
 
+  fun visitReturn(node: Return): T
+
   fun visitSetAssignment(node: SetAssignment): T
 
   fun visitStringLiteral(node: StringLiteral): T

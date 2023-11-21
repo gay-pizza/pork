@@ -300,6 +300,11 @@ types:
   Continue:
     parent: Expression
     values: []
+  Return:
+    parent: Expression
+    values:
+    - name: value
+      type: Expression
   NoneLiteral:
     parent: Expression
     values: []

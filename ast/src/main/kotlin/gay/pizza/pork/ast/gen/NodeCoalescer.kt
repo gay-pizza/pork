@@ -77,6 +77,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitPrefixOperation(node: PrefixOperation): Unit =
     handle(node)
 
+  override fun visitReturn(node: Return): Unit =
+    handle(node)
+
   override fun visitSetAssignment(node: SetAssignment): Unit =
     handle(node)
 

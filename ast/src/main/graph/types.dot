@@ -36,6 +36,7 @@ digraph A {
   type_ForIn [shape=box,label="ForIn"]
   type_Break [shape=box,label="Break"]
   type_Continue [shape=box,label="Continue"]
+  type_Return [shape=box,label="Return"]
   type_NoneLiteral [shape=box,label="NoneLiteral"]
   type_NativeFunctionDescriptor [shape=box,label="NativeFunctionDescriptor"]
   type_IndexedBy [shape=box,label="IndexedBy"]
@@ -69,6 +70,7 @@ digraph A {
   type_Expression -> type_ForIn
   type_Expression -> type_Break
   type_Expression -> type_Continue
+  type_Expression -> type_Return
   type_Expression -> type_NoneLiteral
   type_Expression -> type_IndexedBy
   type_Definition -> type_FunctionDefinition
@@ -116,6 +118,7 @@ digraph A {
   type_ForIn -> type_ForInItem [style=dotted]
   type_ForIn -> type_Expression [style=dotted]
   type_ForIn -> type_Block [style=dotted]
+  type_Return -> type_Expression [style=dotted]
   type_NativeFunctionDescriptor -> type_Symbol [style=dotted]
   type_NativeFunctionDescriptor -> type_StringLiteral [style=dotted]
   type_IndexedBy -> type_Expression [style=dotted]

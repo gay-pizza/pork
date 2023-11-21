@@ -56,15 +56,15 @@ func drawCells(renderer, cells, swap) {
 
 func createCellGrid() {
   let numCells = gridWidth * gridHeight
-  listInitWith(numCells, 0)
+  return listInitWith(numCells, 0)
 }
 
 func getCell(cells, swap, x, y) {
   if (x >= 0) and (y >= 0) and (x < gridWidth) and (y < gridHeight) {
     let mask = if swap { 2 } else { 1 }
-    (cells[x + y * gridWidth] & mask) != 0
+    return (cells[x + y * gridWidth] & mask) != 0
   } else {
-    false
+    return false
   }
 }
 
@@ -88,7 +88,7 @@ func countNeighbours(cells, swap, x, y) {
   if getCell(cells, swap, x - 1, y + 1) { count++ }
   if getCell(cells, swap, x - 1, y) { count++ }
   if getCell(cells, swap, x - 1, y - 1) { count++ }
-  count
+  return count
 }
 
 func gameOfLife(cells, swap) {

@@ -35,6 +35,7 @@ fun NodeParser.parse(type: NodeType): Node =
     NodeType.ForIn -> parseForIn()
     NodeType.Break -> parseBreak()
     NodeType.Continue -> parseContinue()
+    NodeType.Return -> parseReturn()
     NodeType.NoneLiteral -> parseNoneLiteral()
     NodeType.NativeFunctionDescriptor -> parseNativeFunctionDescriptor()
     NodeType.IndexedBy -> parseIndexedBy()

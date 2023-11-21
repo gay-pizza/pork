@@ -31,6 +31,7 @@ enum class NodeType(val parent: NodeType? = null) {
   NoneLiteral(Expression),
   Parentheses(Expression),
   PrefixOperation(Expression),
+  Return(Expression),
   SetAssignment(Expression),
   StringLiteral(Expression),
   SuffixOperation(Expression),

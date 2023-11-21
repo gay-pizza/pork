@@ -99,6 +99,10 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
     node.visitChildren(this)
   }
 
+  override fun visitReturn(node: Return) {
+    node.visitChildren(this)
+  }
+
   override fun visitSetAssignment(node: SetAssignment) {
     node.visitChildren(this)
   }

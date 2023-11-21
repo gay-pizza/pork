@@ -62,6 +62,7 @@ enum class TokenType(vararg val properties: TokenTypeProperty) {
   In(ManyChars("in"), KeywordFamily),
   Continue(ManyChars("continue"), KeywordFamily),
   Break(ManyChars("break"), KeywordFamily),
+  Return(ManyChars("return"), KeywordFamily),
   Import(AnyOf("import", "impork", "porkload"), KeywordFamily),
   Export(ManyChars("export"), KeywordFamily),
   Func(ManyChars("func"), KeywordFamily),

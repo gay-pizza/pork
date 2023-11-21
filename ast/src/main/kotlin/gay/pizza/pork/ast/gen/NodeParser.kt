@@ -58,6 +58,8 @@ interface NodeParser {
 
   fun parsePrefixOperation(): PrefixOperation
 
+  fun parseReturn(): Return
+
   fun parseSetAssignment(): SetAssignment
 
   fun parseStringLiteral(): StringLiteral

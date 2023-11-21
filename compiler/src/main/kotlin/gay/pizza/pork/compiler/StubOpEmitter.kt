@@ -30,6 +30,7 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
 
   fun exit() {
     code.localState.popScope()
+    code.emit(Opcode.None)
     code.emit(Opcode.Return)
   }
 
@@ -209,6 +210,11 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
       PrefixOperator.UnaryMinus -> code.emit(Opcode.UnaryMinus)
       PrefixOperator.BinaryNot -> code.emit(Opcode.BinaryNot)
     }
+  }
+
+  override fun visitReturn(node: Return) {
+    node.value.visit(this)
+    code.emit(Opcode.Return)
   }
 
   override fun visitSetAssignment(node: SetAssignment) {

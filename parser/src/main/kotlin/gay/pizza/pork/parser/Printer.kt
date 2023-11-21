@@ -154,6 +154,11 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.expression)
   }
 
+  override fun visitReturn(node: Return) {
+    append("return ")
+    visit(node.value)
+  }
+
   override fun visitSuffixOperation(node: SuffixOperation) {
     visit(node.reference)
     append(node.op.token)

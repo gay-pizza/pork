@@ -40,7 +40,7 @@ class FunctionContext(val slabContext: SlabContext, val node: FunctionDefinition
     stack.push(this)
     val blockFunction = visitor.visitBlock(node.block!!)
     try {
-      return blockFunction.call()
+      return blockFunction.call(true)
     } catch (e: PorkError) {
       throw e
     } catch (e: Exception) {
