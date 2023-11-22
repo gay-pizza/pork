@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
   api(project(":ast"))
+  api(project(":bir"))
   api(project(":bytecode"))
   api(project(":parser"))
   api(project(":frontend"))

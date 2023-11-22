@@ -6,6 +6,7 @@ include(
   ":common",
   ":tokenizer",
   ":ast",
+  ":bir",
   ":bytecode",
   ":parser",
   ":frontend",
