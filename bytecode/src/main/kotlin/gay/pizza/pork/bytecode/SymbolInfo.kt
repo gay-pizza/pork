@@ -4,7 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SymbolInfo(
-  val id: String,
+  val slab: String,
+  val symbol: String,
   val offset: UInt,
   val size: UInt
-)
+) {
+  val commonSymbolIdentity: String by lazy { "$slab $symbol" }
+}

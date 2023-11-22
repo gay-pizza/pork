@@ -4,7 +4,7 @@ import gay.pizza.pork.ast.gen.FunctionDefinition
 import gay.pizza.pork.execution.ArgumentList
 
 class FunctionContext(val slabContext: SlabContext, val node: FunctionDefinition) : CallableFunction {
-  val name: String by lazy { "${slabContext.slab.location.commonFriendlyName} ${node.symbol.id}" }
+  val name: String by lazy { "${slabContext.slab.location.commonLocationIdentity} ${node.symbol.id}" }
 
   private fun resolveMaybeNative(): CallableFunction? = if (node.nativeFunctionDescriptor == null) {
     null

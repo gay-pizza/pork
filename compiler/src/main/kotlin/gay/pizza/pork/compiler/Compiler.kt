@@ -19,7 +19,7 @@ class Compiler {
   fun resolve(scopeSymbol: ScopeSymbol): CompilableSymbol = resolveOrNull(scopeSymbol) ?:
     throw RuntimeException(
       "Unable to resolve scope symbol: " +
-      "${scopeSymbol.slabScope.slab.location.commonFriendlyName} ${scopeSymbol.symbol.id}")
+      "${scopeSymbol.slabScope.slab.location.commonLocationIdentity} ${scopeSymbol.symbol.id}")
 
   fun contributeCompiledSymbols(
     into: MutableSet<CompilableSymbol>,

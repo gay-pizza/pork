@@ -11,7 +11,12 @@ class CompiledWorldLayout(val compiler: Compiler) : StubResolutionContext {
     val start = allStubOps.size
     val result = symbol.compiledStubOps
     val stubOps = result.ops
-    symbolTable[symbol] = SymbolInfo(symbol.id, start.toUInt(), stubOps.size.toUInt())
+    symbolTable[symbol] = SymbolInfo(
+      slab = symbol.compilableSlab.slab.location.commonLocationIdentity,
+      symbol = symbol.id,
+      offset = start.toUInt(),
+      size = stubOps.size.toUInt()
+    )
     allStubOps.addAll(stubOps)
     allStubAnnotations.addAll(result.annotations)
   }

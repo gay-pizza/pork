@@ -20,7 +20,7 @@ class ScopeAnalysisCommand : CliktCommand(help = "Run Scope Analysis", name = "s
         "symbol ${visibleScopeSymbol.scopeSymbol.symbol.id} " +
         "type=${visibleScopeSymbol.scopeSymbol.definition.type.name} " +
         "internal=${visibleScopeSymbol.isInternalSymbol} " +
-        "slab=${visibleScopeSymbol.scopeSymbol.slabScope.slab.location.commonFriendlyName}"
+        "slab=${visibleScopeSymbol.scopeSymbol.slabScope.slab.location.commonLocationIdentity}"
       )
     }
   }

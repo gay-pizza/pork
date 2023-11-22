@@ -7,8 +7,8 @@ import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.frontend.Slab
 
 class SlabContext(val slab: Slab, val evaluator: Evaluator, rootScope: Scope) {
-  val internalScope = rootScope.fork("internal ${slab.location.commonFriendlyName}")
-  val externalScope = rootScope.fork("external ${slab.location.commonFriendlyName}")
+  val internalScope = rootScope.fork("internal ${slab.location.commonLocationIdentity}")
+  val externalScope = rootScope.fork("external ${slab.location.commonLocationIdentity}")
 
   init {
     processAllDefinitions()

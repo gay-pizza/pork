@@ -28,7 +28,7 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
   }
 
   val id: String
-    get() = "${compilableSlab.slab.location.commonFriendlyName} ${scopeSymbol.symbol.id}"
+    get() = "${compilableSlab.slab.location.commonLocationIdentity} ${scopeSymbol.symbol.id}"
 
-  override fun toString(): String = "${compilableSlab.slab.location.commonFriendlyName} ${scopeSymbol.symbol.id}"
+  override fun toString(): String = "${compilableSlab.slab.location.commonLocationIdentity} ${scopeSymbol.symbol.id}"
 }

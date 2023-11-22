@@ -21,7 +21,7 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
     val compiledWorld = compiler.compile(compiledMain)
     for (symbol in compiledWorld.symbolTable.symbols) {
       val code = compiledWorld.code.subList(symbol.offset.toInt(), (symbol.offset + symbol.size).toInt())
-      println(symbol.id)
+      println(symbol.commonSymbolIdentity)
       for ((index, op) in code.withIndex()) {
         var annotation = ""
         val annotations = compiledWorld.annotations.filter { it.inst == (symbol.offset + index.toUInt()) }
