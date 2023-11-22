@@ -10,6 +10,7 @@ dependencies {
   api(project(":parser"))
   api(project(":frontend"))
   api(project(":evaluator"))
+  api(project(":vm"))
   api(project(":stdlib"))
   api(project(":ffi"))
   implementation(project(":common"))

@@ -2,57 +2,21 @@ package gay.pizza.pork.vm
 
 import gay.pizza.pork.bytecode.CompiledWorld
 import gay.pizza.pork.execution.ExecutionContext
-import gay.pizza.pork.vm.ops.*
+import gay.pizza.pork.execution.NativeRegistry
 
-class VirtualMachine(world: CompiledWorld) : ExecutionContext {
-  private val internal = InternalMachine(world, listOf(
-    IntegerOpHandler,
-    ConstantOpHandler,
-
-    TrueOpHandler,
-    FalseOpHandler,
-
-    NoneOpHandler,
-
-    ListMakeOpHandler,
-    ListSizeOpHandler,
-
-    IndexOpHandler,
-
-    AndOpHandler,
-    OrOpHandler,
-    NotOpHandler,
-
-    CompareEqualOpHandler,
-    CompareLesserEqualOpHandler,
-    CompareGreaterEqualOpHandler,
-
-    AddOpHandler,
-
-    JumpOpHandler,
-    JumpIfOpHandler,
-
-    LoadLocalOpHandler,
-    StoreLocalOpHandler,
-
-    ReturnAddressOpHandler,
-    CallOpHandler,
-    ReturnOpHandler,
-
-    NativeOpHandler,
-
-    ScopeInOpHandler,
-    ScopeOutOpHandler,
-
-    EndOpHandler
-  ))
+class VirtualMachine(world: CompiledWorld, nativeRegistry: NativeRegistry) : ExecutionContext {
+  private val internal = InternalMachine(
+    world = world,
+    nativeRegistry = nativeRegistry,
+    handlers = StandardOpHandlers
+  )
 
   override fun execute() {
+    internal.reset()
     while (true) {
       if (!internal.step()) {
         break
       }
     }
-    internal.reset()
   }
 }

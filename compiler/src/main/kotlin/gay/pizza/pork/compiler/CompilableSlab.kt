@@ -13,4 +13,9 @@ class CompilableSlab(val compiler: Compiler, val slab: Slab) {
   fun resolve(symbol: Symbol): CompilableSymbol? = compilableSymbols.firstOrNull {
     it.scopeSymbol.symbol == symbol
   }
+
+  fun resolveVisible(symbol: Symbol): CompilableSymbol? {
+    val scopeSymbol = slab.scope.resolve(symbol) ?: return null
+    return compiler.resolveOrNull(scopeSymbol)
+  }
 }

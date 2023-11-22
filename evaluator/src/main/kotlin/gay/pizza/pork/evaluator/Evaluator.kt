@@ -1,24 +1,21 @@
 package gay.pizza.pork.evaluator
 
-import gay.pizza.pork.ast.gen.Symbol
-import gay.pizza.pork.execution.ExecutionContext
-import gay.pizza.pork.execution.ExecutionContextProvider
 import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.Slab
 import gay.pizza.pork.frontend.World
 
-class Evaluator(val world: World) : ExecutionContextProvider {
+class Evaluator(val world: World) {
   private val scope = Scope.root()
   private val contexts = mutableMapOf<Slab, SlabContext>()
-  private val nativeProviders = mutableMapOf<String, NativeProvider>()
+  private val nativeProviders = mutableMapOf<String, ExpandedNativeProvider>()
 
   fun evaluate(locator: ImportLocator): Scope {
-    val slabContext = context(locator)
+    val slabContext = slabContext(locator)
     slabContext.finalizeScope()
     return slabContext.externalScope
   }
 
-  fun context(slab: Slab): SlabContext {
+  fun slabContext(slab: Slab): SlabContext {
     val slabContext = contexts.computeIfAbsent(slab) {
       SlabContext(slab, this, scope)
     }
@@ -26,20 +23,14 @@ class Evaluator(val world: World) : ExecutionContextProvider {
     return slabContext
   }
 
-  fun context(locator: ImportLocator): SlabContext = context(world.load(locator))
+  fun slabContext(locator: ImportLocator): SlabContext = slabContext(world.load(locator))
 
-  fun nativeFunctionProvider(form: String): NativeProvider {
+  fun nativeFunctionProvider(form: String): ExpandedNativeProvider {
     return nativeProviders[form] ?:
       throw RuntimeException("Unknown native function form: $form")
   }
 
-  fun addNativeProvider(form: String, nativeProvider: NativeProvider) {
+  fun addNativeProvider(form: String, nativeProvider: ExpandedNativeProvider) {
     nativeProviders[form] = nativeProvider
-  }
-
-  override fun prepare(importLocator: ImportLocator, entryPointSymbol: Symbol): ExecutionContext {
-    val slab = context(importLocator)
-    slab.finalizeScope()
-    return EvaluatorExecutionContext(this, slab, entryPointSymbol)
   }
 }

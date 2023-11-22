@@ -4,11 +4,13 @@ import com.kenai.jffi.*
 import com.kenai.jffi.Function
 import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.*
+import gay.pizza.pork.execution.ArgumentList
+import gay.pizza.pork.execution.None
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 
-class FfiNativeProvider : NativeProvider {
+class FfiNativeProvider : ExpandedNativeProvider {
   private val internalFunctions = mutableMapOf<String, (ArgumentList) -> Any>(
     "ffiStructDefine" to ::ffiStructDefine,
     "ffiStructAllocate" to ::ffiStructAllocate,

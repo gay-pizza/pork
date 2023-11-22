@@ -4,6 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Constant(val id: UInt, val tag: ConstantTag, val value: ByteArray) {
+  fun readAsString(): String {
+    if (tag != ConstantTag.String) {
+      throw RuntimeException("Constant $id is not tagged as a string")
+    }
+    return String(value)
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     other as Constant

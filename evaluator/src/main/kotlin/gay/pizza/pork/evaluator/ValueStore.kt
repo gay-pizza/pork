@@ -1,5 +1,7 @@
 package gay.pizza.pork.evaluator
 
+import gay.pizza.pork.execution.None
+
 class ValueStore(var value: Any, var type: ValueStoreType) {
   var isCurrentlyFree = false
 

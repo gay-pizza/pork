@@ -39,6 +39,7 @@ object PorkElementFactory {
       NodeType.ForIn -> ForInElement(node)
       NodeType.Break -> BreakElement(node)
       NodeType.Continue -> ContinueElement(node)
+      NodeType.Return -> ReturnElement(node)
       NodeType.NoneLiteral -> NoneLiteralElement(node)
       NodeType.NativeFunctionDescriptor -> NativeFunctionDescriptorElement(node)
       NodeType.IndexedBy -> IndexedByElement(node)

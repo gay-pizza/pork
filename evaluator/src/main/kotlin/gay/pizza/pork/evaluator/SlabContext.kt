@@ -16,7 +16,7 @@ class SlabContext(val slab: Slab, val evaluator: Evaluator, rootScope: Scope) {
 
   fun ensureImportedContextsExist() {
     for (importedSlab in slab.importedSlabs) {
-      evaluator.context(importedSlab)
+      evaluator.slabContext(importedSlab)
     }
   }
 
@@ -54,7 +54,7 @@ class SlabContext(val slab: Slab, val evaluator: Evaluator, rootScope: Scope) {
 
   private fun processFinalImportScopes() {
     for (importedSlab in slab.importedSlabs) {
-      val importedSlabContext = evaluator.context(importedSlab)
+      val importedSlabContext = evaluator.slabContext(importedSlab)
       importedSlabContext.processFinalImportScopes()
       internalScope.inherit(importedSlabContext.externalScope)
     }

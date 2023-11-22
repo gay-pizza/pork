@@ -3,7 +3,7 @@ package gay.pizza.pork.ffi
 import com.kenai.jffi.InvocationBuffer
 import com.kenai.jffi.MemoryIO
 import com.kenai.jffi.Struct
-import gay.pizza.pork.evaluator.None
+import gay.pizza.pork.execution.None
 
 class FfiStruct(val ffiTypeRegistry: FfiTypeRegistry) : FfiType {
   private val fields = LinkedHashMap<String, FfiStructField>()

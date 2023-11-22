@@ -2,8 +2,9 @@ package gay.pizza.pork.vm
 
 import gay.pizza.pork.bytecode.CompiledWorld
 import gay.pizza.pork.bytecode.ConstantTag
+import gay.pizza.pork.execution.NativeRegistry
 
-class InternalMachine(val world: CompiledWorld, val handlers: List<OpHandler>) {
+class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegistry, val handlers: List<OpHandler>) {
   private val inlined = world.code.map { op ->
     val handler = handlers.firstOrNull { it.code == op.code } ?:
       throw VirtualMachineException("Opcode ${op.code.name} does not have a handler.")

@@ -2,7 +2,7 @@ package gay.pizza.pork.ffi
 
 import com.kenai.jffi.InvocationBuffer
 import com.kenai.jffi.MemoryIO
-import gay.pizza.pork.evaluator.None
+import gay.pizza.pork.execution.None
 
 enum class FfiPrimitiveType(
   val id: kotlin.String,

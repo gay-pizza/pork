@@ -6,7 +6,6 @@ import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.compiler.Compiler
 import gay.pizza.pork.minimal.FileTool
-import gay.pizza.pork.vm.VirtualMachine
 
 class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "compile") {
   val path by argument("file")
@@ -32,7 +31,5 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
         println("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
       }
     }
-    val vm = VirtualMachine(compiledWorld)
-    vm.execute()
   }
 }

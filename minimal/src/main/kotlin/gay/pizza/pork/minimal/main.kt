@@ -1,7 +1,10 @@
 package gay.pizza.pork.minimal
 
 import gay.pizza.dough.fs.PlatformFsProvider
+import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.evaluator.Scope
+import gay.pizza.pork.execution.InternalNativeProvider
+import gay.pizza.pork.execution.NativeRegistry
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -11,5 +14,12 @@ fun main(args: Array<String>) {
   }
   val path = PlatformFsProvider.resolve(args[0])
   val tool = FileTool(path)
-  tool.run()
+  val nativeRegistry = NativeRegistry()
+  nativeRegistry.add("internal", InternalNativeProvider(quiet = false))
+  val main = tool.createExecutionContext(
+    ExecutionType.Evaluator,
+    Symbol("main"),
+    nativeRegistry
+  )
+  main.execute()
 }

@@ -1,5 +1,7 @@
 package gay.pizza.pork.evaluator
 
+import gay.pizza.pork.execution.None
+
 class Scope(
   var parent: Scope? = null,
   var inherits: List<Scope> = emptyList(),

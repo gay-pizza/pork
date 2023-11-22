@@ -285,7 +285,9 @@ class StubOpEmitter(val compiler: Compiler, val symbol: CompilableSymbol) : Func
       code.emit(Opcode.Constant, listOf(defConstant))
     }
     val formConstant = compiler.constantPool.assign(ConstantTag.String, node.form.id.toByteArray())
-    code.emit(Opcode.Native, listOf(formConstant, node.definitions.size.toUInt()))
+    val functionDefinition = symbol.scopeSymbol.definition as FunctionDefinition
+    val functionArgumentCount = functionDefinition.arguments.size
+    code.emit(Opcode.Native, listOf(formConstant, node.definitions.size.toUInt(), functionArgumentCount.toUInt()))
   }
 
   private fun load(callOrStubVar: Loadable) {

@@ -53,7 +53,7 @@ class LocalState(val symbol: CompilableSymbol) {
         return Loadable(stubVar = found)
       }
     }
-    val found = this.symbol.compilableSlab.resolve(symbol)
+    val found = this.symbol.compilableSlab.resolveVisible(symbol)
     if (found != null) {
       return Loadable(call = found)
     }

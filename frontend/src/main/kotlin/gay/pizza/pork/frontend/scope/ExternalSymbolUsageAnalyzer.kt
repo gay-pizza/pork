@@ -104,7 +104,7 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
   }
 
   override fun visitSetAssignment(node: SetAssignment) {
-    node.visitChildren(this)
+    node.value.visit(this)
   }
 
   override fun visitStringLiteral(node: StringLiteral) {

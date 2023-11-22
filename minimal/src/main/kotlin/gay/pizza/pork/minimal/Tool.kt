@@ -2,8 +2,13 @@ package gay.pizza.pork.minimal
 
 import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.ast.gen.NodeVisitor
+import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.evaluator.*
+import gay.pizza.pork.execution.ExecutionContext
+import gay.pizza.pork.execution.ExecutionContextProvider
+import gay.pizza.pork.execution.InternalNativeProvider
+import gay.pizza.pork.execution.NativeRegistry
 import gay.pizza.pork.ffi.FfiNativeProvider
 import gay.pizza.pork.ffi.JavaAutogenContentSource
 import gay.pizza.pork.ffi.JavaNativeProvider
@@ -36,20 +41,13 @@ abstract class Tool {
 
   fun <T> visit(visitor: NodeVisitor<T>): T = visitor.visit(parse())
 
-  fun loadMainFunction(setupEvaluator: Evaluator.() -> Unit = {}): CallableFunction {
-    val world = buildWorld()
-    val evaluator = Evaluator(world)
-    setupEvaluator(evaluator)
-    val resultingScope = evaluator.evaluate(rootImportLocator)
-    return resultingScope.value("main") as CallableFunction
-  }
+  fun createExecutionContextProvider(type: ExecutionType): ExecutionContextProvider =
+    type.create(buildWorld())
 
-  fun loadMainFunctionStandard(quiet: Boolean = false): CallableFunction =
-    loadMainFunction(setupEvaluator = {
-      addNativeProvider("internal", InternalNativeProvider(quiet = quiet))
-      addNativeProvider("ffi", FfiNativeProvider())
-      addNativeProvider("java", JavaNativeProvider())
-    })
+  fun createExecutionContext(type: ExecutionType, symbol: Symbol, nativeRegistry: NativeRegistry): ExecutionContext {
+    val executionContextProvider = createExecutionContextProvider(type)
+    return executionContextProvider.prepare(rootImportLocator, symbol, nativeRegistry)
+  }
 
   fun buildWorld(): World {
     val fileContentSource = createContentSource()
@@ -58,10 +56,5 @@ abstract class Tool {
     dynamicImportSource.addContentSource("local", fileContentSource)
     dynamicImportSource.addContentSource("java", JavaAutogenContentSource)
     return World(dynamicImportSource)
-  }
-
-  fun run(quiet: Boolean = false) {
-    val main = loadMainFunctionStandard(quiet = quiet)
-    main.call(emptyList(), CallStack())
   }
 }
