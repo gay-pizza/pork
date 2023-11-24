@@ -5,6 +5,5 @@ import gay.pizza.pork.bytecode.MutableRel
 class LoopState(
   val startOfLoop: UInt,
   val exitJumpTarget: MutableRel,
-  val scopeDepth: UInt,
-  val enclosing: LoopState? = null
+  val scopeDepth: UInt
 )

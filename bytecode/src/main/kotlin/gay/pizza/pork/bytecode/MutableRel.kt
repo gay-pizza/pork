@@ -1,3 +1,3 @@
 package gay.pizza.pork.bytecode
 
-class MutableRel(var rel: UInt)
+data class MutableRel(var rel: UInt)

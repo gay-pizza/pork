@@ -3,14 +3,8 @@ package gay.pizza.pork.tool
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import gay.pizza.dough.fs.PlatformFsProvider
-import gay.pizza.pork.ast.gen.FunctionDefinition
 import gay.pizza.pork.ast.gen.Symbol
-import gay.pizza.pork.ast.gen.visit
-import gay.pizza.pork.bir.IrSymbolAssignment
-import gay.pizza.pork.bir.IrSymbolTag
 import gay.pizza.pork.compiler.Compiler
-import gay.pizza.pork.compiler.IrCodeEmitter
-import gay.pizza.pork.compiler.IrSymbolWorld
 import gay.pizza.pork.minimal.FileTool
 
 class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "compile") {
@@ -37,12 +31,5 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
         println("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
       }
     }
-
-    val irSymbolAssignment = IrSymbolAssignment()
-    val irSymbolWorld = IrSymbolWorld(irSymbolAssignment)
-    val self = irSymbolAssignment.next(IrSymbolTag.Function)
-    val irCodeEmitter = IrCodeEmitter(self, irSymbolWorld, irSymbolAssignment, compiledSlab.slab.scope)
-    val ir = irCodeEmitter.visit((compiledMain.scopeSymbol.definition as FunctionDefinition).block!!)
-    println(ir)
   }
 }

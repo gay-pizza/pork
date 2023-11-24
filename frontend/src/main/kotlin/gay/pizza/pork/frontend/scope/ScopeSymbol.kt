@@ -18,4 +18,6 @@ class ScopeSymbol(val slabScope: SlabScope, val definition: Definition) {
     result = 31 * result + symbol.hashCode()
     return result
   }
+
+  override fun toString(): String = "ScopeSymbol(${symbol.id})"
 }

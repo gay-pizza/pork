@@ -1,62 +1,55 @@
 package gay.pizza.pork.compiler
 
-import gay.pizza.pork.ast.gen.Symbol
+import gay.pizza.pork.bir.IrSymbol
 import gay.pizza.pork.bytecode.MutableRel
+import gay.pizza.pork.frontend.scope.ScopeSymbol
 
 class LocalState(val symbol: CompilableSymbol) {
   private var internalLoopState: LoopState? = null
-  val loopState: LoopState?
-    get() = internalLoopState
 
   private var localVarIndex: UInt = 0u
-  private val variables = mutableListOf<MutableList<StubVar>>()
+  private val stubVariables = mutableMapOf<IrSymbol, StubVar>()
+  private val loops = mutableMapOf<IrSymbol, LoopState>()
 
-  fun startLoop(startOfLoop: UInt, exitJumpTarget: MutableRel) {
-    internalLoopState = LoopState(
+  fun startLoop(symbol: IrSymbol, startOfLoop: UInt, exitJumpTarget: MutableRel) {
+    val existing = loops[symbol]
+    if (existing != null) {
+      throw CompileError("Starting loop that already is started")
+    }
+    val loopState = LoopState(
       startOfLoop = startOfLoop,
       exitJumpTarget = exitJumpTarget,
-      scopeDepth = (internalLoopState?.scopeDepth ?: 0u) + 1u,
-      enclosing = internalLoopState
+      scopeDepth = (internalLoopState?.scopeDepth ?: 0u) + 1u
     )
+    loops[symbol] = loopState
   }
 
-  fun endLoop() {
-    internalLoopState = internalLoopState?.enclosing
+  fun findLoopState(symbol: IrSymbol): LoopState =
+    loops[symbol] ?: throw CompileError("Unable to find target loop")
+
+  fun endLoop(symbol: IrSymbol) {
+    loops.remove(symbol) ?: throw CompileError("End of loop target not found")
   }
 
-  fun createLocal(symbol: Symbol): StubVar {
-    val scope = variables.last()
-    val variable = StubVar(localVarIndex++, symbol)
-    scope.add(variable)
+  fun createOrFindLocal(symbol: IrSymbol): StubVar {
+    val existing = stubVariables[symbol]
+    if (existing != null) {
+      return existing
+    }
+    val variable = StubVar(localVarIndex++, symbol.id)
+    stubVariables[symbol] = variable
     return variable
   }
 
-  fun createAnonymousLocal(): StubVar {
-    val scope = variables.last()
-    val variable = StubVar(localVarIndex++)
-    scope.add(variable)
-    return variable
-  }
-
-  fun pushScope() {
-    variables.add(mutableListOf())
-  }
-
-  fun popScope() {
-    variables.removeLast()
-  }
-
-  fun resolve(symbol: Symbol): Loadable {
-    for (scope in variables.reversed()) {
-      val found = scope.firstOrNull { it.symbol == symbol }
-      if (found != null) {
-        return Loadable(stubVar = found)
-      }
+  fun resolve(symbol: IrSymbol): Loadable {
+    val localStubVar = stubVariables[symbol]
+    if (localStubVar != null) {
+      return Loadable(stubVar = localStubVar)
     }
-    val found = this.symbol.compilableSlab.resolveVisible(symbol)
-    if (found != null) {
-      return Loadable(call = found)
-    }
-    throw RuntimeException("Unable to resolve symbol: ${symbol.id}")
+    val value = this.symbol.compilableSlab.compiler.irSymbolWorld.resolve(symbol) ?:
+      throw RuntimeException("Unable to resolve symbol: ${symbol.id} ${symbol.tag}")
+    val scopeSymbol = value as ScopeSymbol
+    val call = this.symbol.compilableSlab.compiler.resolve(scopeSymbol)
+    return Loadable(call = call)
   }
 }

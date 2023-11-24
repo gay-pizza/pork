@@ -1,12 +1,14 @@
 package gay.pizza.pork.bir
 
 data class IrDefinition(
-  val symbol: IrSymbol,
+  override val symbol: IrSymbol,
   val type: IrDefinitionType,
+  val arguments: List<IrFunctionArgument>,
   val code: IrCodeBlock
-) : IrElement {
+) : IrElement, IrSymbolOwner {
   override fun crawl(block: (IrElement) -> Unit) {
     block(symbol)
+    arguments.forEach(block)
     block(code)
   }
 }

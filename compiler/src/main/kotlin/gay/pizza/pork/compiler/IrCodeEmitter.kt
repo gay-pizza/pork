@@ -8,12 +8,23 @@ import gay.pizza.pork.frontend.scope.SlabScope
 
 class IrCodeEmitter(
   val self: IrSymbol,
-  val irSymbolWorld: IrSymbolWorld,
+  val irSymbolWorld: IrSymbolWorld<Any>,
   val irSymbolAssignment: IrSymbolAssignment,
   val scope: SlabScope
 ) : FunctionLevelVisitor<IrCodeElement>() {
   private val loopSymbols = mutableListOf<IrSymbol>()
-  private val localVariables = mutableListOf<MutableList<LocalVariable>>()
+  private val localVariables = mutableListOf<MutableMap<String, LocalVariable>>()
+
+  var functionArguments: List<IrFunctionArgument> = emptyList()
+
+  fun createFunctionArguments(functionDefinition: FunctionDefinition) {
+    val functionSymbols = mutableListOf<IrFunctionArgument>()
+    for (arg in functionDefinition.arguments) {
+      val symbol = createLocalVariable(arg.symbol)
+      functionSymbols.add(IrFunctionArgument(symbol))
+    }
+    functionArguments = functionSymbols
+  }
 
   private fun startLoop(): IrSymbol {
     val symbol = irSymbolAssignment.next(IrSymbolTag.Loop)
@@ -34,19 +45,24 @@ class IrCodeEmitter(
     }
   }
 
-  private fun enterBlockScope() {
-    val locals = mutableListOf<LocalVariable>()
+  fun enterLocalScope() {
+    val locals = mutableMapOf<String, LocalVariable>()
     localVariables.add(locals)
   }
 
-  private fun exitBlockScope() {
+  fun exitLocalScope() {
     localVariables.removeLast()
   }
 
   private fun createLocalVariable(name: Symbol): IrSymbol {
     val symbol = irSymbolAssignment.next(IrSymbolTag.Local)
     val variable = LocalVariable(symbol, name)
-    localVariables.last().add(variable)
+    val variables = localVariables.last()
+    val existing = variables[name.id]
+    if (existing != null) {
+      throw CompileError("Unable to define local variable '${name.id}' within this scope, it already exists", name)
+    }
+    variables[name.id] = variable
     return symbol
   }
 
@@ -58,10 +74,10 @@ class IrCodeEmitter(
     }
 
   private fun lookupLocalVariable(name: Symbol): IrSymbol? {
-    for (i in 0..localVariables.size) {
-      val b = localVariables.size - i - 1
+    for (i in 1..localVariables.size) {
+      val b = localVariables.size - i
       val scope = localVariables[b]
-      val found = scope.firstOrNull { it.name == name }
+      val found = scope[name.id]
       if (found != null) {
         return found.symbol
       }
@@ -76,20 +92,20 @@ class IrCodeEmitter(
     }
     val scoped = scope.resolve(name)
     if (scoped != null) {
-      return irSymbolWorld.lookup(scoped, scopeSymbolToTag(scoped))
+      return irSymbolWorld.create(scoped, scopeSymbolToTag(scoped))
     }
     return null
   }
 
   private fun lookupFunction(name: Symbol): Pair<ScopeSymbol, IrSymbol>? {
     val scoped = scope.resolve(name) ?: return null
-    return scoped to irSymbolWorld.lookup(scoped, scopeSymbolToTag(scoped))
+    return scoped to irSymbolWorld.create(scoped, scopeSymbolToTag(scoped))
   }
 
   override fun visitBlock(node: Block): IrCodeBlock {
-    enterBlockScope()
+    enterLocalScope()
     val block = IrCodeBlock(node.expressions.map { it.visit(this) })
-    exitBlockScope()
+    exitLocalScope()
     return block
   }
 
@@ -149,7 +165,7 @@ class IrCodeEmitter(
       }
     }
 
-    if (functionDefinition.arguments.any { it.multiple }) {
+    if (variableArguments == null && functionDefinition.arguments.any { it.multiple }) {
       variableArguments = mutableListOf()
     }
 
@@ -234,7 +250,13 @@ class IrCodeEmitter(
     IrStringConstant(node.text)
 
   override fun visitSuffixOperation(node: SuffixOperation): IrCodeElement {
-    TODO("Not yet implemented")
+    val op = when (node.op) {
+      SuffixOperator.Increment -> IrSuffixOp.Increment
+      SuffixOperator.Decrement -> IrSuffixOp.Decrement
+    }
+    val symbol = lookup(node.reference.symbol) ?: throw CompileError(
+      "Unable to find symbol for suffix operation '${node.reference.symbol.id}'", node)
+    return IrSuffix(op, symbol)
   }
 
   override fun visitSymbolReference(node: SymbolReference): IrCodeElement {
@@ -255,4 +277,9 @@ class IrCodeEmitter(
       inner = node.block.visit(this)
     )
   }
+
+  override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): IrCodeElement = IrNativeDefinition(
+    form = node.form.id,
+    definitions = node.definitions.map { it.text }
+  )
 }

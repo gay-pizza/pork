@@ -1,10 +1,10 @@
 package gay.pizza.pork.bir
 
 data class IrCall(
-  val target: IrSymbol,
+  override val target: IrSymbol,
   val arguments: List<IrCodeElement>,
   val variableArguments: List<IrCodeElement>?
-) : IrCodeElement {
+) : IrCodeElement, IrSymbolUser {
   override fun crawl(block: (IrElement) -> Unit) {
     block(target)
     arguments.forEach(block)

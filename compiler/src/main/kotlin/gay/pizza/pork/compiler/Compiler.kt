@@ -1,5 +1,6 @@
 package gay.pizza.pork.compiler
 
+import gay.pizza.pork.bir.IrSymbolAssignment
 import gay.pizza.pork.bytecode.CompiledWorld
 import gay.pizza.pork.bytecode.MutableConstantPool
 import gay.pizza.pork.frontend.Slab
@@ -10,6 +11,9 @@ class Compiler {
   val compilableSlabs: ComputableState<Slab, CompilableSlab> = ComputableState { slab ->
     CompilableSlab(this, slab)
   }
+
+  val irSymbolAssignment: IrSymbolAssignment = IrSymbolAssignment()
+  val irSymbolWorld: IrSymbolWorld<Any> = IrSymbolWorld(irSymbolAssignment)
 
   fun resolveOrNull(scopeSymbol: ScopeSymbol): CompilableSymbol? {
     val compiledSlab = compilableSlabs.of(scopeSymbol.slabScope.slab)

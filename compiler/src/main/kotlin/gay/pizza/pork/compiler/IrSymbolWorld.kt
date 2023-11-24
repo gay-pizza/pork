@@ -4,10 +4,13 @@ import gay.pizza.pork.bir.IrSymbol
 import gay.pizza.pork.bir.IrSymbolAssignment
 import gay.pizza.pork.bir.IrSymbolTag
 
-class IrSymbolWorld(val irSymbolAssignment: IrSymbolAssignment) {
-  private val symbols = mutableMapOf<Any, IrSymbol>()
+class IrSymbolWorld<T>(val irSymbolAssignment: IrSymbolAssignment) {
+  private val symbols = mutableMapOf<T, IrSymbol>()
 
-  fun lookup(value: Any, tag: IrSymbolTag): IrSymbol = symbols.getOrPut(value) {
+  fun create(value: T, tag: IrSymbolTag): IrSymbol = symbols.getOrPut(value) {
     irSymbolAssignment.next(tag)
   }
+
+  fun resolve(value: T): IrSymbol? = symbols[value]
+  fun resolve(symbol: IrSymbol): T? = symbols.entries.firstOrNull { it.value == symbol }?.key
 }

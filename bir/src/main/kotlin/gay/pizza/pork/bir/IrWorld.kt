@@ -1,7 +1,7 @@
 package gay.pizza.pork.bir
 
-data class IrAccess(val target: IrSymbol) : IrCodeElement {
+data class IrWorld(val slabs: List<IrSlab>) : IrElement {
   override fun crawl(block: (IrElement) -> Unit) {
-    block(target)
+    slabs.forEach(block)
   }
 }
