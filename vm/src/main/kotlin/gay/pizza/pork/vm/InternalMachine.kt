@@ -47,11 +47,14 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
     }
   }
 
-  fun loadLocal(id: UInt) {
+  fun localAt(id: UInt): Any {
     val localSet = locals.last()
-    val local = localSet[id]
-      ?: throw VirtualMachineException("Attempted to load local $id but it was not stored.")
-    push(local)
+    return localSet[id] ?:
+      throw VirtualMachineException("Attempted to load local $id but it was not stored.")
+  }
+
+  fun loadLocal(id: UInt) {
+    push(localAt(id))
   }
 
   fun storeLocal(id: UInt) {
@@ -107,5 +110,12 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
     inst = 0u
     exitFlag = false
     autoNextInst = true
+  }
+
+  fun frame(at: UInt = inst): StackFrame? {
+    val (symbolInfo, rel) = world.symbolTable.lookup(at) ?: (null to null)
+    return if (symbolInfo != null && rel != null) {
+      StackFrame(symbolInfo, rel)
+    } else null
   }
 }

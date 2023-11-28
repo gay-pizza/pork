@@ -27,6 +27,8 @@ interface IrVisitor<T> {
   fun visitIrWorld(ir: IrWorld): T
   fun visitIrNativeDefinition(ir: IrNativeDefinition): T
   fun visitIrFunctionArgument(ir: IrFunctionArgument): T
+  fun visitIrIndex(ir: IrIndex): T
+  fun visitIrListSize(ir: IrListSize): T
 
   fun visit(ir: IrElement): T = when (ir) {
     is IrBreak -> visitIrBeak(ir)
@@ -55,5 +57,7 @@ interface IrVisitor<T> {
     is IrWorld -> visitIrWorld(ir)
     is IrNativeDefinition -> visitIrNativeDefinition(ir)
     is IrFunctionArgument -> visitIrFunctionArgument(ir)
+    is IrIndex -> visitIrIndex(ir)
+    is IrListSize -> visitIrListSize(ir)
   }
 }

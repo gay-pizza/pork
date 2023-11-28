@@ -1,5 +1,5 @@
 export func main() {
-  let items = ["Hello", "Goodbye"]
+  let items = listInitWith(30, 0)
   for item in items {
     println(item)
   }

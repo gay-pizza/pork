@@ -13,7 +13,7 @@ class IrCodeEmitter(
   val scope: SlabScope
 ) : FunctionLevelVisitor<IrCodeElement>() {
   private val loopSymbols = mutableListOf<IrSymbol>()
-  private val localVariables = mutableListOf<MutableMap<String, LocalVariable>>()
+  private val localVariables = mutableListOf<MutableMap<Pair<String?, UInt?>, LocalVariable>>()
 
   var functionArguments: List<IrFunctionArgument> = emptyList()
 
@@ -46,7 +46,7 @@ class IrCodeEmitter(
   }
 
   fun enterLocalScope() {
-    val locals = mutableMapOf<String, LocalVariable>()
+    val locals = mutableMapOf<Pair<String?, UInt?>, LocalVariable>()
     localVariables.add(locals)
   }
 
@@ -54,15 +54,16 @@ class IrCodeEmitter(
     localVariables.removeLast()
   }
 
-  private fun createLocalVariable(name: Symbol): IrSymbol {
-    val symbol = irSymbolAssignment.next(IrSymbolTag.Local)
+  private fun createLocalVariable(name: Symbol? = null): IrSymbol {
+    val symbol = irSymbolAssignment.next(tag = IrSymbolTag.Local, name = name?.id)
     val variable = LocalVariable(symbol, name)
     val variables = localVariables.last()
-    val existing = variables[name.id]
+    val identifier = name?.id to (if (name == null) symbol.id else null)
+    val existing = variables[identifier]
     if (existing != null) {
-      throw CompileError("Unable to define local variable '${name.id}' within this scope, it already exists", name)
+      throw CompileError("Unable to define local variable '${identifier.first}' within this scope, it already exists", name)
     }
-    variables[name.id] = variable
+    variables[identifier] = variable
     return symbol
   }
 
@@ -74,10 +75,11 @@ class IrCodeEmitter(
     }
 
   private fun lookupLocalVariable(name: Symbol): IrSymbol? {
+    val identifier = name.id to null
     for (i in 1..localVariables.size) {
       val b = localVariables.size - i
       val scope = localVariables[b]
-      val found = scope[name.id]
+      val found = scope[identifier]
       if (found != null) {
         return found.symbol
       }
@@ -99,7 +101,7 @@ class IrCodeEmitter(
 
   private fun lookupFunction(name: Symbol): Pair<ScopeSymbol, IrSymbol>? {
     val scoped = scope.resolve(name) ?: return null
-    return scoped to irSymbolWorld.create(scoped, scopeSymbolToTag(scoped))
+    return scoped to irSymbolWorld.create(value = scoped, tag = scopeSymbolToTag(scoped), name = scoped.symbol.id)
   }
 
   override fun visitBlock(node: Block): IrCodeBlock {
@@ -128,7 +130,33 @@ class IrCodeEmitter(
     IrDoubleConstant(node.value)
 
   override fun visitForIn(node: ForIn): IrCodeElement {
-    return IrNoneConstant
+    val listLocal = createLocalVariable()
+    val indexLocal = createLocalVariable()
+    val sizeLocal = createLocalVariable()
+    val loopSymbol = irSymbolAssignment.next(IrSymbolTag.Loop)
+
+    val items = mutableListOf<IrCodeElement>(
+      IrStore(listLocal, visit(node.expression)),
+      IrStore(indexLocal, IrIntegerConstant(0)),
+      IrStore(sizeLocal, IrListSize(IrLoad(listLocal)))
+    )
+
+    enterLocalScope()
+    val loopValueLocal = createLocalVariable(node.item.symbol)
+    val subCodeBlock = visitBlock(node.block)
+    val innerCodeBlock = IrCodeBlock(listOf(
+      IrStore(loopValueLocal, IrIndex(IrLoad(listLocal), IrLoad(indexLocal))),
+      IrStore(indexLocal, IrInfix(IrInfixOp.Add, IrLoad(indexLocal), IrIntegerConstant(1))),
+      subCodeBlock
+    ))
+    exitLocalScope()
+    val loop = IrLoop(
+      symbol = loopSymbol,
+      condition = IrInfix(IrInfixOp.Lesser, IrLoad(indexLocal), IrLoad(sizeLocal)),
+      inner = innerCodeBlock
+    )
+    items.add(loop)
+    return IrCodeBlock(items)
   }
 
   override fun visitFunctionCall(node: FunctionCall): IrCodeElement {
@@ -169,19 +197,20 @@ class IrCodeEmitter(
       variableArguments = mutableListOf()
     }
 
-    return IrCall(symbol, arguments, variableArguments)
+    return IrCall(target = symbol, arguments = arguments, variableArguments = variableArguments)
   }
 
   override fun visitIf(node: If): IrCodeElement =
     IrConditional(
-      node.condition.visit(this),
-      node.thenBlock.visit(this),
-      node.elseBlock?.visit(this) ?: IrNoneConstant
+      conditional = node.condition.visit(this),
+      ifTrue = node.thenBlock.visit(this),
+      ifFalse = node.elseBlock?.visit(this) ?: IrNoneConstant
     )
 
-  override fun visitIndexedBy(node: IndexedBy): IrCodeElement {
-    TODO("Not yet implemented")
-  }
+  override fun visitIndexedBy(node: IndexedBy): IrCodeElement = IrIndex(
+    data = visit(node.expression),
+    index = visit(node.index)
+  )
 
   override fun visitInfixOperation(node: InfixOperation): IrCodeElement {
     val op = when (node.op) {

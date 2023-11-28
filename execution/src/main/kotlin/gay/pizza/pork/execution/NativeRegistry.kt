@@ -14,5 +14,5 @@ class NativeRegistry {
   }
 
   fun of(form: String): NativeProvider =
-    providers[form] ?: throw RuntimeException("Unknown native form: ${form}")
+    providers[form] ?: throw RuntimeException("Unknown native form: $form")
 }

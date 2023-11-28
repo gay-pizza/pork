@@ -4,5 +4,6 @@ class IrSymbolAssignment {
   private var index = 0u
 
   private fun nextSymbolId(): UInt = index++
-  fun next(tag: IrSymbolTag): IrSymbol = IrSymbol(nextSymbolId(), tag)
+  fun next(tag: IrSymbolTag, name: String? = null): IrSymbol =
+    IrSymbol(id = nextSymbolId(), tag = tag, name = name)
 }

@@ -10,7 +10,7 @@ import gay.pizza.pork.frontend.World
 
 class VirtualMachineProvider(val world: World) : ExecutionContextProvider {
   override fun prepare(importLocator: ImportLocator, entryPointSymbol: Symbol, nativeRegistry: NativeRegistry): ExecutionContext {
-    val compiler = Compiler()
+    val compiler = Compiler(world)
     val slab = world.load(importLocator)
     val compilableSlab = compiler.compilableSlabs.of(slab)
     val compilableSymbol = compilableSlab.resolve(entryPointSymbol) ?:

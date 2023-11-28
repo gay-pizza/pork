@@ -74,10 +74,10 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
     val endRel = MutableRel(0u)
     visit(ir.conditional)
     code.patch(Opcode.JumpIf, listOf(0u), 0, symbol, thenRel)
-    visit(ir.ifTrue)
+    visit(ir.ifFalse)
     code.patch(Opcode.Jump, listOf(0u), 0, symbol, endRel)
     thenRel.rel = code.nextOpInst()
-    visit(ir.ifFalse)
+    visit(ir.ifTrue)
     endRel.rel = code.nextOpInst()
   }
 
@@ -90,11 +90,16 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
   }
 
   override fun visitIrLongConstant(ir: IrLongConstant) {
-    code.emit(Opcode.Integer, listOf(ir.value.toUInt()))
+    val value1 = ir.value.toUInt()
+    val value2 = (ir.value shr 32).toUInt()
+    code.emit(Opcode.Long, listOf(value1, value2))
   }
 
   override fun visitIrDoubleConstant(ir: IrDoubleConstant) {
-    code.emit(Opcode.Integer, listOf(ir.value.toUInt()))
+    val value = ir.value.toRawBits()
+    val value1 = value.toUInt()
+    val value2 = (value shr 32).toUInt()
+    code.emit(Opcode.Double, listOf(value1, value2))
   }
 
   override fun visitIrStringConstant(ir: IrStringConstant) {
@@ -218,5 +223,16 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
       ir.form.encodeToByteArray()
     )
     code.emit(Opcode.Native, listOf(formConstant, ir.definitions.size.toUInt(), functionArgumentCount.toUInt()))
+  }
+
+  override fun visitIrIndex(ir: IrIndex) {
+    visit(ir.index)
+    visit(ir.data)
+    code.emit(Opcode.Index)
+  }
+
+  override fun visitIrListSize(ir: IrListSize) {
+    visit(ir.list)
+    code.emit(Opcode.ListSize)
   }
 }

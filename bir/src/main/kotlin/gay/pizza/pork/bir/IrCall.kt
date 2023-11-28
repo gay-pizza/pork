@@ -1,5 +1,8 @@
 package gay.pizza.pork.bir
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class IrCall(
   override val target: IrSymbol,
   val arguments: List<IrCodeElement>,

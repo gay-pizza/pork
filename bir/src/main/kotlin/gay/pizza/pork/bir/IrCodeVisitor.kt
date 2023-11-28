@@ -1,6 +1,4 @@
-package gay.pizza.pork.compiler
-
-import gay.pizza.pork.bir.*
+package gay.pizza.pork.bir
 
 interface IrCodeVisitor<T> : IrVisitor<T> {
   override fun visitIrDefinition(ir: IrDefinition): T {

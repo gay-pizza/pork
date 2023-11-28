@@ -1,5 +1,8 @@
 package gay.pizza.pork.bir
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class IrLoop(
   override val symbol: IrSymbol,
   val condition: IrCodeElement,

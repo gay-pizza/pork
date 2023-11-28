@@ -1,5 +1,8 @@
 package gay.pizza.pork.bir
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class IrSlab(
   val location: IrSlabLocation,
   val definitions: List<IrDefinition>

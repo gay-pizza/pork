@@ -7,8 +7,8 @@ import gay.pizza.pork.bir.IrSymbolTag
 class IrSymbolWorld<T>(val irSymbolAssignment: IrSymbolAssignment) {
   private val symbols = mutableMapOf<T, IrSymbol>()
 
-  fun create(value: T, tag: IrSymbolTag): IrSymbol = symbols.getOrPut(value) {
-    irSymbolAssignment.next(tag)
+  fun create(value: T, tag: IrSymbolTag, name: String? = null): IrSymbol = symbols.getOrPut(value) {
+    irSymbolAssignment.next(tag, name)
   }
 
   fun resolve(value: T): IrSymbol? = symbols[value]

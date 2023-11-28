@@ -1,5 +1,8 @@
 package gay.pizza.pork.bir
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class IrConditional(
   val conditional: IrCodeElement,
   val ifTrue: IrCodeElement,

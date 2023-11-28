@@ -2,6 +2,7 @@ package gay.pizza.pork.vm.ops
 
 import gay.pizza.pork.bytecode.Op
 import gay.pizza.pork.bytecode.Opcode
+import gay.pizza.pork.execution.None
 import gay.pizza.pork.vm.InternalMachine
 import gay.pizza.pork.vm.OpHandler
 
@@ -9,9 +10,10 @@ object NativeOpHandler : OpHandler(Opcode.Native) {
   override fun handle(machine: InternalMachine, op: Op) {
     val argumentCount = op.args[2]
     val arguments = mutableListOf<Any>()
-    for (i in 0u until argumentCount) {
-      machine.loadLocal(i)
-      arguments.add(machine.popAnyValue())
+    var x = argumentCount
+    while (x > 0u) {
+      x--
+      arguments.add(machine.localAt(x))
     }
     val formConstant = machine.world.constantPool.read(op.args[0])
     val form = formConstant.readAsString()
@@ -22,6 +24,7 @@ object NativeOpHandler : OpHandler(Opcode.Native) {
       defs.add(machine.pop())
     }
     val function = provider.provideNativeFunction(defs)
-    function.invoke(arguments)
+    val result = function.invoke(arguments)
+    machine.push(if (result == Unit) None else result)
   }
 }

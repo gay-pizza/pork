@@ -7,8 +7,8 @@ import gay.pizza.pork.vm.OpHandler
 
 object SubtractOpHandler : OpHandler(Opcode.Subtract) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val left = machine.pop<Int>()
     val right = machine.pop<Int>()
+    val left = machine.pop<Int>()
     machine.push(left - right)
   }
 }

@@ -19,11 +19,6 @@ class CompilableSlab(val compiler: Compiler, val slab: Slab) {
     it.scopeSymbol.symbol == symbol
   }
 
-  fun resolveVisible(symbol: Symbol): CompilableSymbol? {
-    val scopeSymbol = slab.scope.resolve(symbol) ?: return null
-    return compiler.resolveOrNull(scopeSymbol)
-  }
-
   private fun compileIrSlab(): IrSlab {
     val definitions = mutableListOf<IrDefinition>()
     for (compilableSymbol in compilableSymbols) {

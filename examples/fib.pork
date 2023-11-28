@@ -1,9 +1,9 @@
 /* fibonacci sequence */
 func fib(n) {
-  return if n < 2 {
-    n
+  if n < 2 {
+    return n
   } else {
-    fib(n - 1) + fib(n - 2)
+    return fib(n - 1) + fib(n - 2)
   }
 }
 
