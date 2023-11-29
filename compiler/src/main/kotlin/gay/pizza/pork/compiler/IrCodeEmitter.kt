@@ -241,7 +241,7 @@ class IrCodeEmitter(
 
   override fun visitLetAssignment(node: LetAssignment): IrCodeElement {
     val symbol = createLocalVariable(node.symbol)
-    return IrStore(symbol, node.value.visit(this))
+    return IrDeclare(symbol, node.value.visit(this))
   }
 
   override fun visitListLiteral(node: ListLiteral): IrCodeElement =
@@ -296,7 +296,7 @@ class IrCodeEmitter(
 
   override fun visitVarAssignment(node: VarAssignment): IrCodeElement {
     val local = createLocalVariable(node.symbol)
-    return IrStore(local, node.value.visit(this))
+    return IrDeclare(local, node.value.visit(this))
   }
 
   override fun visitWhile(node: While): IrCodeElement = loop { symbol ->
