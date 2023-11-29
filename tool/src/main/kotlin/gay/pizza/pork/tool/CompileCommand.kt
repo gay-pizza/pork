@@ -1,5 +1,7 @@
 package gay.pizza.pork.tool
 
+import com.charleskorn.kaml.PolymorphismStyle
+import com.charleskorn.kaml.Yaml
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import gay.pizza.dough.fs.PlatformFsProvider
@@ -8,10 +10,7 @@ import gay.pizza.pork.bir.IrWorld
 import gay.pizza.pork.bytecode.CompiledWorld
 import gay.pizza.pork.compiler.Compiler
 import gay.pizza.pork.minimal.FileTool
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 
-@OptIn(ExperimentalSerializationApi::class)
 class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "compile") {
   val path by argument("file")
 
@@ -30,11 +29,10 @@ class CompileCommand : CliktCommand(help = "Compile Pork to Bytecode", name = "c
   }
 
   private fun printCompiledIr(irWorld: IrWorld) {
-    val json = Json {
-      prettyPrint = true
-      prettyPrintIndent = "  "
-    }
-    println(json.encodeToString(IrWorld.serializer(), irWorld))
+    val yaml = Yaml(configuration = Yaml.default.configuration.copy(
+      polymorphismStyle = PolymorphismStyle.Property
+    ))
+    println(yaml.encodeToString(IrWorld.serializer(), irWorld))
   }
 
   private fun printCompiledWorld(compiledWorld: CompiledWorld) {

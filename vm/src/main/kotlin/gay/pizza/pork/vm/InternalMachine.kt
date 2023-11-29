@@ -13,8 +13,8 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
 
   private var inst: UInt = 0u
   private val stack = mutableListOf<Any>()
-  private val locals = mutableListOf<MutableMap<UInt, Any>>(
-    mutableMapOf()
+  private val locals = mutableListOf(
+    LocalSlots()
   )
   private val callStack = mutableListOf(0u)
   private val returnAddressStack = mutableListOf<UInt>()
@@ -32,7 +32,7 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
   }
 
   fun pushScope() {
-    locals.add(mutableMapOf())
+    locals.add(LocalSlots())
   }
 
   fun popScope() {
@@ -43,14 +43,13 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
     val constant = world.constantPool.constants[id.toInt()]
     when (constant.tag) {
       ConstantTag.String -> push(String(constant.value))
-      else -> throw VirtualMachineException("Unknown Constant Tag: ${constant.tag.name}")
+      else -> throw VirtualMachineException("Unknown constant tag: ${constant.tag.name}")
     }
   }
 
   fun localAt(id: UInt): Any {
     val localSet = locals.last()
-    return localSet[id] ?:
-      throw VirtualMachineException("Attempted to load local $id but it was not stored.")
+    return localSet.load(id)
   }
 
   fun loadLocal(id: UInt) {
@@ -60,7 +59,7 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
   fun storeLocal(id: UInt) {
     val localSet = locals.last()
     val value = popAnyValue()
-    localSet[id] = value
+    localSet.store(id, value)
   }
 
   fun setNextInst(value: UInt) {
@@ -106,7 +105,7 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
     callStack.clear()
     callStack.add(0u)
     locals.clear()
-    locals.add(mutableMapOf())
+    locals.add(LocalSlots())
     inst = 0u
     exitFlag = false
     autoNextInst = true

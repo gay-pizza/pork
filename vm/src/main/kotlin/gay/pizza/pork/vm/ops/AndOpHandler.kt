@@ -7,8 +7,8 @@ import gay.pizza.pork.vm.OpHandler
 
 object AndOpHandler : OpHandler(Opcode.And) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val left = machine.pop<Boolean>()
     val right = machine.pop<Boolean>()
+    val left = machine.pop<Boolean>()
     machine.push(left && right)
   }
 }
