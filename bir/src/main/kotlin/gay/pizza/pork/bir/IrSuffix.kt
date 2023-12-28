@@ -3,7 +3,7 @@ package gay.pizza.pork.bir
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class IrSuffix(val op: IrSuffixOp, override val target: IrSymbol) : IrCodeElement, IrSymbolUser {
+data class IrSuffix(var op: IrSuffixOp, override var target: IrSymbol) : IrCodeElement(), IrSymbolUser {
   override fun crawl(block: (IrElement) -> Unit) {
     block(target)
   }

@@ -4,6 +4,7 @@ import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.bir.IrDefinition
 import gay.pizza.pork.bir.IrSlab
 import gay.pizza.pork.bir.IrSlabLocation
+import gay.pizza.pork.bir.IrSymbolTag
 import gay.pizza.pork.frontend.Slab
 
 class CompilableSlab(val compiler: Compiler, val slab: Slab) {
@@ -20,11 +21,12 @@ class CompilableSlab(val compiler: Compiler, val slab: Slab) {
   }
 
   private fun compileIrSlab(): IrSlab {
+    val slabSymbol = compiler.irSymbolAssignment.next(IrSymbolTag.Slab, slab.location.commonLocationIdentity)
     val definitions = mutableListOf<IrDefinition>()
     for (compilableSymbol in compilableSymbols) {
       definitions.add(compilableSymbol.compiledIrDefinition)
     }
     val irSlabLocation = IrSlabLocation(slab.location.form, slab.location.filePath)
-    return IrSlab(irSlabLocation, definitions)
+    return IrSlab(slabSymbol, irSlabLocation, definitions)
   }
 }

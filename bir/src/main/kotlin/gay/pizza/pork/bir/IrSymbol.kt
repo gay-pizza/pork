@@ -3,7 +3,7 @@ package gay.pizza.pork.bir
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class IrSymbol(val id: UInt, val tag: IrSymbolTag, val name: String? = null) : IrElement {
+data class IrSymbol(val id: UInt, val tag: IrSymbolTag, val name: String? = null) : IrElement() {
   override fun crawl(block: (IrElement) -> Unit) {}
 
   override fun equals(other: Any?): Boolean {

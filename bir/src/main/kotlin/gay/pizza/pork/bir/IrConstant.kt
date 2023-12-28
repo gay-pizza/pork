@@ -3,24 +3,24 @@ package gay.pizza.pork.bir
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface IrConstant : IrCodeElement {
+sealed class IrConstant : IrCodeElement() {
   override fun crawl(block: (IrElement) -> Unit) {}
 }
 
 @Serializable
-data class IrIntegerConstant(val value: Int) : IrConstant
+data class IrIntegerConstant(var value: Int) : IrConstant()
 
 @Serializable
-data class IrLongConstant(val value: Long) : IrConstant
+data class IrLongConstant(var value: Long) : IrConstant()
 
 @Serializable
-data class IrDoubleConstant(val value: Double) : IrConstant
+data class IrDoubleConstant(var value: Double) : IrConstant()
 
 @Serializable
-data class IrStringConstant(val value: String) : IrConstant
+data class IrStringConstant(var value: String) : IrConstant()
 
 @Serializable
-data class IrBooleanConstant(val value: Boolean) : IrConstant
+data class IrBooleanConstant(var value: Boolean) : IrConstant()
 
 @Serializable
-data object IrNoneConstant : IrConstant
+data object IrNoneConstant : IrConstant()

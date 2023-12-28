@@ -1,7 +1,10 @@
 package gay.pizza.pork.bir
 
+import kotlinx.serialization.Serializable
+
+@Serializable(with = IrSymbolGraphSerializer::class)
 class IrSymbolGraph {
-  private val edges = mutableSetOf<Pair<IrSymbolUser, IrSymbolOwner>>()
+  private val edges = mutableSetOf<IrSymbolGraphEdge>()
 
   private fun crawlForKnown(known: MutableMap<IrSymbol, IrSymbolOwner>, root: IrElement) {
     if (root is IrSymbolOwner) {
@@ -17,7 +20,7 @@ class IrSymbolGraph {
     if (root is IrSymbolUser) {
       val what = known[root.target]
       if (what != null) {
-        edges.add(root to what)
+        edges.add(IrSymbolGraphEdge(root, what))
       }
     }
 
@@ -26,10 +29,14 @@ class IrSymbolGraph {
     }
   }
 
-  fun crawl(root: IrElement) {
+  fun buildFromRoot(root: IrElement) {
     val known = mutableMapOf<IrSymbol, IrSymbolOwner>()
     crawlForKnown(known, root)
     crawlForAssociations(known, root)
+  }
+
+  fun buildFromEdges(edges: Collection<IrSymbolGraphEdge>) {
+    this.edges.addAll(edges)
   }
 
   fun forEachEdge(block: (IrSymbolUser, IrSymbolOwner) -> Unit) {

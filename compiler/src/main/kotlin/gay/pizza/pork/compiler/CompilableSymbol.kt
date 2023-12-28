@@ -29,7 +29,7 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
   private fun compileIrDefinition(): IrDefinition {
     val compiler = compilableSlab.compiler
     val functionSymbol = compiler.irSymbolWorld.create(scopeSymbol, IrSymbolTag.Function, scopeSymbol.symbol.id)
-    val irCodeEmitter = IrCodeEmitter(
+    val irCodeEmitter = AstIrEmitter(
       self = functionSymbol,
       irSymbolWorld = compiler.irSymbolWorld,
       irSymbolAssignment = compiler.irSymbolAssignment,

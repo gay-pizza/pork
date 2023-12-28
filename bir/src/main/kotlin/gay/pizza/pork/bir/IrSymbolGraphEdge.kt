@@ -3,6 +3,4 @@ package gay.pizza.pork.bir
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface IrSymbolOwner {
-  var symbol: IrSymbol
-}
+data class IrSymbolGraphEdge(val user: IrSymbolUser, val owner: IrSymbolOwner)

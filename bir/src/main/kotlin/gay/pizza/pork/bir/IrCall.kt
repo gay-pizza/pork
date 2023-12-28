@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IrCall(
-  override val target: IrSymbol,
-  val arguments: List<IrCodeElement>,
-  val variableArguments: List<IrCodeElement>?
-) : IrCodeElement, IrSymbolUser {
+  override var target: IrSymbol,
+  var arguments: List<IrCodeElement>,
+  var variableArguments: List<IrCodeElement>?
+) : IrCodeElement(), IrSymbolUser {
   override fun crawl(block: (IrElement) -> Unit) {
     block(target)
     arguments.forEach(block)

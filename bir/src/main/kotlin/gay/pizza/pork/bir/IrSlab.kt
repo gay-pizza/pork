@@ -4,9 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IrSlab(
-  val location: IrSlabLocation,
-  val definitions: List<IrDefinition>
-) : IrElement {
+  override var symbol: IrSymbol,
+  var location: IrSlabLocation,
+  var definitions: List<IrDefinition>
+) : IrElement(), IrSymbolOwner {
   override fun crawl(block: (IrElement) -> Unit) {
     block(location)
     definitions.forEach(block)

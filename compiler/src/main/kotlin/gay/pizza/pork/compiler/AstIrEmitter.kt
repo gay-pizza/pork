@@ -6,7 +6,7 @@ import gay.pizza.pork.bir.*
 import gay.pizza.pork.frontend.scope.ScopeSymbol
 import gay.pizza.pork.frontend.scope.SlabScope
 
-class IrCodeEmitter(
+class AstIrEmitter(
   val self: IrSymbol,
   val irSymbolWorld: IrSymbolWorld<Any>,
   val irSymbolAssignment: IrSymbolAssignment,
