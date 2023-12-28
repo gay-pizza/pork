@@ -3,7 +3,7 @@ func buildRow(str, a, b, c, d) {
   print("|", str, "| ")
   for i in [a, b, c, d] {
     print(checkSeparator)
-    if a { print("✅|") } else { print("🚫|") }
+    if i { print("✅|") } else { print("🚫|") }
   }
   println()
 }
