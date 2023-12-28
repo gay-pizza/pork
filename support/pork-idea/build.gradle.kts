@@ -1,7 +1,7 @@
 import gay.pizza.pork.buildext.AstCodegenType
 
 plugins {
-  id("org.jetbrains.intellij") version "1.16.0"
+  id("org.jetbrains.intellij") version "1.16.1"
   id("gay.pizza.pork.module")
   id("gay.pizza.pork.ast")
 }
