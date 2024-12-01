@@ -7,3 +7,4 @@ out/
 /kotlin-js-store
 /.fleet/*
 .DS_Store
+.intellijPlatform

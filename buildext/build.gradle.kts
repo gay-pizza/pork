@@ -12,10 +12,10 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22")
-  implementation("org.jetbrains.kotlin:kotlin-serialization:1.9.22")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-  implementation("com.charleskorn.kaml:kaml:0.56.0")
+  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
+  implementation("org.jetbrains.kotlin:kotlin-serialization:1.7.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+  implementation("com.charleskorn.kaml:kaml:0.66.0")
 }
 
 java {

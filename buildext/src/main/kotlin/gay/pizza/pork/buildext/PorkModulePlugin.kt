@@ -28,7 +28,7 @@ open class PorkModulePlugin : Plugin<Project> {
 
     target.dependencies {
       add("implementation", "org.jetbrains.kotlin:kotlin-bom")
-      add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+      add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
       add("api", "gay.pizza.dough:dough-core:0.1.0-SNAPSHOT")
       add("api", "gay.pizza.dough:dough-fs:0.1.0-SNAPSHOT")
     }
