@@ -4,11 +4,13 @@ import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.CallableFunction
 import gay.pizza.pork.evaluator.SlabContext
 import gay.pizza.pork.evaluator.ExpandedNativeProvider
+import gay.pizza.pork.execution.NativeFunction
+import gay.pizza.pork.execution.NativeProvider
 import gay.pizza.pork.execution.None
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
 
-class JavaNativeProvider : ExpandedNativeProvider {
+class JavaNativeProvider : ExpandedNativeProvider, NativeProvider {
   private val lookup = MethodHandles.lookup()
 
   override fun provideNativeFunction(
@@ -61,5 +63,9 @@ class JavaNativeProvider : ExpandedNativeProvider {
     "static-getter" -> lookup.findStaticGetter(javaClass, symbol, returnType)
     "static-setter" -> lookup.findStaticSetter(javaClass, symbol, returnType)
     else -> throw RuntimeException("Unknown Handle Kind: $kind")
+  }
+
+  override fun provideNativeFunction(definitions: List<String>): NativeFunction {
+    throw RuntimeException("Invalid Native Function Usage")
   }
 }

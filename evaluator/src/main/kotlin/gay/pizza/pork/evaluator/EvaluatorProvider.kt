@@ -11,7 +11,11 @@ class EvaluatorProvider(val world: World) : ExecutionContextProvider {
   override fun prepare(importLocator: ImportLocator, entryPointSymbol: Symbol, nativeRegistry: NativeRegistry): ExecutionContext {
     val evaluator = Evaluator(world)
     nativeRegistry.forEachProvider { form, provider ->
-      evaluator.addNativeProvider(form, AdaptedNativeProvider(provider))
+      if (provider is ExpandedNativeProvider) {
+        evaluator.addNativeProvider(form, provider)
+      } else {
+        evaluator.addNativeProvider(form, AdaptedNativeProvider(provider))
+      }
     }
     val slab = evaluator.slabContext(importLocator)
     slab.finalizeScope()

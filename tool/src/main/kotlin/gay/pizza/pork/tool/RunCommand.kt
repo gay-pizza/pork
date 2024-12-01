@@ -10,6 +10,8 @@ import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.execution.InternalNativeProvider
 import gay.pizza.pork.execution.NativeRegistry
+import gay.pizza.pork.ffi.FfiNativeProvider
+import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.minimal.ExecutionType
 import gay.pizza.pork.minimal.FileTool
 
@@ -26,6 +28,8 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
     val tool = FileTool(PlatformFsProvider.resolve(path))
     val nativeRegistry = NativeRegistry()
     nativeRegistry.add("internal", InternalNativeProvider(quiet = quiet))
+    nativeRegistry.add("java", JavaNativeProvider())
+    nativeRegistry.add("ffi", FfiNativeProvider())
     val main = tool.createExecutionContext(executionType, Symbol("main"), nativeRegistry)
     maybeLoopAndMeasure(loop, measure) {
       main.execute()

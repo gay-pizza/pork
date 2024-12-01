@@ -34,7 +34,7 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
     @Suppress("UNCHECKED_CAST")
     val list = arguments[0] as MutableList<Any>
     val value = arguments[2]
-    list[(arguments.at<Number>(0)).toInt()] = value
+    list[(arguments.at<Number>(1)).toInt()] = value
     return value
   }
 

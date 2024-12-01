@@ -5,12 +5,14 @@ import com.kenai.jffi.Function
 import gay.pizza.pork.ast.gen.ArgumentSpec
 import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.execution.ArgumentList
+import gay.pizza.pork.execution.NativeFunction
+import gay.pizza.pork.execution.NativeProvider
 import gay.pizza.pork.execution.None
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.exists
 
-class FfiNativeProvider : ExpandedNativeProvider {
+class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
   private val internalFunctions = mutableMapOf<String, (ArgumentList) -> Any>(
     "ffiStructDefine" to ::ffiStructDefine,
     "ffiStructAllocate" to ::ffiStructAllocate,
@@ -206,6 +208,10 @@ class FfiNativeProvider : ExpandedNativeProvider {
       structType.add(name, type)
     }
     return structType.read(address, 0)
+  }
+
+  override fun provideNativeFunction(definitions: List<String>): NativeFunction {
+    throw RuntimeException("Invalid Native Function Usage")
   }
 
   companion object {

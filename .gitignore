@@ -8,3 +8,4 @@ out/
 /.fleet/*
 .DS_Store
 .intellijPlatform
+.kotlin/
