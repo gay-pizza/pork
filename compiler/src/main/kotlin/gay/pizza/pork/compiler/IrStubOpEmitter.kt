@@ -17,9 +17,6 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
   }
 
   fun final() {
-    if (irDefinition.type == IrDefinitionType.CodeFunction) {
-      code.emit(Opcode.None)
-    }
     code.emit(Opcode.Return)
     code.emit(Opcode.End)
   }

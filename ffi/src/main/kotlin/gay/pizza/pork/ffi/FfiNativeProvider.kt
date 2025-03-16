@@ -3,6 +3,7 @@ package gay.pizza.pork.ffi
 import com.kenai.jffi.*
 import com.kenai.jffi.Function
 import gay.pizza.pork.ast.gen.ArgumentSpec
+import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.execution.ArgumentList
 import gay.pizza.pork.execution.NativeFunction
@@ -26,14 +27,14 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
     rootTypeRegistry.registerPrimitiveTypes()
   }
 
-  override fun provideNativeFunction(
+  fun provideNativeFunctionGeneric(
     definitions: List<String>,
-    arguments: List<ArgumentSpec>,
-    inside: SlabContext
+    arguments: List<ArgumentSpec>? = null,
+    inside: SlabContext? = null,
   ): CallableFunction {
     if (definitions[0] == "internal") {
-      val internal = internalFunctions[definitions[1]] ?:
-        throw RuntimeException("Unknown internal function: ${definitions[1]}")
+      val internal =
+        internalFunctions[definitions[1]] ?: throw RuntimeException("Unknown internal function: ${definitions[1]}")
       return CallableFunction { functionArguments, _ ->
         internal(functionArguments)
       }
@@ -77,7 +78,13 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
     }
   }
 
-  private fun addStructDefs(ffiTypeRegistry: FfiTypeRegistry, types: List<String>, inside: SlabContext) {
+  override fun provideNativeFunction(
+    definitions: List<String>,
+    arguments: List<ArgumentSpec>,
+    inside: SlabContext
+  ): CallableFunction = provideNativeFunctionGeneric(definitions, arguments, inside)
+
+  private fun addStructDefs(ffiTypeRegistry: FfiTypeRegistry, types: List<String>, inside: SlabContext?) {
     for (parameter in types) {
       if (!parameter.startsWith("struct ")) {
         continue
@@ -87,7 +94,8 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
       if (structureName.endsWith("*")) {
         structureName = structureName.substring(0, structureName.length - 1)
       }
-      val structureDefinitionValue = inside.internalScope.value(structureName)
+      val structureDefinitionValue =
+        inside?.internalScope?.value(structureName) ?: throw RuntimeException("Undefined structure: $structureName")
       if (structureDefinitionValue !is FfiStructDefinition) {
         throw RuntimeException("Structure '${structureName}' was not an FfiStructDefinition.")
       }
@@ -101,16 +109,21 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
 
   private fun buildArgumentList(
     context: CallContext,
-    functionArgumentSpecs: List<ArgumentSpec>,
+    functionArgumentSpecs: List<ArgumentSpec>?,
     functionArguments: List<Any>,
     ffiTypeRegistry: FfiTypeRegistry,
     functionDefinition: FfiFunctionDefinition,
     freeStringList: MutableList<FfiString>
   ): HeapInvocationBuffer {
     val buffer = HeapInvocationBuffer(context)
-    for ((index, spec) in functionArgumentSpecs.withIndex()) {
-      val ffiType = ffiTypeRegistry.lookup(functionDefinition.parameters[index]) ?:
-      throw RuntimeException("Unknown ffi type: ${functionDefinition.parameters[index]}")
+
+    val useFunctionArguments = functionArgumentSpecs ?: functionArguments.map {
+      ArgumentSpec(symbol = Symbol(""), multiple = false)
+    }
+
+    for ((index, spec) in useFunctionArguments.withIndex()) {
+      val ffiType = ffiTypeRegistry.lookup(functionDefinition.parameters[index])
+        ?: throw RuntimeException("Unknown ffi type: ${functionDefinition.parameters[index]}")
       if (spec.multiple) {
         val variableArguments = functionArguments
           .subList(index, functionArguments.size)
@@ -143,7 +156,8 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
     if (functionAddress == 0L) {
       throw RuntimeException(
         "Failed to find symbol ${functionDefinition.function} in " +
-        "library $actualLibraryPath")
+          "library $actualLibraryPath"
+      )
     }
     return functionAddress
   }
@@ -156,16 +170,17 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
     return FfiPlatforms.current.platform.findLibrary(name) ?: name
   }
 
-  private fun invoke(invoker: Invoker, function: Function, buffer: HeapInvocationBuffer, type: FfiType): Any = when (type) {
-    FfiPrimitiveType.Pointer -> invoker.invokeAddress(function, buffer)
-    FfiPrimitiveType.UnsignedInt, FfiPrimitiveType.Int -> invoker.invokeInt(function, buffer)
-    FfiPrimitiveType.Long -> invoker.invokeLong(function, buffer)
-    FfiPrimitiveType.Void -> invoker.invokeStruct(function, buffer)
-    FfiPrimitiveType.Double -> invoker.invokeDouble(function, buffer)
-    FfiPrimitiveType.Float -> invoker.invokeFloat(function, buffer)
-    FfiPrimitiveType.String -> invoker.invokeAddress(function, buffer)
-    else -> throw RuntimeException("Unsupported ffi return type: $type")
-  } ?: None
+  private fun invoke(invoker: Invoker, function: Function, buffer: HeapInvocationBuffer, type: FfiType): Any =
+    when (type) {
+      FfiPrimitiveType.Pointer -> invoker.invokeAddress(function, buffer)
+      FfiPrimitiveType.UnsignedInt, FfiPrimitiveType.Int -> invoker.invokeInt(function, buffer)
+      FfiPrimitiveType.Long -> invoker.invokeLong(function, buffer)
+      FfiPrimitiveType.Void -> invoker.invokeStruct(function, buffer)
+      FfiPrimitiveType.Double -> invoker.invokeDouble(function, buffer)
+      FfiPrimitiveType.Float -> invoker.invokeFloat(function, buffer)
+      FfiPrimitiveType.String -> invoker.invokeAddress(function, buffer)
+      else -> throw RuntimeException("Unsupported ffi return type: $type")
+    } ?: None
 
   private fun ffiStructDefine(arguments: ArgumentList): Any {
     val copy = arguments.toMutableList()
@@ -211,9 +226,11 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
   }
 
   override fun provideNativeFunction(definitions: List<String>): NativeFunction {
-    throw RuntimeException("Invalid Native Function Usage")
+    val callable = provideNativeFunctionGeneric(definitions, arguments = null, inside = null)
+    return NativeFunction { arguments ->
+      callable.call(arguments, CallStack())
+    }
   }
-
   companion object {
     fun typeConversion(type: FfiType): Type = when (type) {
       FfiPrimitiveType.UnsignedByte -> Type.UINT8
