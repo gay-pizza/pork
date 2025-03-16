@@ -30,7 +30,9 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
     if (callOrStubVar.stubVar != null) {
       code.emit(Opcode.LoadLocal, listOf(callOrStubVar.stubVar.index))
     } else {
-      code.emit(Opcode.Integer, listOf(code.nextOpInst() + 2u))
+      val retRel = MutableRel(0u)
+      retRel.rel = code.nextOpInst() + 2u
+      code.patch(Opcode.ReturnAddress, listOf(0u), 0, symbol, retRel)
       code.patch(Opcode.Call, listOf(0u), mapOf(0 to callOrStubVar.call!!))
     }
   }

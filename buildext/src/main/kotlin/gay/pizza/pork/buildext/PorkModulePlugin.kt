@@ -5,7 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class PorkModulePlugin : Plugin<Project> {
@@ -17,20 +17,22 @@ open class PorkModulePlugin : Plugin<Project> {
     target.repositories.maven(url = "https://gitlab.com/api/v4/projects/49101454/packages/maven")
 
     target.extensions.getByType<JavaPluginExtension>().apply {
-      val javaVersion = JavaVersion.toVersion(17)
+      val javaVersion = JavaVersion.toVersion(22)
       sourceCompatibility = javaVersion
       targetCompatibility = javaVersion
     }
 
     target.tasks.withType<KotlinCompile> {
-      kotlinOptions.jvmTarget = "17"
+      compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_22)
+      }
     }
 
     target.dependencies {
       add("implementation", "org.jetbrains.kotlin:kotlin-bom")
-      add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-      add("api", "gay.pizza.dough:dough-core:0.1.0-SNAPSHOT")
-      add("api", "gay.pizza.dough:dough-fs:0.1.0-SNAPSHOT")
+      add("implementation", "org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+      add("api", "gay.pizza.dough:dough-core:0.2.0-SNAPSHOT")
+      add("api", "gay.pizza.dough:dough-fs:0.2.0-SNAPSHOT")
     }
   }
 }

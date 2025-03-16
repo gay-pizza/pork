@@ -11,6 +11,8 @@ import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.bir.IrSymbolGraph
 import gay.pizza.pork.bir.IrWorld
 import gay.pizza.pork.bytecode.CompiledWorld
+import gay.pizza.pork.bytecode.ConstantTag
+import gay.pizza.pork.bytecode.Opcode
 import gay.pizza.pork.compiler.Compiler
 import gay.pizza.pork.minimal.FileTool
 
@@ -61,7 +63,15 @@ class CompileCommand : CliktCommand(help = "Compile Pork", name = "compile") {
         if (annotations.isNotEmpty()) {
           annotation = " ; ${annotations.joinToString(", ") { it.text}}"
         }
-        println("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
+        print("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
+        if (op.code == Opcode.Constant) {
+          val constant = compiledWorld.constantPool.constants[op.args[0].toInt()]
+          val constantString = when (constant.tag) {
+            ConstantTag.String -> "\"" + constant.readAsString() + "\""
+          }
+          print(" ; constant: $constantString")
+        }
+        println()
       }
     }
   }

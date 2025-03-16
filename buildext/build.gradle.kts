@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -12,19 +13,21 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
-  implementation("org.jetbrains.kotlin:kotlin-serialization:1.7.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
-  implementation("com.charleskorn.kaml:kaml:0.66.0")
+  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.10")
+  implementation("org.jetbrains.kotlin:kotlin-serialization:2.1.10")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+  implementation("com.charleskorn.kaml:kaml:0.72.0")
 }
 
 java {
-  sourceCompatibility = JavaVersion.toVersion(17)
-  targetCompatibility = JavaVersion.toVersion(17)
+  sourceCompatibility = JavaVersion.toVersion(22)
+  targetCompatibility = JavaVersion.toVersion(22)
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "17"
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_22)
+  }
 }
 
 gradlePlugin {
