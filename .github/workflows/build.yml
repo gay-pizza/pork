@@ -15,7 +15,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@94baf225fe0a508e581a564467443d0e2379123b # v4
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build buildPlugin
       - name: Archive Pork Bundle
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: pork-idea
-          path: support/pork-idea/build/distributions/Pork.zip
+          path: support/pork-idea/build/distributions/pork-idea.zip

@@ -1,7 +1,7 @@
 import gay.pizza.pork.buildext.AstCodegenType
 
 plugins {
-  id("org.jetbrains.intellij.platform") version "2.1.0"
+  id("org.jetbrains.intellij.platform") version "2.3.0"
   id("gay.pizza.pork.module")
   id("gay.pizza.pork.ast")
 }
@@ -17,10 +17,9 @@ dependencies {
   implementation(project(":parser"))
 
   intellijPlatform {
-    intellijIdeaCommunity("2024.2")
+    intellijIdeaCommunity("2024.3")
     pluginVerifier()
     zipSigner()
-    instrumentationTools()
   }
 }
 
