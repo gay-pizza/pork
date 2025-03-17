@@ -20,13 +20,14 @@ dependencies {
 }
 
 java {
-  sourceCompatibility = JavaVersion.toVersion(22)
-  targetCompatibility = JavaVersion.toVersion(22)
+  val javaVersion = JavaVersion.toVersion(21)
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
 }
 
 tasks.withType<KotlinCompile> {
   compilerOptions {
-    jvmTarget.set(JvmTarget.JVM_22)
+    jvmTarget.set(JvmTarget.JVM_21)
   }
 }
 

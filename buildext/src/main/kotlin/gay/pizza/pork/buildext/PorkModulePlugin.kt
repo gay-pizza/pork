@@ -17,14 +17,14 @@ open class PorkModulePlugin : Plugin<Project> {
     target.repositories.maven(url = "https://gitlab.com/api/v4/projects/49101454/packages/maven")
 
     target.extensions.getByType<JavaPluginExtension>().apply {
-      val javaVersion = JavaVersion.toVersion(22)
+      val javaVersion = JavaVersion.toVersion(21)
       sourceCompatibility = javaVersion
       targetCompatibility = javaVersion
     }
 
     target.tasks.withType<KotlinCompile> {
       compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_22)
+        jvmTarget.set(JvmTarget.JVM_21)
       }
     }
 

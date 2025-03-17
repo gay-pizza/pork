@@ -3,8 +3,10 @@ package gay.pizza.pork.buildext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.register
 
 class PorkAstPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -22,12 +24,12 @@ class PorkAstPlugin : Plugin<Project> {
   private fun getAstExtension(project: Project): PorkAstExtension =
     project.extensions.getByType<PorkAstExtension>()
 
-  private fun createGenerateAstCode(project: Project): Task {
+  private fun createGenerateAstCode(project: Project): TaskProvider<*> {
     val extension = getAstExtension(project)
     val codegenType = extension.astCodegenType.get()
     if (codegenType == AstCodegenType.Standard) {
-      return project.tasks.create("generateAstCode", GenerateStandardAstCode::class)
+      return project.tasks.register("generateAstCode", GenerateStandardAstCode::class)
     }
-    return project.tasks.create("generateAstCode", GeneratePorkIdeaAstCode::class)
+    return project.tasks.register("generateAstCode", GeneratePorkIdeaAstCode::class)
   }
 }
