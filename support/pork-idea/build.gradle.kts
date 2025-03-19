@@ -23,6 +23,14 @@ dependencies {
   }
 }
 
+intellijPlatform {
+  pluginConfiguration {
+    ideaVersion {
+      sinceBuild = "243"
+    }
+  }
+}
+
 porkAst {
   astCodegenType.set(AstCodegenType.PorkIdea)
 }
