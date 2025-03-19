@@ -6,9 +6,9 @@ import gay.pizza.pork.execution.NativeRegistry
 
 class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegistry, val handlers: List<OpHandler>) {
   private val inlined = world.code.map { op ->
-    val handler = handlers.firstOrNull { it.code == op.code } ?:
-      throw VirtualMachineException("Opcode ${op.code.name} does not have a handler.")
-    op to handler
+    val handler = handlers.firstOrNull { it.code == op.code }
+      ?: throw VirtualMachineException("Opcode ${op.code.name} does not have a handler.")
+    op to (handler.optimize(machine = this, op) ?: handler)
   }
 
   private var inst: UInt = 0u

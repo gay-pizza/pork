@@ -22,9 +22,11 @@ class CompileCommand : CliktCommand(help = "Compile Pork", name = "compile") {
 
   val path by argument("file")
 
-  private val yaml = Yaml(configuration = Yaml.default.configuration.copy(
-    polymorphismStyle = PolymorphismStyle.Property
-  ))
+  private val yaml = Yaml(
+    configuration = Yaml.default.configuration.copy(
+      polymorphismStyle = PolymorphismStyle.Property
+    )
+  )
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))
@@ -61,13 +63,14 @@ class CompileCommand : CliktCommand(help = "Compile Pork", name = "compile") {
         var annotation = ""
         val annotations = compiledWorld.annotations.filter { it.inst == (symbol.offset + index.toUInt()) }
         if (annotations.isNotEmpty()) {
-          annotation = " ; ${annotations.joinToString(", ") { it.text}}"
+          annotation = " ; ${annotations.joinToString(", ") { it.text }}"
         }
         print("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
-        if (op.code == Opcode.Constant) {
+        if (op.code == Opcode.Constant || op.code == Opcode.Native) {
           val constant = compiledWorld.constantPool.constants[op.args[0].toInt()]
           val constantString = when (constant.tag) {
-            ConstantTag.String -> "\"" + constant.readAsString() + "\""
+            ConstantTag.String -> "string = \"" + constant.readAsString() + "\""
+            ConstantTag.NativeDefinition -> "native definition = " + constant.readAsNativeDefinition().joinToString(" ") { def -> "\"${def}\"" }
           }
           print(" ; constant: $constantString")
         }

@@ -129,6 +129,7 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
         code.emit(Opcode.CompareEqual)
         code.emit(Opcode.Not)
       }
+
       IrInfixOp.EuclideanModulo -> code.emit(Opcode.EuclideanModulo)
       IrInfixOp.Remainder -> code.emit(Opcode.Remainder)
       IrInfixOp.Lesser -> code.emit(Opcode.CompareLesser)
@@ -207,7 +208,8 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
         code.emit(Opcode.Integer, listOf(1u))
         code.emit(Opcode.Add, emptyList())
       }
-      IrSuffixOp.Decrement-> {
+
+      IrSuffixOp.Decrement -> {
         code.emit(Opcode.Integer, listOf(1u))
         code.emit(Opcode.Subtract, emptyList())
       }
@@ -216,18 +218,22 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
   }
 
   override fun visitIrNativeDefinition(ir: IrNativeDefinition) {
-    for (def in ir.definitions.reversed()) {
-      val defConstant = symbol.compilableSlab.compiler.constantPool.assign(
-        ConstantTag.String,
-        def.encodeToByteArray()
-      )
-      code.emit(Opcode.Constant, listOf(defConstant))
+    val encodedDefinitions = ir.definitions.map { def -> def.encodeToByteArray() }.toMutableList()
+    encodedDefinitions.add(0, ir.form.encodeToByteArray())
+    val buffer = ByteArray(encodedDefinitions.sumOf { it.size } + encodedDefinitions.size - 1) { 0 }
+    var i = 0
+    for ((index, encoded) in encodedDefinitions.withIndex()) {
+      encoded.copyInto(buffer, i, 0)
+      i += encoded.size
+      if (index != encodedDefinitions.lastIndex) {
+        i += 1
+      }
     }
-    val formConstant = symbol.compilableSlab.compiler.constantPool.assign(
-      ConstantTag.String,
-      ir.form.encodeToByteArray()
+    val nativeDefinitionConstant = symbol.compilableSlab.compiler.constantPool.assign(
+      ConstantTag.NativeDefinition,
+      buffer,
     )
-    code.emit(Opcode.Native, listOf(formConstant, ir.definitions.size.toUInt(), functionArgumentCount.toUInt()))
+    code.emit(Opcode.Native, listOf(nativeDefinitionConstant, functionArgumentCount.toUInt()))
   }
 
   override fun visitIrIndex(ir: IrIndex) {

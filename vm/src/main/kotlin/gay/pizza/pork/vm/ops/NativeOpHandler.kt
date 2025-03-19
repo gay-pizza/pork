@@ -8,23 +8,15 @@ import gay.pizza.pork.vm.OpHandler
 
 object NativeOpHandler : OpHandler(Opcode.Native) {
   override fun handle(machine: InternalMachine, op: Op) {
-    val argumentCount = op.args[2]
-    val arguments = mutableListOf<Any>()
-    var x = argumentCount
-    while (x > 0u) {
-      x--
-      arguments.add(machine.localAt(x))
-    }
-    val formConstant = machine.world.constantPool.read(op.args[0])
-    val form = formConstant.readAsString()
+    val handler = optimize(machine, op)
+    handler.handle(machine, op)
+  }
+
+  override fun optimize(machine: InternalMachine, op: Op): OpHandler {
+    val nativeDefinition = machine.world.constantPool.read(op.args[0]).readAsNativeDefinition()
+    val form = nativeDefinition[0]
     val provider = machine.nativeRegistry.of(form)
-    val countOfNativeDefs = op.args[1].toInt()
-    val defs = mutableListOf<String>()
-    for (i in 0 until countOfNativeDefs) {
-      defs.add(machine.pop())
-    }
-    val function = provider.provideNativeFunction(defs)
-    val result = function.invoke(arguments)
-    machine.push(if (result == Unit) None else result)
+    val function = provider.provideNativeFunction(nativeDefinition.subList(1, nativeDefinition.size))
+    return OptimizedNativeOpHandler(function)
   }
 }
