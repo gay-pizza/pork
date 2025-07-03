@@ -1,12 +1,10 @@
 package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.core.subcommands
 
-class RootCommand : CliktCommand(
-  help = "Pork - The BBQ Language",
-  name = "pork"
-) {
+class RootCommand : CliktCommand("pork") {
   init {
     subcommands(
       RunCommand(),
@@ -21,6 +19,8 @@ class RootCommand : CliktCommand(
       CompileCommand()
     )
   }
+
+  override fun help(context: Context): String = "Pork - The BBQ Language"
 
   override fun run() {}
 }

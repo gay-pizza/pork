@@ -1,6 +1,7 @@
 package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
@@ -13,9 +14,11 @@ import gay.pizza.pork.minimal.FileTool
 import gay.pizza.pork.parser.ParserAttributes
 import gay.pizza.pork.parser.ParserNodeAttribution
 
-class AttributeCommand : CliktCommand(help = "Attribute AST", name = "attribute") {
+class AttributeCommand : CliktCommand("attribute") {
   val hierarchical by option("--hierarchical", help = "Print Hierarchical Output").flag(default = true)
   val path by argument("file")
+
+  override fun help(context: Context): String = "Attribute AST"
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))

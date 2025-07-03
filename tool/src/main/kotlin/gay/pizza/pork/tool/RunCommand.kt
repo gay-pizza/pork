@@ -1,6 +1,7 @@
 package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
@@ -15,7 +16,7 @@ import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.minimal.ExecutionType
 import gay.pizza.pork.minimal.FileTool
 
-class RunCommand : CliktCommand(help = "Run Program", name = "run") {
+class RunCommand : CliktCommand("run") {
   val loop by option("--loop", help = "Loop Program").flag()
   val measure by option("--measure", help = "Measure Time").flag()
   val quiet by option("--quiet", help = "Silence Prints").flag()
@@ -23,6 +24,8 @@ class RunCommand : CliktCommand(help = "Run Program", name = "run") {
     .enum<ExecutionType> { it.id }
     .default(ExecutionType.VirtualMachine)
   val path by argument("file")
+
+  override fun help(context: Context): String = "Run Program"
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))

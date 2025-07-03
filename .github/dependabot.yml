@@ -11,3 +11,14 @@ updates:
     actions-dev-updates:
       dependency-type: development
       applies-to: version-updates
+- package-ecosystem: gradle
+  directory: /
+  schedule:
+    interval: weekly
+  groups:
+    gradle-updates:
+      dependency-type: production
+      applies-to: version-updates
+    gradle-dev-updates:
+      dependency-type: development
+      applies-to: version-updates

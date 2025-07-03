@@ -1,13 +1,16 @@
 package gay.pizza.pork.tool
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.frontend.scope.WorldScope
 import gay.pizza.pork.minimal.FileTool
 
-class ScopeAnalysisCommand : CliktCommand(help = "Run Scope Analysis", name = "scope-analysis") {
+class ScopeAnalysisCommand : CliktCommand("scope-analysis") {
   val path by argument("file")
+
+  override fun help(context: Context): String = "Run Scope Analysis"
 
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))

@@ -3,6 +3,7 @@ package gay.pizza.pork.tool
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
@@ -16,11 +17,13 @@ import gay.pizza.pork.bytecode.Opcode
 import gay.pizza.pork.compiler.Compiler
 import gay.pizza.pork.minimal.FileTool
 
-class CompileCommand : CliktCommand(help = "Compile Pork", name = "compile") {
+class CompileCommand : CliktCommand("compile") {
   val showIrCode by option("--show-ir-code").flag(default = false)
   val showIrSymbolGraph by option("--show-ir-symbol-graph").flag(default = false)
 
   val path by argument("file")
+
+  override fun help(context: Context): String = "Compile Pork"
 
   private val yaml = Yaml(
     configuration = Yaml.default.configuration.copy(
