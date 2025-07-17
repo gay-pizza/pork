@@ -11,6 +11,11 @@ abstract class IndentTracked(val indent: String) {
     emit(indentLevelText)
   }
 
+  fun emitIndented(text: String) {
+    emitIndent()
+    emit(text)
+  }
+
   fun emitIndentedLine(line: String) {
     emitIndent()
     emitLine(line)

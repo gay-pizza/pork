@@ -16,7 +16,7 @@ class RootCommand : CliktCommand("pork") {
       AttributeCommand(),
       ScopeAnalysisCommand(),
       CopyStdlibCommand(),
-      CompileCommand()
+      CompileCommand(),
     )
   }
 

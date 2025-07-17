@@ -46,7 +46,11 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
     }
     val type = if (what is NativeFunctionDescriptor) {
       IrDefinitionType.NativeFunction
-    } else IrDefinitionType.CodeFunction
+    } else if (scopeSymbol.definition is LetDefinition) {
+      IrDefinitionType.Variable
+    } else {
+      IrDefinitionType.CodeFunction
+    }
     val irCodeElement = irCodeEmitter.visit(what)
     val irCodeBlock = if (irCodeElement is IrCodeBlock) {
       irCodeElement

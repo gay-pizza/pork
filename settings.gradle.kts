@@ -18,5 +18,5 @@ include(
   ":ffi",
   ":tool",
   ":minimal",
-  ":support:pork-idea"
+  ":support:pork-idea",
 )

@@ -39,7 +39,7 @@ class CompileCommand : CliktCommand("compile") {
     val compiledSlab = compiler.compilableSlabs.of(slab)
     val compiledMain = compiledSlab.resolve(Symbol("main"))
       ?: throw RuntimeException("'main' function not found.")
-    val irWorld = compiler.compileIrWorld()
+    val irWorld = compiler.compileIrWorld(compiledMain)
     val compiledWorld = compiler.compile(compiledMain)
     if (showIrCode) {
       printCompiledIr(irWorld)

@@ -42,7 +42,9 @@ class Compiler(val world: World) {
     }
   }
 
-  fun compileIrWorld(): IrWorld {
+  fun compileIrWorld(entryPointSymbol: CompilableSymbol): IrWorld {
+    val usedSymbolSet = mutableSetOf<CompilableSymbol>()
+    contributeCompiledSymbols(usedSymbolSet, entryPointSymbol.scopeSymbol, entryPointSymbol)
     val slabs = mutableListOf<IrSlab>()
     for (slab in world.slabs) {
       slabs.add(compilableSlabs.of(slab).compiledIrSlab)
