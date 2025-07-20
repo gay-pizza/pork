@@ -50,6 +50,7 @@ enum class TokenType(vararg val properties: TokenTypeProperty) {
   Mod(ManyChars("mod"), KeywordFamily),
   Rem(ManyChars("rem"), KeywordFamily),
   Comma(SingleChar(',')),
+  Colon(SingleChar(':')),
   DotDotDot(ManyChars("...")),
   DotDot(ManyChars(".."), Promotion('.', DotDotDot)),
   Dot(SingleChar('.'), Promotion('.', DotDot)),

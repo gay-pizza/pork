@@ -119,6 +119,10 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
     checkAndContribute(node.symbol)
   }
 
+  override fun visitTypeSpec(node: TypeSpec) {
+    checkAndContribute(node.symbol)
+  }
+
   override fun visitVarAssignment(node: VarAssignment) {
     internalSymbols.last().add(node.symbol)
     node.value.visit(this)

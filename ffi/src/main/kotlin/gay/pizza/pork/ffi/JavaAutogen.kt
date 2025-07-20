@@ -147,11 +147,13 @@ class JavaAutogen(val javaClass: Class<*>) {
       arguments = parameterNames.map {
         ArgumentSpec(
           symbol = Symbol(it),
-          multiple = false
+          multiple = false,
+          typeSpec = null,
         )
       },
       nativeFunctionDescriptor = asNative(functionDefinition),
-      block = null
+      block = null,
+      returnType = null,
     )
 
   private fun asNative(functionDefinition: JavaFunctionDefinition): NativeFunctionDescriptor =

@@ -8,7 +8,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {
   override fun parseArgumentSpec(): ArgumentSpec = produce(NodeType.ArgumentSpec) {
     val symbol = parseSymbol()
-    ArgumentSpec(symbol, next(TokenType.DotDotDot))
+    var typeSpec: TypeSpec? = null
+    if (next(TokenType.Colon)) {
+      typeSpec = parseTypeSpec()
+    }
+    ArgumentSpec(symbol, typeSpec = typeSpec, next(TokenType.DotDotDot))
   }
 
   override fun parseBlock(): Block = expect(NodeType.Block, TokenType.LeftCurly) {
@@ -213,7 +217,10 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       parseArgumentSpec()
     }
     expect(TokenType.RightParentheses)
-
+    var returnType: TypeSpec? = null
+    if (next(TokenType.Colon)) {
+      returnType = parseTypeSpec()
+    }
     var native: NativeFunctionDescriptor? = null
     var block: Block? = null
     if (peek(TokenType.Native)) {
@@ -221,7 +228,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     } else {
       block = parseBlock()
     }
-    FunctionDefinition(modifiers, name, arguments, block, native)
+    FunctionDefinition(modifiers = modifiers, symbol = name, arguments = arguments, returnType = returnType, block = block, nativeFunctionDescriptor = native)
   }
 
   override fun parseIf(): If = expect(NodeType.If, TokenType.If) {
@@ -280,18 +287,26 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
   override fun parseLetAssignment(): LetAssignment = expect(NodeType.LetAssignment, TokenType.Let) {
     val symbol = parseSymbol()
+    var typeSpec: TypeSpec? = null
+    if (next(TokenType.Colon)) {
+      typeSpec = parseTypeSpec()
+    }
     expect(TokenType.Equals)
     val value = parseExpression()
-    LetAssignment(symbol, value)
+    LetAssignment(symbol = symbol, typeSpec = typeSpec, value = value)
   }
 
   override fun parseLetDefinition(): LetDefinition = produce(NodeType.LetDefinition) {
     val definitionModifiers = parseDefinitionModifiers()
     expect(TokenType.Let)
     val name = parseSymbol()
+    var typeSpec: TypeSpec? = null
+    if (next(TokenType.Colon)) {
+      typeSpec = parseTypeSpec()
+    }
     expect(TokenType.Equals)
     val value = parseExpression()
-    LetDefinition(definitionModifiers, name, value)
+    LetDefinition(modifiers = definitionModifiers, symbol = name, typeSpec = typeSpec, value = value)
   }
 
   override fun parseListLiteral(): ListLiteral = expect(NodeType.ListLiteral, TokenType.LeftBracket) {
@@ -375,11 +390,19 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     SymbolReference(parseSymbol())
   }
 
+  override fun parseTypeSpec(): TypeSpec = produce(NodeType.TypeSpec) {
+    TypeSpec(parseSymbol())
+  }
+
   override fun parseVarAssignment(): VarAssignment = expect(NodeType.VarAssignment, TokenType.Var) {
     val symbol = parseSymbol()
+    var typeSpec: TypeSpec? = null
+    if (next(TokenType.Colon)) {
+      typeSpec = parseTypeSpec()
+    }
     expect(TokenType.Equals)
     val value = parseExpression()
-    VarAssignment(symbol, value)
+    VarAssignment(symbol = symbol, typeSpec = typeSpec, value = value)
   }
 
   override fun parseWhile(): While = expect(NodeType.While, TokenType.While) {

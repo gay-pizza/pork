@@ -9,6 +9,9 @@ abstract class FunctionLevelVisitor<T> : NodeVisitor<T> {
   override fun visitSymbol(node: Symbol): T =
     throw RuntimeException("Visiting Symbol is not supported.")
 
+  override fun visitTypeSpec(node: TypeSpec): T =
+    throw RuntimeException("Visiting TypeSpec is not supported.")
+
   override fun visitLetDefinition(node: LetDefinition): T {
     topLevelUsedError("LetDefinition")
   }

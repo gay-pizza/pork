@@ -64,6 +64,8 @@ interface NodeVisitor<T> {
 
   fun visitSymbolReference(node: SymbolReference): T
 
+  fun visitTypeSpec(node: TypeSpec): T
+
   fun visitVarAssignment(node: VarAssignment): T
 
   fun visitWhile(node: While): T

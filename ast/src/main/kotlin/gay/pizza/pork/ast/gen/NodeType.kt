@@ -37,6 +37,7 @@ enum class NodeType(val parent: NodeType? = null) {
   SuffixOperation(Expression),
   Symbol(Node),
   SymbolReference(Expression),
+  TypeSpec(Node),
   VarAssignment(Expression),
   While(Expression)
 }

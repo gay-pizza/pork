@@ -95,6 +95,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitSymbolReference(node: SymbolReference): Unit =
     handle(node)
 
+  override fun visitTypeSpec(node: TypeSpec): Unit =
+    handle(node)
+
   override fun visitVarAssignment(node: VarAssignment): Unit =
     handle(node)
 

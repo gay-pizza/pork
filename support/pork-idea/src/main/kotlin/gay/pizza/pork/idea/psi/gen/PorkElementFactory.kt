@@ -11,6 +11,7 @@ object PorkElementFactory {
   fun create(node: ASTNode): PsiElement =
     when (PorkElementTypes.nodeTypeFor(node.elementType)) {
       NodeType.Symbol -> SymbolElement(node)
+      NodeType.TypeSpec -> TypeSpecElement(node)
       NodeType.Block -> BlockElement(node)
       NodeType.CompilationUnit -> CompilationUnitElement(node)
       NodeType.LetAssignment -> LetAssignmentElement(node)

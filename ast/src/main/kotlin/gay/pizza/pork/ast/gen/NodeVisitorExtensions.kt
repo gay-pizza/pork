@@ -4,6 +4,7 @@ package gay.pizza.pork.ast.gen
 fun <T> NodeVisitor<T>.visit(node: Node): T =
   when (node) {
     is Symbol -> visitSymbol(node)
+    is TypeSpec -> visitTypeSpec(node)
     is Block -> visitBlock(node)
     is CompilationUnit -> visitCompilationUnit(node)
     is LetAssignment -> visitLetAssignment(node)

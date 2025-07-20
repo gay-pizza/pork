@@ -70,6 +70,8 @@ interface NodeParser {
 
   fun parseSymbolReference(): SymbolReference
 
+  fun parseTypeSpec(): TypeSpec
+
   fun parseVarAssignment(): VarAssignment
 
   fun parseWhile(): While

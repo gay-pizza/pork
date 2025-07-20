@@ -1,5 +1,5 @@
 /* fibonacci sequence */
-func fib(n) {
+func fib(n: int32): int32 {
   if n < 2 {
     return n
   } else {
@@ -8,6 +8,6 @@ func fib(n) {
 }
 
 export func main() {
-  let result = fib(28)
+  let result: int32 = fib(28)
   println(result)
 }

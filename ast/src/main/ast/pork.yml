@@ -18,6 +18,11 @@ types:
     - name: modifiers
       type: DefinitionModifiers
       required: true
+  TypeSpec:
+    parent: Node
+    values:
+    - name: symbol
+      type: Symbol
   DefinitionModifiers:
     values:
     - name: export
@@ -42,6 +47,8 @@ types:
       type: Symbol
     - name: value
       type: Expression
+    - name: typeSpec
+      type: TypeSpec?
   VarAssignment:
     parent: Expression
     namedElementValue: symbol
@@ -50,6 +57,8 @@ types:
       type: Symbol
     - name: value
       type: Expression
+    - name: typeSpec
+      type: TypeSpec?
   SetAssignment:
     parent: Expression
     values:
@@ -142,6 +151,8 @@ types:
     values:
     - name: symbol
       type: Symbol
+    - name: typeSpec
+      type: TypeSpec?
     - name: multiple
       type: Boolean
       defaultValue: "false"
@@ -155,6 +166,8 @@ types:
       type: Symbol
     - name: arguments
       type: List<ArgumentSpec>
+    - name: returnType
+      type: TypeSpec?
     - name: block
       type: Block?
     - name: nativeFunctionDescriptor
@@ -167,6 +180,8 @@ types:
       type: DefinitionModifiers
     - name: symbol
       type: Symbol
+    - name: typeSpec
+      type: TypeSpec?
     - name: value
       type: Expression
   If:

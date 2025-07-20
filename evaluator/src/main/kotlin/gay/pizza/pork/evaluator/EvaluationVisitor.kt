@@ -54,8 +54,6 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
 
   override fun visitLongLiteral(node: LongLiteral): Any = node.value
 
-  override fun visitSymbol(node: Symbol): Any = None
-
   override fun visitFunctionCall(node: FunctionCall): Any {
     val arguments = node.arguments.map { it.visit(this) }
     val functionValue = currentScope.value(node.symbol.id) as CallableFunction

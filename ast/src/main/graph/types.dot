@@ -4,6 +4,7 @@ digraph A {
   type_Symbol [shape=box,label="Symbol"]
   type_Declaration [shape=box,label="Declaration"]
   type_Definition [shape=box,label="Definition"]
+  type_TypeSpec [shape=box,label="TypeSpec"]
   type_DefinitionModifiers [shape=box,label="DefinitionModifiers"]
   type_Block [shape=box,label="Block"]
   type_CompilationUnit [shape=box,label="CompilationUnit"]
@@ -44,6 +45,7 @@ digraph A {
   type_Node -> type_Symbol
   type_Node -> type_Declaration
   type_Node -> type_Definition
+  type_Node -> type_TypeSpec
   type_Node -> type_Block
   type_Node -> type_CompilationUnit
   type_Node -> type_ArgumentSpec
@@ -78,13 +80,16 @@ digraph A {
   type_Declaration -> type_ImportDeclaration
   type_Definition -> type_Symbol [style=dotted]
   type_Definition -> type_DefinitionModifiers [style=dotted]
+  type_TypeSpec -> type_Symbol [style=dotted]
   type_Block -> type_Expression [style=dotted]
   type_CompilationUnit -> type_Declaration [style=dotted]
   type_CompilationUnit -> type_Definition [style=dotted]
   type_LetAssignment -> type_Symbol [style=dotted]
   type_LetAssignment -> type_Expression [style=dotted]
+  type_LetAssignment -> type_TypeSpec [style=dotted]
   type_VarAssignment -> type_Symbol [style=dotted]
   type_VarAssignment -> type_Expression [style=dotted]
+  type_VarAssignment -> type_TypeSpec [style=dotted]
   type_SetAssignment -> type_Symbol [style=dotted]
   type_SetAssignment -> type_Expression [style=dotted]
   type_InfixOperation -> type_Expression [style=dotted]
@@ -92,13 +97,16 @@ digraph A {
   type_FunctionCall -> type_Symbol [style=dotted]
   type_FunctionCall -> type_Expression [style=dotted]
   type_ArgumentSpec -> type_Symbol [style=dotted]
+  type_ArgumentSpec -> type_TypeSpec [style=dotted]
   type_FunctionDefinition -> type_DefinitionModifiers [style=dotted]
   type_FunctionDefinition -> type_Symbol [style=dotted]
   type_FunctionDefinition -> type_ArgumentSpec [style=dotted]
+  type_FunctionDefinition -> type_TypeSpec [style=dotted]
   type_FunctionDefinition -> type_Block [style=dotted]
   type_FunctionDefinition -> type_NativeFunctionDescriptor [style=dotted]
   type_LetDefinition -> type_DefinitionModifiers [style=dotted]
   type_LetDefinition -> type_Symbol [style=dotted]
+  type_LetDefinition -> type_TypeSpec [style=dotted]
   type_LetDefinition -> type_Expression [style=dotted]
   type_If -> type_Expression [style=dotted]
   type_If -> type_Block [style=dotted]

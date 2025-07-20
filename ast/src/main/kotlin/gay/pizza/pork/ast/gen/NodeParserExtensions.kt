@@ -7,6 +7,7 @@ fun NodeParser.parse(type: NodeType): Node =
     NodeType.Symbol -> parseSymbol()
     NodeType.Declaration -> parseDeclaration()
     NodeType.Definition -> parseDefinition()
+    NodeType.TypeSpec -> parseTypeSpec()
     NodeType.Block -> parseBlock()
     NodeType.CompilationUnit -> parseCompilationUnit()
     NodeType.LetAssignment -> parseLetAssignment()

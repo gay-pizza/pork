@@ -113,6 +113,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
   override fun visitLetAssignment(node: LetAssignment) {
     append("let ")
     visit(node.symbol)
+    if (node.typeSpec != null) {
+      append(": ")
+      visit(node.typeSpec!!)
+    }
     append(" = ")
     visit(node.value)
   }
@@ -121,6 +125,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visitDefinitionModifiers(node.modifiers)
     append("let ")
     visit(node.symbol)
+    if (node.typeSpec != null) {
+      append(": ")
+      visit(node.typeSpec!!)
+    }
     append(" = ")
     visit(node.value)
   }
@@ -129,9 +137,17 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     visit(node.symbol)
   }
 
+  override fun visitTypeSpec(node: TypeSpec) {
+    visit(node.symbol)
+  }
+
   override fun visitVarAssignment(node: VarAssignment) {
     append("var ")
     visit(node.symbol)
+    if (node.typeSpec != null) {
+      append(": ")
+      visit(node.typeSpec!!)
+    }
     append(" = ")
     visit(node.value)
   }
@@ -209,6 +225,10 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
       }
     }
     append(") ")
+    if (node.returnType != null) {
+      append(": ")
+      visit(node.returnType!!)
+    }
     if (node.block != null) {
       visit(node.block!!)
     }

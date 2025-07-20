@@ -118,7 +118,7 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
     val buffer = HeapInvocationBuffer(context)
 
     val useFunctionArguments = functionArgumentSpecs ?: functionArguments.map {
-      ArgumentSpec(symbol = Symbol(""), multiple = false)
+      ArgumentSpec(symbol = Symbol(""), typeSpec = null, multiple = false)
     }
 
     for ((index, spec) in useFunctionArguments.withIndex()) {
