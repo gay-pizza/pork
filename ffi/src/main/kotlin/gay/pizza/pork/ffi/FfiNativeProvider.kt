@@ -8,6 +8,7 @@ import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.execution.ArgumentList
 import gay.pizza.pork.execution.NativeFunction
 import gay.pizza.pork.execution.NativeProvider
+import gay.pizza.pork.execution.NativeType
 import gay.pizza.pork.execution.None
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -231,6 +232,11 @@ class FfiNativeProvider : ExpandedNativeProvider, NativeProvider {
       callable.call(arguments, CallStack())
     }
   }
+
+  override fun provideNativeType(definitions: List<String>): NativeType {
+    throw RuntimeException("Unknown native type")
+  }
+
   companion object {
     fun typeConversion(type: FfiType): Type = when (type) {
       FfiPrimitiveType.UnsignedByte -> Type.UINT8

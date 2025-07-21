@@ -233,7 +233,15 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
       ConstantTag.NativeDefinition,
       buffer,
     )
-    code.emit(Opcode.Native, listOf(nativeDefinitionConstant, functionArgumentCount.toUInt()))
+
+    when (ir.kind) {
+      IrNativeDefinitionKind.Function -> {
+        code.emit(Opcode.NativeFunction, listOf(nativeDefinitionConstant, functionArgumentCount.toUInt()))
+      }
+      IrNativeDefinitionKind.Type -> {
+        code.emit(Opcode.NativeType, listOf(nativeDefinitionConstant))
+      }
+    }
   }
 
   override fun visitIrIndex(ir: IrIndex) {

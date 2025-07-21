@@ -6,6 +6,7 @@ import gay.pizza.pork.evaluator.SlabContext
 import gay.pizza.pork.evaluator.ExpandedNativeProvider
 import gay.pizza.pork.execution.NativeFunction
 import gay.pizza.pork.execution.NativeProvider
+import gay.pizza.pork.execution.NativeType
 import gay.pizza.pork.execution.None
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -67,5 +68,9 @@ class JavaNativeProvider : ExpandedNativeProvider, NativeProvider {
 
   override fun provideNativeFunction(definitions: List<String>): NativeFunction {
     throw RuntimeException("Invalid Native Function Usage")
+  }
+
+  override fun provideNativeType(definitions: List<String>): NativeType {
+    throw RuntimeException("Invalid Native Type Usage")
   }
 }

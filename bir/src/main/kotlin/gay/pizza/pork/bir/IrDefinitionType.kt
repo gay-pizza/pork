@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 enum class IrDefinitionType {
   Variable,
   CodeFunction,
-  NativeFunction
+  NativeFunction,
+  NativeType,
 }

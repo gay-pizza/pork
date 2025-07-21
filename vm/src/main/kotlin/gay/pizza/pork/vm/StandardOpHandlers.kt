@@ -47,7 +47,8 @@ val StandardOpHandlers: List<OpHandler> = listOf(
   CallOpHandler,
   ReturnOpHandler,
 
-  NativeOpHandler,
+  NativeFunctionOpHandler,
+  NativeTypeOpHandler,
 
   ScopeInOpHandler,
   ScopeOutOpHandler,

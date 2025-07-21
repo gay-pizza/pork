@@ -8,14 +8,33 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
     "listInitWith" to NativeFunction(::listInitWith)
   )
 
+  private val types = mutableMapOf(
+    "int32" to NativeType { Int::class.java },
+    "int64" to NativeType { Long::class.java },
+    "string" to NativeType { String::class.java },
+    "float32" to NativeType { Float::class.java },
+    "float64" to NativeType { Double::class.java },
+    "bool" to NativeType { Boolean::class.java },
+  )
+
   fun add(name: String, function: NativeFunction) {
     functions[name] = function
+  }
+
+  fun add(name: String, type: NativeType) {
+    types[name] = type
   }
 
   override fun provideNativeFunction(definitions: List<String>): NativeFunction {
     val definition = definitions[0]
     return functions[definition] ?:
       throw RuntimeException("Unknown internal function: $definition")
+  }
+
+  override fun provideNativeType(definitions: List<String>): NativeType {
+    val definition = definitions[0]
+    return types[definition] ?:
+      throw RuntimeException("Unknown internal type: $definition")
   }
 
   private fun printValues(arguments: ArgumentList): Any {

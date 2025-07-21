@@ -308,6 +308,13 @@ class AstIrEmitter(
   }
 
   override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): IrCodeElement = IrNativeDefinition(
+    kind = IrNativeDefinitionKind.Function,
+    form = node.form.id,
+    definitions = node.definitions.map { it.text }
+  )
+
+  override fun visitNativeTypeDescriptor(node: NativeTypeDescriptor): IrCodeElement = IrNativeDefinition(
+    kind = IrNativeDefinitionKind.Type,
     form = node.form.id,
     definitions = node.definitions.map { it.text }
   )

@@ -3,6 +3,8 @@ package gay.pizza.pork.compiler
 import gay.pizza.pork.ast.gen.FunctionDefinition
 import gay.pizza.pork.ast.gen.LetDefinition
 import gay.pizza.pork.ast.gen.NativeFunctionDescriptor
+import gay.pizza.pork.ast.gen.NativeTypeDescriptor
+import gay.pizza.pork.ast.gen.TypeDefinition
 import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.bir.IrCodeBlock
 import gay.pizza.pork.bir.IrDefinition
@@ -36,25 +38,34 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
       scope = compilableSlab.slab.scope
     )
     irCodeEmitter.enterLocalScope()
-    val what = if (scopeSymbol.definition is FunctionDefinition) {
-      val functionDefinition = scopeSymbol.definition as FunctionDefinition
-      irCodeEmitter.createFunctionArguments(functionDefinition)
-      functionDefinition.block ?: functionDefinition.nativeFunctionDescriptor!!
-    } else {
-      val letDefinition = scopeSymbol.definition as LetDefinition
-      letDefinition.value
+    val what = when (scopeSymbol.definition) {
+      is FunctionDefinition -> {
+        val functionDefinition = scopeSymbol.definition as FunctionDefinition
+        irCodeEmitter.createFunctionArguments(functionDefinition)
+        functionDefinition.block ?: functionDefinition.nativeFunctionDescriptor!!
+      }
+
+      is TypeDefinition -> {
+        val typeDefinition = scopeSymbol.definition as TypeDefinition
+        typeDefinition.nativeTypeDescriptor!!
+      }
+
+      else -> {
+        val letDefinition = scopeSymbol.definition as LetDefinition
+        letDefinition.value
+      }
     }
     val type = if (what is NativeFunctionDescriptor) {
       IrDefinitionType.NativeFunction
+    } else if (what is NativeTypeDescriptor) {
+      IrDefinitionType.NativeType
     } else if (scopeSymbol.definition is LetDefinition) {
       IrDefinitionType.Variable
     } else {
       IrDefinitionType.CodeFunction
     }
     val irCodeElement = irCodeEmitter.visit(what)
-    val irCodeBlock = if (irCodeElement is IrCodeBlock) {
-      irCodeElement
-    } else IrCodeBlock(listOf(irCodeElement))
+    val irCodeBlock = irCodeElement as? IrCodeBlock ?: IrCodeBlock(listOf(irCodeElement))
     irCodeEmitter.exitLocalScope()
     return IrDefinition(
       symbol = functionSymbol,

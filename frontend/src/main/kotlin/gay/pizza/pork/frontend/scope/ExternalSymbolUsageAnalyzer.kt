@@ -16,6 +16,9 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
     internalSymbols.removeLast()
   }
 
+  override fun visitTypeDefinition(node: TypeDefinition) {
+  }
+
   override fun visitLetDefinition(node: LetDefinition) {
     node.value.visit(this)
   }

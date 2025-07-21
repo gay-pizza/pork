@@ -69,7 +69,7 @@ class CompileCommand : CliktCommand("compile") {
           annotation = " ; ${annotations.joinToString(", ") { it.text }}"
         }
         print("  ${symbol.offset + index.toUInt()} ${op}${annotation}")
-        if (op.code == Opcode.Constant || op.code == Opcode.Native) {
+        if (op.code == Opcode.Constant || op.code == Opcode.NativeFunction) {
           val constant = compiledWorld.constantPool.constants[op.args[0].toInt()]
           val constantString = when (constant.tag) {
             ConstantTag.String -> "string = \"" + constant.readAsString() + "\""
