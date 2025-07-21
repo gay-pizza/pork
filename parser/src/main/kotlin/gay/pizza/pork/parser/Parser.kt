@@ -8,11 +8,12 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   ParserBase(source, attribution) {
   override fun parseArgumentSpec(): ArgumentSpec = produce(NodeType.ArgumentSpec) {
     val symbol = parseSymbol()
+    val multiple = next(TokenType.DotDotDot)
     var typeSpec: TypeSpec? = null
     if (next(TokenType.Colon)) {
       typeSpec = parseTypeSpec()
     }
-    ArgumentSpec(symbol, typeSpec = typeSpec, next(TokenType.DotDotDot))
+    ArgumentSpec(symbol, typeSpec = typeSpec, multiple = multiple)
   }
 
   override fun parseBlock(): Block = expect(NodeType.Block, TokenType.LeftCurly) {
@@ -175,6 +176,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
   override fun parseDefinition(): Definition =
     when (val type = peekAheadUntilNotIn(*TokenType.DeclarationModifiers)) {
       TokenType.Func -> parseFunctionDefinition()
+      TokenType.Type -> parseTypeDefinition()
       TokenType.Let -> parseLetDefinition()
       else -> throw ParseError(
         "Failed to parse token: ${type.name} as" +
@@ -330,6 +332,15 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     NativeFunctionDescriptor(form, definitions)
   }
 
+  override fun parseNativeTypeDescriptor(): NativeTypeDescriptor = expect(NodeType.NativeTypeDescriptor, TokenType.Native) {
+    val form = parseSymbol()
+    val definitions = mutableListOf<StringLiteral>()
+    while (peek(TokenType.Quote)) {
+      definitions.add(parseStringLiteral())
+    }
+    NativeTypeDescriptor(form = form, definitions = definitions)
+  }
+
   override fun parseNoneLiteral(): NoneLiteral = expect(NodeType.NoneLiteral, TokenType.None) {
     NoneLiteral()
   }
@@ -388,6 +399,15 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
 
   override fun parseSymbolReference(): SymbolReference = produce(NodeType.SymbolReference) {
     SymbolReference(parseSymbol())
+  }
+
+  override fun parseTypeDefinition(): TypeDefinition = produce(NodeType.TypeDefinition) {
+    val definitionModifiers = parseDefinitionModifiers()
+    expect(TokenType.Type)
+    val name = parseSymbol()
+    expect(TokenType.Equals)
+    val nativeTypeDescriptor = parseNativeTypeDescriptor()
+    TypeDefinition(modifiers = definitionModifiers, symbol = name, nativeTypeDescriptor = nativeTypeDescriptor)
   }
 
   override fun parseTypeSpec(): TypeSpec = produce(NodeType.TypeSpec) {

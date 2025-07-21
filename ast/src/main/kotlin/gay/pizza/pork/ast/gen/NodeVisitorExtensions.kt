@@ -36,7 +36,9 @@ fun <T> NodeVisitor<T>.visit(node: Node): T =
     is Return -> visitReturn(node)
     is NoneLiteral -> visitNoneLiteral(node)
     is NativeFunctionDescriptor -> visitNativeFunctionDescriptor(node)
+    is NativeTypeDescriptor -> visitNativeTypeDescriptor(node)
     is IndexedBy -> visitIndexedBy(node)
+    is TypeDefinition -> visitTypeDefinition(node)
   }
 
 fun <T> NodeVisitor<T>.visitNodes(vararg nodes: Node?): List<T> =

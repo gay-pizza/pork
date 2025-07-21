@@ -52,6 +52,8 @@ interface NodeParser {
 
   fun parseNativeFunctionDescriptor(): NativeFunctionDescriptor
 
+  fun parseNativeTypeDescriptor(): NativeTypeDescriptor
+
   fun parseNoneLiteral(): NoneLiteral
 
   fun parseParentheses(): Parentheses
@@ -69,6 +71,8 @@ interface NodeParser {
   fun parseSymbol(): Symbol
 
   fun parseSymbolReference(): SymbolReference
+
+  fun parseTypeDefinition(): TypeDefinition
 
   fun parseTypeSpec(): TypeSpec
 

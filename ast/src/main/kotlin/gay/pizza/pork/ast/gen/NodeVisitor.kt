@@ -46,6 +46,8 @@ interface NodeVisitor<T> {
 
   fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): T
 
+  fun visitNativeTypeDescriptor(node: NativeTypeDescriptor): T
+
   fun visitNoneLiteral(node: NoneLiteral): T
 
   fun visitParentheses(node: Parentheses): T
@@ -63,6 +65,8 @@ interface NodeVisitor<T> {
   fun visitSymbol(node: Symbol): T
 
   fun visitSymbolReference(node: SymbolReference): T
+
+  fun visitTypeDefinition(node: TypeDefinition): T
 
   fun visitTypeSpec(node: TypeSpec): T
 

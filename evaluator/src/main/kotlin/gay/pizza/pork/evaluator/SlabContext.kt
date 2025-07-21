@@ -3,7 +3,9 @@ package gay.pizza.pork.evaluator
 import gay.pizza.pork.ast.gen.Definition
 import gay.pizza.pork.ast.gen.FunctionDefinition
 import gay.pizza.pork.ast.gen.LetDefinition
+import gay.pizza.pork.ast.gen.TypeDefinition
 import gay.pizza.pork.ast.gen.visit
+import gay.pizza.pork.execution.None
 import gay.pizza.pork.frontend.Slab
 
 class SlabContext(val slab: Slab, val evaluator: Evaluator, rootScope: Scope) {
@@ -50,6 +52,7 @@ class SlabContext(val slab: Slab, val evaluator: Evaluator, rootScope: Scope) {
       EvaluationVisitor(internalScope.fork("let ${definition.symbol.id}"), CallStack())
         .visit(definition.value)
     }
+    is TypeDefinition -> None
   }
 
   private fun processFinalImportScopes() {

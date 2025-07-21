@@ -43,7 +43,9 @@ object PorkElementFactory {
       NodeType.Return -> ReturnElement(node)
       NodeType.NoneLiteral -> NoneLiteralElement(node)
       NodeType.NativeFunctionDescriptor -> NativeFunctionDescriptorElement(node)
+      NodeType.NativeTypeDescriptor -> NativeTypeDescriptorElement(node)
       NodeType.IndexedBy -> IndexedByElement(node)
+      NodeType.TypeDefinition -> TypeDefinitionElement(node)
       else -> ASTWrapperPsiElement(node)
     }
 }

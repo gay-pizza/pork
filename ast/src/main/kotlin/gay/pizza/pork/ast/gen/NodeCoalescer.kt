@@ -68,6 +68,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): Unit =
     handle(node)
 
+  override fun visitNativeTypeDescriptor(node: NativeTypeDescriptor): Unit =
+    handle(node)
+
   override fun visitNoneLiteral(node: NoneLiteral): Unit =
     handle(node)
 
@@ -93,6 +96,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
     handle(node)
 
   override fun visitSymbolReference(node: SymbolReference): Unit =
+    handle(node)
+
+  override fun visitTypeDefinition(node: TypeDefinition): Unit =
     handle(node)
 
   override fun visitTypeSpec(node: TypeSpec): Unit =

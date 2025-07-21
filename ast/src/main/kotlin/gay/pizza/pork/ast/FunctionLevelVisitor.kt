@@ -23,6 +23,10 @@ abstract class FunctionLevelVisitor<T> : NodeVisitor<T> {
     topLevelUsedError("FunctionDefinition")
   }
 
+  override fun visitTypeDefinition(node: TypeDefinition): T {
+    topLevelUsedError("TypeDefinition")
+  }
+
   override fun visitImportDeclaration(node: ImportDeclaration): T {
     topLevelUsedError("ImportDeclaration")
   }
@@ -37,6 +41,10 @@ abstract class FunctionLevelVisitor<T> : NodeVisitor<T> {
 
   override fun visitNativeFunctionDescriptor(node: NativeFunctionDescriptor): T {
     topLevelUsedError("NativeFunctionDescriptor")
+  }
+
+  override fun visitNativeTypeDescriptor(node: NativeTypeDescriptor): T {
+    topLevelUsedError("NativeTypeDescriptor")
   }
 
   private fun topLevelUsedError(name: String): Nothing {

@@ -40,7 +40,9 @@ digraph A {
   type_Return [shape=box,label="Return"]
   type_NoneLiteral [shape=box,label="NoneLiteral"]
   type_NativeFunctionDescriptor [shape=box,label="NativeFunctionDescriptor"]
+  type_NativeTypeDescriptor [shape=box,label="NativeTypeDescriptor"]
   type_IndexedBy [shape=box,label="IndexedBy"]
+  type_TypeDefinition [shape=box,label="TypeDefinition"]
   type_Node -> type_Expression
   type_Node -> type_Symbol
   type_Node -> type_Declaration
@@ -52,6 +54,7 @@ digraph A {
   type_Node -> type_ImportPath
   type_Node -> type_ForInItem
   type_Node -> type_NativeFunctionDescriptor
+  type_Node -> type_NativeTypeDescriptor
   type_Expression -> type_LetAssignment
   type_Expression -> type_VarAssignment
   type_Expression -> type_SetAssignment
@@ -77,6 +80,7 @@ digraph A {
   type_Expression -> type_IndexedBy
   type_Definition -> type_FunctionDefinition
   type_Definition -> type_LetDefinition
+  type_Definition -> type_TypeDefinition
   type_Declaration -> type_ImportDeclaration
   type_Definition -> type_Symbol [style=dotted]
   type_Definition -> type_DefinitionModifiers [style=dotted]
@@ -129,5 +133,10 @@ digraph A {
   type_Return -> type_Expression [style=dotted]
   type_NativeFunctionDescriptor -> type_Symbol [style=dotted]
   type_NativeFunctionDescriptor -> type_StringLiteral [style=dotted]
+  type_NativeTypeDescriptor -> type_Symbol [style=dotted]
+  type_NativeTypeDescriptor -> type_StringLiteral [style=dotted]
   type_IndexedBy -> type_Expression [style=dotted]
+  type_TypeDefinition -> type_DefinitionModifiers [style=dotted]
+  type_TypeDefinition -> type_Symbol [style=dotted]
+  type_TypeDefinition -> type_NativeTypeDescriptor [style=dotted]
 }

@@ -330,6 +330,13 @@ types:
       type: Symbol
     - name: definitions
       type: List<StringLiteral>
+  NativeTypeDescriptor:
+    parent: Node
+    values:
+    - name: form
+      type: Symbol
+    - name: definitions
+      type: List<StringLiteral>
   IndexedBy:
     parent: Expression
     values:
@@ -337,3 +344,13 @@ types:
       type: Expression
     - name: index
       type: Expression
+  TypeDefinition:
+    parent: Definition
+    namedElementValue: symbol
+    values:
+    - name: modifiers
+      type: DefinitionModifiers
+    - name: symbol
+      type: Symbol
+    - name: nativeTypeDescriptor
+      type: NativeTypeDescriptor?

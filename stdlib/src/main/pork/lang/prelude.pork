@@ -1,11 +1,17 @@
-export func print(values...)
+export type int32 = native internal "int32"
+export type int64 = native internal "int64"
+export type string = native internal "string"
+export type list = native internal "list"
+export type any = native internal "any"
+
+export func print(values...: string)
   native internal "print"
 
-export func println(values...)
+export func println(values...: string)
   native internal "println"
 
-export func listSet(list, index, value)
+export func listSet(list: list, index: int32, value: any)
   native internal "listSet"
 
-export func listInitWith(size, value)
+export func listInitWith(size: int32, value: any)
   native internal "listInitWith"

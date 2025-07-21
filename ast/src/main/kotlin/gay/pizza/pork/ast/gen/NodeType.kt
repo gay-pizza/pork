@@ -28,6 +28,7 @@ enum class NodeType(val parent: NodeType? = null) {
   ListLiteral(Expression),
   LongLiteral(Expression),
   NativeFunctionDescriptor(Node),
+  NativeTypeDescriptor(Node),
   NoneLiteral(Expression),
   Parentheses(Expression),
   PrefixOperation(Expression),
@@ -37,6 +38,7 @@ enum class NodeType(val parent: NodeType? = null) {
   SuffixOperation(Expression),
   Symbol(Node),
   SymbolReference(Expression),
+  TypeDefinition(Definition),
   TypeSpec(Node),
   VarAssignment(Expression),
   While(Expression)

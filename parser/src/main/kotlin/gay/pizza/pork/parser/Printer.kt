@@ -90,6 +90,18 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     }
   }
 
+  override fun visitNativeTypeDescriptor(node: NativeTypeDescriptor) {
+    append("native ")
+    visit(node.form)
+    append(" ")
+    for ((index, argument) in node.definitions.withIndex()) {
+      visit(argument)
+      if (index + 1 != node.definitions.size) {
+        append(" ")
+      }
+    }
+  }
+
   override fun visitNoneLiteral(node: NoneLiteral) {
     append("none")
   }
@@ -135,6 +147,16 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
 
   override fun visitSymbolReference(node: SymbolReference) {
     visit(node.symbol)
+  }
+
+  override fun visitTypeDefinition(node: TypeDefinition) {
+    visitDefinitionModifiers(node.modifiers)
+    append("type ")
+    visit(node.symbol)
+    append(" = ")
+    if (node.nativeTypeDescriptor != null) {
+      visit(node.nativeTypeDescriptor!!)
+    }
   }
 
   override fun visitTypeSpec(node: TypeSpec) {

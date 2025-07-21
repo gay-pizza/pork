@@ -39,6 +39,8 @@ fun NodeParser.parse(type: NodeType): Node =
     NodeType.Return -> parseReturn()
     NodeType.NoneLiteral -> parseNoneLiteral()
     NodeType.NativeFunctionDescriptor -> parseNativeFunctionDescriptor()
+    NodeType.NativeTypeDescriptor -> parseNativeTypeDescriptor()
     NodeType.IndexedBy -> parseIndexedBy()
+    NodeType.TypeDefinition -> parseTypeDefinition()
     else -> throw RuntimeException("Unable to automatically parse type: ${type.name}")
   }
