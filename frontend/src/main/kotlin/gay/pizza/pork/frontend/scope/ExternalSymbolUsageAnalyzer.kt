@@ -12,7 +12,9 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
 
   override fun visitFunctionDefinition(node: FunctionDefinition) {
     for (argument in node.arguments) {
-      visit(argument.typeSpec!!)
+      if (argument.typeSpec != null) {
+        visit(argument.typeSpec!!)
+      }
     }
 
     if (node.returnType != null) {

@@ -11,7 +11,18 @@ class JavaAutogen(val javaClass: Class<*>) {
   fun generateCompilationUnit(): CompilationUnit {
     return CompilationUnit(
       declarations = listOf(),
-      definitions = generateFunctionDefinitions()
+      definitions = generateFunctionDefinitions() + generateTypeDefinition()
+    )
+  }
+
+  fun generateTypeDefinition(): TypeDefinition {
+    return TypeDefinition(
+      modifiers = DefinitionModifiers(export = true),
+      symbol = Symbol(prefix),
+      nativeTypeDescriptor = NativeTypeDescriptor(
+        form = Symbol("java"),
+        definitions = listOf(StringLiteral(javaClass.name)),
+      )
     )
   }
 
@@ -50,7 +61,9 @@ class JavaAutogen(val javaClass: Class<*>) {
         if (Modifier.isStatic(method.modifiers)) {
           definitions[name] = function(name, parameterNames, form("static"))
         } else {
-          definitions[name] = function(name, parameterNames, form("virtual"))
+          val finalParameterNames = parameterNames.toMutableList()
+          finalParameterNames.add(0, "__instance")
+          definitions[name] = function(name, finalParameterNames, form("virtual"))
         }
       }
 

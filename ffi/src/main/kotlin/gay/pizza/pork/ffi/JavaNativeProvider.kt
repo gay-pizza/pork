@@ -1,8 +1,5 @@
 package gay.pizza.pork.ffi
 
-import gay.pizza.pork.ast.gen.ArgumentSpec
-import gay.pizza.pork.evaluator.CallableFunction
-import gay.pizza.pork.evaluator.SlabContext
 import gay.pizza.pork.evaluator.ExpandedNativeProvider
 import gay.pizza.pork.execution.NativeFunction
 import gay.pizza.pork.execution.NativeProvider
@@ -13,25 +10,6 @@ import java.lang.invoke.MethodType
 
 class JavaNativeProvider : ExpandedNativeProvider, NativeProvider {
   private val lookup = MethodHandles.lookup()
-
-  override fun provideNativeFunction(
-    definitions: List<String>,
-    arguments: List<ArgumentSpec>,
-    inside: SlabContext
-  ): CallableFunction {
-    val functionDefinition = JavaFunctionDefinition.parse(definitions)
-    val javaClass = lookupClass(functionDefinition.type)
-    val returnTypeClass = lookupClass(functionDefinition.returnType)
-    val parameterClasses = functionDefinition.parameters.map { lookupClass(it) }
-    val handle = mapKindToHandle(
-      functionDefinition.kind,
-      functionDefinition.symbol,
-      javaClass,
-      returnTypeClass,
-      parameterClasses
-    )
-    return CallableFunction { functionArguments, _ -> handle.invokeWithArguments(functionArguments) ?: None }
-  }
 
   private fun lookupClass(name: String): Class<*> = when (name) {
     "void" -> Void.TYPE
@@ -67,10 +45,23 @@ class JavaNativeProvider : ExpandedNativeProvider, NativeProvider {
   }
 
   override fun provideNativeFunction(definitions: List<String>): NativeFunction {
-    throw RuntimeException("Invalid Native Function Usage")
+    val functionDefinition = JavaFunctionDefinition.parse(definitions)
+    val javaClass = lookupClass(functionDefinition.type)
+    val returnTypeClass = lookupClass(functionDefinition.returnType)
+    val parameterClasses = functionDefinition.parameters.map { lookupClass(it) }
+    val handle = mapKindToHandle(
+      functionDefinition.kind,
+      functionDefinition.symbol,
+      javaClass,
+      returnTypeClass,
+      parameterClasses
+    )
+    return NativeFunction { functionArguments -> handle.invokeWithArguments(functionArguments) ?: None }
   }
 
   override fun provideNativeType(definitions: List<String>): NativeType {
-    throw RuntimeException("Invalid Native Type Usage")
+    val className = definitions[0]
+    val javaClass = Class.forName(className)
+    return JavaNativeType(javaClass)
   }
 }
