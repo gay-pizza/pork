@@ -1,14 +1,7 @@
 import std ffi.struct
 
-export let timeval = ffiStructDefine(
-  "long", "seconds",
-  "unsigned int", "microseconds"
-)
-
-export let timezone = ffiStructDefine(
-  "int", "minutes_greenwich",
-  "int", "dst_time"
-)
+export type timeval = native ffi "long" "seconds" "unsigned int" "microseconds"
+export type timezone = native ffi "int" "minutes_greenwich" "int" "dst_time"
 
 func gettimeofday(value, tz)
   native ffi "c" "int gettimeofday(struct timeval*, struct timezone*)"

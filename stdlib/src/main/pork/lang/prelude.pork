@@ -1,7 +1,10 @@
 export type int32 = native internal "int32"
 export type int64 = native internal "int64"
+export type float32 = native internal "float32"
+export type float64 = native internal "float64"
 export type string = native internal "string"
 export type list = native internal "list"
+export type bool = native internal "bool"
 export type any = native internal "any"
 
 export func print(values...: string)

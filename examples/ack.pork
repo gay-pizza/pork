@@ -1,0 +1,17 @@
+/* ackermann function */
+func ack(m: int32, n: int32): int32 {
+  if m == 0 {
+    return n + 1
+  }
+
+  if n == 0 {
+    return ack(m - 1, 1)
+  }
+
+  return ack(m - 1, ack(m, n - 1))
+}
+
+export func main() {
+  let result: int32 = ack(3, 1)
+  println(result)
+}

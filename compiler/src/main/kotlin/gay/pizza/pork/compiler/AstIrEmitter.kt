@@ -20,10 +20,26 @@ class AstIrEmitter(
   fun createFunctionArguments(functionDefinition: FunctionDefinition) {
     val functionSymbols = mutableListOf<IrFunctionArgument>()
     for (arg in functionDefinition.arguments) {
+      if (arg.typeSpec != null) {
+        validateTypeSpec(arg.typeSpec!!)
+      }
       val symbol = createLocalVariable(arg.symbol)
       functionSymbols.add(IrFunctionArgument(symbol))
     }
     functionArguments = functionSymbols
+    if (functionDefinition.returnType != null) {
+      validateTypeSpec(functionDefinition.returnType!!)
+    }
+  }
+
+  fun checkLetDefinition(letDefinition: LetDefinition) {
+    if (letDefinition.typeSpec != null) {
+      validateTypeSpec(letDefinition.typeSpec!!)
+    }
+  }
+
+  private fun validateTypeSpec(typeSpec: TypeSpec) {
+    lookup(typeSpec.symbol) ?: throw CompileError("Unresolved type: ${typeSpec.symbol.id}")
   }
 
   private fun startLoop(): IrSymbol {
@@ -204,7 +220,7 @@ class AstIrEmitter(
     IrConditional(
       conditional = node.condition.visit(this),
       ifTrue = node.thenBlock.visit(this),
-      ifFalse = node.elseBlock?.visit(this) ?: IrNoneConstant
+      ifFalse = node.elseBlock?.visit(this) ?: IrNop
     )
 
   override fun visitIndexedBy(node: IndexedBy): IrCodeElement = IrIndex(
@@ -240,6 +256,9 @@ class AstIrEmitter(
     IrIntegerConstant(node.value)
 
   override fun visitLetAssignment(node: LetAssignment): IrCodeElement {
+    if (node.typeSpec != null) {
+      validateTypeSpec(node.typeSpec!!)
+    }
     val symbol = createLocalVariable(node.symbol)
     return IrDeclare(symbol, node.value.visit(this))
   }
@@ -295,6 +314,9 @@ class AstIrEmitter(
   }
 
   override fun visitVarAssignment(node: VarAssignment): IrCodeElement {
+    if (node.typeSpec != null) {
+      validateTypeSpec(node.typeSpec!!)
+    }
     val local = createLocalVariable(node.symbol)
     return IrDeclare(local, node.value.visit(this))
   }

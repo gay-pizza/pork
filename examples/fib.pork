@@ -8,6 +8,6 @@ func fib(n: int32): int32 {
 }
 
 export func main() {
-  let result: int32 = fib(28)
+  let result: int32 = fib(31)
   println(result)
 }

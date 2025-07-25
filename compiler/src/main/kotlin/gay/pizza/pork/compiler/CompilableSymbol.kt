@@ -52,6 +52,7 @@ class CompilableSymbol(val compilableSlab: CompilableSlab, val scopeSymbol: Scop
 
       else -> {
         val letDefinition = scopeSymbol.definition as LetDefinition
+        irCodeEmitter.checkLetDefinition(letDefinition)
         letDefinition.value
       }
     }

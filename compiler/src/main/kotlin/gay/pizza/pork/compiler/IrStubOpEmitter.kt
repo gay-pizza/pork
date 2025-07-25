@@ -194,6 +194,8 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
     store(variable)
   }
 
+  override fun visitIrNop(ir: IrNop) {}
+
   override fun visitIrStore(ir: IrStore) {
     visit(ir.value)
     val variable = code.localState.createOrFindLocal(ir.target)

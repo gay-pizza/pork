@@ -11,6 +11,14 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
     get() = symbols
 
   override fun visitFunctionDefinition(node: FunctionDefinition) {
+    for (argument in node.arguments) {
+      visit(argument.typeSpec!!)
+    }
+
+    if (node.returnType != null) {
+      visit(node.returnType!!)
+    }
+
     internalSymbols.add(node.arguments.map { it.symbol }.toMutableSet())
     node.block?.visit(this)
     internalSymbols.removeLast()

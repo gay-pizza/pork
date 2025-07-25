@@ -30,6 +30,7 @@ interface IrVisitor<T> {
   fun visitIrIndex(ir: IrIndex): T
   fun visitIrListSize(ir: IrListSize): T
   fun visitIrDeclare(ir: IrDeclare): T
+  fun visitIrNop(ir: IrNop): T
 
   fun visit(ir: IrElement): T = when (ir) {
     is IrBreak -> visitIrBeak(ir)
@@ -61,5 +62,6 @@ interface IrVisitor<T> {
     is IrIndex -> visitIrIndex(ir)
     is IrListSize -> visitIrListSize(ir)
     is IrDeclare -> visitIrDeclare(ir)
+    IrNop -> visitIrNop(ir as IrNop)
   }
 }
