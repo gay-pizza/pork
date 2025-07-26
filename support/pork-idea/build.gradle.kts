@@ -29,6 +29,8 @@ intellijPlatform {
       sinceBuild = "243"
     }
   }
+
+  buildSearchableOptions.set(false)
 }
 
 porkAst {
