@@ -7,6 +7,6 @@ dependencies {
   api(project(":evaluator"))
 
   implementation(project(":common"))
-  implementation("com.github.jnr:jffi:1.3.12")
-  implementation("com.github.jnr:jffi:1.3.12:native")
+  implementation("com.github.jnr:jffi:1.3.13")
+  implementation("com.github.jnr:jffi:1.3.13:native")
 }
