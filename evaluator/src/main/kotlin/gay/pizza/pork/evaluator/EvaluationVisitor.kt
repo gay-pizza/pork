@@ -114,7 +114,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
       }
       PrefixOperator.UnaryPlus, PrefixOperator.UnaryMinus, PrefixOperator.BinaryNot -> {
         if (value !is Number) {
-          throw RuntimeException("Numeric unary '${node.op.token}' illegal on non-numeric type '${value.javaClass.simpleName}'")
+          throw RuntimeException("Numeric unary '${node.op.token}' illegal on non-numeric type")
         }
         unaryNumericOperation(node, value)
       }
@@ -164,7 +164,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
         binaryNot = { it.inv() }
       )
     }
-    else -> throw RuntimeException("Unknown numeric type: ${value.javaClass.name}")
+    else -> throw RuntimeException("Unknown numeric type")
   }
 
   override fun visitSuffixOperation(node: SuffixOperation): Any {
