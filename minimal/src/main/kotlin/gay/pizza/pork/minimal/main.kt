@@ -2,7 +2,6 @@ package gay.pizza.pork.minimal
 
 import gay.pizza.dough.fs.PlatformFsProvider
 import gay.pizza.pork.ast.gen.Symbol
-import gay.pizza.pork.evaluator.Scope
 import gay.pizza.pork.execution.ExecutionOptions
 import gay.pizza.pork.execution.InternalNativeProvider
 import gay.pizza.pork.execution.NativeRegistry
@@ -16,7 +15,7 @@ fun main(args: Array<String>) {
   val path = PlatformFsProvider.resolve(args[0])
   val tool = FileTool(path)
   val nativeRegistry = NativeRegistry()
-  nativeRegistry.add("internal", InternalNativeProvider(quiet = false))
+  nativeRegistry.add("internal", InternalNativeProvider(quiet = false, debug = false))
   val main = tool.createExecutionContext(
     ExecutionType.Evaluator,
     Symbol("main"),

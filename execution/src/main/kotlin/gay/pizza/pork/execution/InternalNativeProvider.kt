@@ -1,6 +1,6 @@
 package gay.pizza.pork.execution
 
-class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
+class InternalNativeProvider(val quiet: Boolean = false, val debug: Boolean = false) : NativeProvider {
   private val functions = mutableMapOf(
     "print" to NativeFunction(::printValues),
     "println" to NativeFunction(::printLine),
@@ -39,13 +39,26 @@ class InternalNativeProvider(val quiet: Boolean = false) : NativeProvider {
 
   private fun printValues(arguments: ArgumentList): Any {
     if (quiet || arguments.isEmpty()) return None
-    print(arguments.at<List<*>>(0).joinToString(" ") { it.toString() })
+    val string = arguments.at<List<*>>(0).joinToString(" ") { it.toString() }
+    if (debug) {
+      print("  internal: native print: ${string.replace("\n", "\\n")}")
+      return None
+    }
+    print(string)
     return None
   }
 
   private fun printLine(arguments: ArgumentList): Any {
     if (quiet) return None
-    println(arguments.at<List<*>>(0).joinToString(" ") { it.toString() })
+    val string = arguments.at<List<*>>(0).joinToString(" ") { it.toString() }
+    if (debug) {
+      val lines = string.split("\n")
+      for (line in lines) {
+        println("  internal: native println: $line")
+      }
+      return None
+    }
+    println(string)
     return Unit
   }
 

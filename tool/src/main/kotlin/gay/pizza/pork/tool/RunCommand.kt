@@ -32,7 +32,7 @@ class RunCommand : CliktCommand("run") {
   override fun run() {
     val tool = FileTool(PlatformFsProvider.resolve(path))
     val nativeRegistry = NativeRegistry()
-    nativeRegistry.add("internal", InternalNativeProvider(quiet = quiet))
+    nativeRegistry.add("internal", InternalNativeProvider(quiet = quiet, debug = debug))
     nativeRegistry.add("java", JavaNativeProvider())
     nativeRegistry.add("ffi", FfiNativeProvider())
     val main = tool.createExecutionContext(executionType, Symbol("main"), ExecutionOptions(

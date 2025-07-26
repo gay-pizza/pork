@@ -25,7 +25,8 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
     val (op, handler) = inlined[inst.toInt()]
     if (debug) {
       val frame = frame(inst)
-      println("vm: step: in ${frame?.symbolInfo?.commonSymbolIdentity ?: "unknown"}: $inst ${op.code}${if (op.args.isEmpty()) "" else " " + op.args.joinToString(" ")}")
+      println("vm: step: in slab ${frame?.symbolInfo?.slab ?: "unknown"}: symbol ${frame?.symbolInfo?.symbol ?: "unknown"}: $inst ${op.code}${if (op.args.isEmpty()) "" else " " + op.args.joinToString(" ")}")
+      println("vm: step: stack: ${stack}")
     }
 
     handler.handle(this, op)
