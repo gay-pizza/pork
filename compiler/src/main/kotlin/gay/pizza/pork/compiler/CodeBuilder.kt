@@ -40,6 +40,8 @@ class CodeBuilder(val symbol: CompilableSymbol) {
     ops.add(PatchSymOp(Op(code, arguments), patches))
   }
 
+  fun lastOp(): StubOp? = ops.lastOrNull()
+
   fun annotate(text: String) {
     annotations.add(StubOpAnnotation(symbol, nextOpInst(), text))
   }

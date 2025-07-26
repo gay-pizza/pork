@@ -17,8 +17,9 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
   }
 
   fun final() {
-    code.emit(Opcode.Return)
-    code.emit(Opcode.End)
+    if (code.lastOp()?.op?.code != Opcode.Return) {
+      code.emit(Opcode.Return)
+    }
   }
 
   private fun resolve(symbol: IrSymbol): Loadable = code.localState.resolve(symbol)
