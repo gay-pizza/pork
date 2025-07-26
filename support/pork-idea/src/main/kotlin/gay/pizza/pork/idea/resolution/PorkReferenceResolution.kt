@@ -177,7 +177,8 @@ object PorkReferenceResolution {
     for (file in getRelevantFiles(containingFile)) {
       val definitions = PsiTreeUtil.collectElements(file.file) { element ->
         element is FunctionDefinitionElement ||
-          element is LetDefinitionElement
+          element is LetDefinitionElement ||
+          element is TypeDefinitionElement
       }.filterIsInstance<PorkNamedElement>()
       if (name != null) {
         val fileFoundDefinition = definitions.firstOrNull {

@@ -4,7 +4,7 @@ import gay.pizza.pork.bytecode.CompiledWorld
 import gay.pizza.pork.bytecode.ConstantTag
 import gay.pizza.pork.execution.NativeRegistry
 
-class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegistry, val handlers: List<OpHandler>) {
+class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegistry, val handlers: List<OpHandler>, val debug: Boolean = false) {
   private val inlined = world.code.map { op ->
     val handler = handlers.firstOrNull { it.code == op.code }
       ?: throw VirtualMachineException("Opcode ${op.code.name} does not have a handler.")
@@ -23,6 +23,11 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
 
   fun step(): Boolean {
     val (op, handler) = inlined[inst.toInt()]
+    if (debug) {
+      val frame = frame(inst)
+      println("vm: step: in ${frame?.symbolInfo?.commonSymbolIdentity ?: "unknown"}: $inst ${op.code}${if (op.args.isEmpty()) "" else " " + op.args.joinToString(" ")}")
+    }
+
     handler.handle(this, op)
     if (autoNextInst) {
       inst++
@@ -32,19 +37,29 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
   }
 
   fun pushScope() {
+    if (debug) {
+      println("  vm: push scope")
+    }
     locals.add(LocalSlots())
   }
 
   fun popScope() {
+    if (debug) {
+      println("  vm: pop scope")
+    }
     locals.removeLast()
   }
 
   fun loadConstant(id: UInt) {
     val constant = world.constantPool.constants[id.toInt()]
-    when (constant.tag) {
-      ConstantTag.String -> push(String(constant.value))
+    val value = when (constant.tag) {
+      ConstantTag.String -> String(constant.value)
       else -> throw VirtualMachineException("Unknown constant tag: ${constant.tag.name}")
     }
+    if (debug) {
+      println("  vm: load constant: ${constant.id} ${constant.tag.name} $value")
+    }
+    push(value)
   }
 
   fun localAt(id: UInt): Any {
@@ -53,35 +68,57 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
   }
 
   fun loadLocal(id: UInt) {
-    push(localAt(id))
+    val value = localAt(id)
+    if (debug) {
+      println("  vm: load local: $id   $value")
+    }
+    push(value)
   }
 
   fun storeLocal(id: UInt) {
     val localSet = locals.last()
     val value = popAnyValue()
+    if (debug) {
+      println("  vm: store local: $id = $value")
+    }
     localSet.store(id, value)
   }
 
   fun setNextInst(value: UInt) {
     inst = value
     autoNextInst = false
+    if (debug) {
+      println("  vm: next instruction: $value")
+    }
   }
 
   fun pushReturnAddress(value: UInt) {
+    if (debug) {
+      println("  vm: push return address: $value")
+    }
     returnAddressStack.add(value)
   }
 
   fun pushCallStack(value: UInt) {
+    if (debug) {
+      println("  vm: push call stack: $value")
+    }
     callStack.add(value)
   }
 
   fun popCallStack() {
-    callStack.removeLast()
+    val call = callStack.removeLast()
+    if (debug) {
+      println("  vm: pop call stack: $call")
+    }
   }
 
   fun armReturnAddressIfSet() {
     val returnAddress = returnAddressStack.removeLastOrNull()
     if (returnAddress != null) {
+      if (debug) {
+        println("  vm: arm return address: $returnAddress")
+      }
       setNextInst(returnAddress)
     } else {
       exit()
@@ -89,18 +126,33 @@ class InternalMachine(val world: CompiledWorld, val nativeRegistry: NativeRegist
   }
 
   fun push(item: Any) {
+    if (debug) {
+      println("  vm: push stack: $item")
+    }
     stack.add(item)
   }
 
-  fun popAnyValue(): Any = stack.removeLast()
+  fun popAnyValue(): Any {
+    val value = stack.removeLast()
+    if (debug) {
+      println("  vm: pop stack: $value")
+    }
+    return value
+  }
 
   inline fun <reified T> pop(): T = popAnyValue() as T
 
   fun exit() {
+    if (debug) {
+      println("  vm: exit")
+    }
     exitFlag = true
   }
 
   fun reset() {
+    if (debug) {
+      println("vm: reset")
+    }
     stack.clear()
     callStack.clear()
     callStack.add(0u)

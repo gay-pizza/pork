@@ -5,6 +5,7 @@ import gay.pizza.pork.ast.gen.Node
 import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.parser.ParseError
 import gay.pizza.pork.parser.ParserNodeAttribution
+import gay.pizza.pork.tokenizer.ExpectedTokenError
 
 class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution() {
   override fun <T : Node> produce(type: NodeType, block: () -> T): T {
@@ -15,6 +16,12 @@ class PsiBuilderMarkAttribution(val builder: PsiBuilder) : ParserNodeAttribution
       item
     } catch (e: PsiBuilderTokenSource.BadCharacterError) {
       marker.error("Invalid character")
+      while (!builder.eof()) {
+        builder.advanceLexer()
+      }
+      throw PorkParser.ExitParser()
+    } catch (e: ExpectedTokenError) {
+      marker.error("${e.message}")
       while (!builder.eof()) {
         builder.advanceLexer()
       }

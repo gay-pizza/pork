@@ -7,6 +7,7 @@ import gay.pizza.pork.ast.gen.visit
 import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.execution.ExecutionContext
 import gay.pizza.pork.execution.ExecutionContextProvider
+import gay.pizza.pork.execution.ExecutionOptions
 import gay.pizza.pork.execution.InternalNativeProvider
 import gay.pizza.pork.execution.NativeRegistry
 import gay.pizza.pork.ffi.FfiNativeProvider
@@ -44,9 +45,9 @@ abstract class Tool {
   fun createExecutionContextProvider(type: ExecutionType): ExecutionContextProvider =
     type.create(buildWorld())
 
-  fun createExecutionContext(type: ExecutionType, symbol: Symbol, nativeRegistry: NativeRegistry): ExecutionContext {
+  fun createExecutionContext(type: ExecutionType, symbol: Symbol, options: ExecutionOptions): ExecutionContext {
     val executionContextProvider = createExecutionContextProvider(type)
-    return executionContextProvider.prepare(rootImportLocator, symbol, nativeRegistry)
+    return executionContextProvider.prepare(rootImportLocator, symbol, options)
   }
 
   fun buildWorld(): World {

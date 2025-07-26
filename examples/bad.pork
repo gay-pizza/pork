@@ -1,0 +1,15 @@
+func depth(i: int32) {
+  println("Depth: ", i)
+}
+
+export func main() {
+  if true {
+    false
+  }
+
+  if false {
+    true
+  }
+
+  return println("uhm, bad")
+}

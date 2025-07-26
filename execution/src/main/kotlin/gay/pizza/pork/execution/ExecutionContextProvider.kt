@@ -4,5 +4,5 @@ import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.frontend.ImportLocator
 
 interface ExecutionContextProvider {
-  fun prepare(importLocator: ImportLocator, entryPointSymbol: Symbol, nativeRegistry: NativeRegistry): ExecutionContext
+  fun prepare(importLocator: ImportLocator, entryPointSymbol: Symbol, options: ExecutionOptions): ExecutionContext
 }
