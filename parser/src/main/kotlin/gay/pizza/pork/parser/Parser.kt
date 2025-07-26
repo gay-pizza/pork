@@ -63,7 +63,7 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       }
     }
 
-    if (peek(TokenType.LeftBracket)) {
+    while (peek(TokenType.LeftBracket)) {
       expression = produce(NodeType.IndexedBy) {
         attribution.adopt(expression)
         expect(TokenType.LeftBracket)
