@@ -2,7 +2,6 @@ package gay.pizza.pork.vm.ops
 
 import gay.pizza.pork.bytecode.Op
 import gay.pizza.pork.bytecode.Opcode
-import gay.pizza.pork.execution.NativeFunction
 import gay.pizza.pork.execution.NativeType
 import gay.pizza.pork.execution.None
 import gay.pizza.pork.vm.InternalMachine

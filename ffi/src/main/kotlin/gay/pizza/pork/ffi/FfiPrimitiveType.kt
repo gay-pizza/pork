@@ -5,8 +5,8 @@ import com.kenai.jffi.MemoryIO
 import gay.pizza.pork.execution.None
 
 enum class FfiPrimitiveType(
-  val id: kotlin.String,
-  override val size: kotlin.Long,
+  val id: String,
+  override val size: Long,
   val numberConvert: (Number.() -> Number)? = null,
   val nullableConversion: (Any?.() -> Any)? = null,
   val notNullConversion: (Any.() -> Any)? = null
@@ -22,9 +22,7 @@ enum class FfiPrimitiveType(
   UnsignedLong("unsigned long", 8, numberConvert = { toLong() }),
   Double("double", 8, numberConvert = { toDouble() }),
   String("char*", 8, nullableConversion = {
-    if (this is FfiString) {
-      this
-    } else FfiString.allocate(toString())
+    this as? FfiString ?: FfiString.allocate(toString())
   }),
   Pointer("void*", 8, nullableConversion = {
     when (this) {
@@ -52,7 +50,7 @@ enum class FfiPrimitiveType(
     }
   }
 
-  private fun <T> notNullConvert(type: kotlin.String, value: Any?, into: Any.() -> T): T {
+  private fun <T> notNullConvert(type: String, value: Any?, into: Any.() -> T): T {
     if (value == null) {
       throw RuntimeException("Null values cannot be used for converting to type $type")
     }
@@ -66,7 +64,7 @@ enum class FfiPrimitiveType(
     return into(value)
   }
 
-  private fun <T> numberConvert(type: kotlin.String, value: Any?, into: Number.() -> T): T {
+  private fun <T> numberConvert(type: String, value: Any?, into: Number.() -> T): T {
     if (value == null || value == None) {
       throw RuntimeException("Null values cannot be used for converting to numeric type $type")
     }
@@ -90,7 +88,7 @@ enum class FfiPrimitiveType(
     return ffi
   }
 
-  override fun read(address: FfiAddress, offset: kotlin.Int): Any {
+  override fun read(address: FfiAddress, offset: Int): Any {
     val actual = address.location + offset
     return when (this) {
       UnsignedByte, Byte -> MemoryIO.getInstance().getByte(actual)
@@ -107,10 +105,10 @@ enum class FfiPrimitiveType(
 
   companion object {
     fun push(buffer: InvocationBuffer, value: Any): Unit = when (value) {
-      is kotlin.Byte -> buffer.putByte(value.toInt())
-      is kotlin.Short -> buffer.putShort(value.toInt())
-      is kotlin.Int -> buffer.putInt(value)
-      is kotlin.Long -> buffer.putLong(value)
+      is Byte -> buffer.putByte(value.toInt())
+      is Short -> buffer.putShort(value.toInt())
+      is Int -> buffer.putInt(value)
+      is Long -> buffer.putLong(value)
       is FfiAddress -> buffer.putAddress(value.location)
       is FfiString -> buffer.putAddress(value.address.location)
       else -> throw RuntimeException("Unknown buffer insertion: $value (${value.javaClass.name})")

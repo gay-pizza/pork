@@ -1,6 +1,6 @@
 package gay.pizza.pork.buildext.ast
 
-enum class AstPrimitive(val id: kotlin.String) {
+enum class AstPrimitive(val id: String) {
   Boolean("Boolean"),
   String("String"),
   Int("Int"),

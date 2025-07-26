@@ -6,11 +6,7 @@ import gay.pizza.pork.ast.gen.NodeType
 import gay.pizza.pork.tokenizer.*
 
 abstract class ParserBase(source: TokenSource, val attribution: NodeAttribution) : NodeParser {
-  val source: TokenSource = if (source is ParserAwareTokenSource) {
-    source
-  } else {
-    LazySkippingTokenSource(source, TokenType.ParserIgnoredTypes)
-  }
+  val source: TokenSource = source as? ParserAwareTokenSource ?: LazySkippingTokenSource(source, TokenType.ParserIgnoredTypes)
 
   @Suppress("NOTHING_TO_INLINE")
   protected inline fun <T: Node> produce(type: NodeType, noinline block: () -> T): T =

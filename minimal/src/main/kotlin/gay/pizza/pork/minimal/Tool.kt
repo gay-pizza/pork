@@ -4,15 +4,10 @@ import gay.pizza.pork.ast.gen.CompilationUnit
 import gay.pizza.pork.ast.gen.NodeVisitor
 import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.ast.gen.visit
-import gay.pizza.pork.evaluator.*
 import gay.pizza.pork.execution.ExecutionContext
 import gay.pizza.pork.execution.ExecutionContextProvider
 import gay.pizza.pork.execution.ExecutionOptions
-import gay.pizza.pork.execution.InternalNativeProvider
-import gay.pizza.pork.execution.NativeRegistry
-import gay.pizza.pork.ffi.FfiNativeProvider
 import gay.pizza.pork.ffi.JavaAutogenContentSource
-import gay.pizza.pork.ffi.JavaNativeProvider
 import gay.pizza.pork.frontend.ContentSource
 import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.DynamicImportSource

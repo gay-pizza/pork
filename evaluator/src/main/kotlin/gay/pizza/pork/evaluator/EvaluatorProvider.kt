@@ -4,7 +4,6 @@ import gay.pizza.pork.ast.gen.Symbol
 import gay.pizza.pork.execution.ExecutionContext
 import gay.pizza.pork.execution.ExecutionContextProvider
 import gay.pizza.pork.execution.ExecutionOptions
-import gay.pizza.pork.execution.NativeRegistry
 import gay.pizza.pork.frontend.ImportLocator
 import gay.pizza.pork.frontend.World
 

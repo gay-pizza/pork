@@ -1,6 +1,5 @@
 package gay.pizza.pork.tokenizer
 
-@Suppress("CanBeParameter")
 class MatchedCharConsumer(
   val start: CharSequence,
   val end: CharSequence,
