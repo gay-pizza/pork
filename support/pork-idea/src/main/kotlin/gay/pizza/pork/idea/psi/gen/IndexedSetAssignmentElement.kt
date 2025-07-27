@@ -6,7 +6,7 @@ import com.intellij.navigation.ItemPresentation
 import gay.pizza.pork.idea.psi.PorkElementHelpers
 import javax.swing.Icon
 
-class SetAssignmentElement(node: ASTNode) : PorkElement(node) {
+class IndexedSetAssignmentElement(node: ASTNode) : PorkElement(node) {
   override fun getIcon(flags: Int): Icon? =
     PorkElementHelpers.iconOf(this)
 

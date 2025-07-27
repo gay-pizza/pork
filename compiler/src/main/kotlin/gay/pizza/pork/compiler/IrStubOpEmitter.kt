@@ -248,9 +248,16 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
   }
 
   override fun visitIrIndex(ir: IrIndex) {
+    if (ir.value != null) {
+      visit(ir.value!!)
+    }
     visit(ir.index)
     visit(ir.data)
-    code.emit(Opcode.Index)
+    if (ir.value != null) {
+      code.emit(Opcode.IndexSet)
+    } else {
+      code.emit(Opcode.Index)
+    }
   }
 
   override fun visitIrListSize(ir: IrListSize) {

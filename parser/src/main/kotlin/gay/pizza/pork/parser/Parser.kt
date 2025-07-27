@@ -53,16 +53,6 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       }
     }
 
-    if (expression is SymbolReference && peek(TokenType.Equals)) {
-      val symbolReference = expression
-      expression = produce(NodeType.SetAssignment) {
-        attribution.adopt(expression)
-        expect(TokenType.Equals)
-        val value = parseExpression()
-        SetAssignment(symbolReference.symbol, value)
-      }
-    }
-
     while (peek(TokenType.LeftBracket)) {
       expression = produce(NodeType.IndexedBy) {
         attribution.adopt(expression)
@@ -73,12 +63,33 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
       }
     }
 
+    if (expression is SymbolReference && peek(TokenType.Equals)) {
+      val symbolReference = expression
+      expression = produce(NodeType.SymbolSetAssignment) {
+        attribution.adopt(expression)
+        expect(TokenType.Equals)
+        val value = parseExpression()
+        SymbolSetAssignment(symbolReference.symbol, value)
+      }
+    }
+
+    if (expression is IndexedBy && peek(TokenType.Equals)) {
+      val indexedBy = expression
+      expression = produce(NodeType.IndexedSetAssignment) {
+        attribution.adopt(indexedBy)
+        expect(TokenType.Equals)
+        val value = parseExpression()
+        IndexedSetAssignment(target = indexedBy.expression, index = indexedBy.index, value = value)
+      }
+    }
+
     return if (peek(
         TokenType.Plus, TokenType.Minus, TokenType.Multiply, TokenType.Divide, TokenType.Ampersand,
         TokenType.Pipe, TokenType.Caret, TokenType.Equality, TokenType.Inequality, TokenType.Mod,
         TokenType.Rem, TokenType.Lesser, TokenType.Greater, TokenType.LesserEqual, TokenType.GreaterEqual,
         TokenType.And, TokenType.Or)) {
       produce(NodeType.InfixOperation) {
+        attribution.adopt(expression)
         val infixToken = next()
         val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
         InfixOperation(expression, infixOperator, parseExpression())
@@ -263,6 +274,16 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     IndexedBy(expression, index)
   }
 
+  override fun parseIndexedSetAssignment(): IndexedSetAssignment = produce(NodeType.IndexedSetAssignment) {
+    val target = parseExpression()
+    expect(TokenType.LeftBracket)
+    val index = parseExpression()
+    expect(TokenType.RightBracket)
+    expect(TokenType.Equals)
+    val value = parseExpression()
+    IndexedSetAssignment(target, index, value)
+  }
+
   override fun parseInfixOperation(): InfixOperation = produce(NodeType.InfixOperation) {
     val infixToken = next()
     val infixOperator = ParserHelpers.convertInfixOperator(infixToken)
@@ -363,11 +384,11 @@ class Parser(source: TokenSource, attribution: NodeAttribution) :
     Return(parseExpression())
   }
 
-  override fun parseSetAssignment(): SetAssignment = produce(NodeType.SetAssignment) {
+  override fun parseSymbolSetAssignment(): SymbolSetAssignment = produce(NodeType.SymbolSetAssignment) {
     val symbol = parseSymbol()
     expect(TokenType.Equals)
     val value = parseExpression()
-    SetAssignment(symbol, value)
+    SymbolSetAssignment(symbol, value)
   }
 
   override fun parseStringLiteral(): StringLiteral = produce(NodeType.StringLiteral) {

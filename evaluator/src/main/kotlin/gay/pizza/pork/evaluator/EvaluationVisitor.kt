@@ -177,7 +177,7 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
     return previousValue
   }
 
-  override fun visitSetAssignment(node: SetAssignment): Any {
+  override fun visitSymbolSetAssignment(node: SymbolSetAssignment): Any {
     val value = node.value.visit(this)
     currentScope.set(node.symbol.id, value)
     return value
@@ -397,6 +397,24 @@ class EvaluationVisitor(root: Scope, val stack: CallStack) : FunctionLevelVisito
     }
 
     throw RuntimeException("Failed to index '${value}' by '${index}': Unsupported types used.")
+  }
+
+  override fun visitIndexedSetAssignment(node: IndexedSetAssignment): Any {
+    val value = node.value.visit(this)
+    val index = node.index.visit(this)
+    val target = node.target.visit(this)
+    if (target is MutableList<*> && index is Number) {
+      @Suppress("UNCHECKED_CAST")
+      (target as MutableList<Any?>)[index.toInt()] = value
+      return None
+    }
+
+    if (target is Array<*> && index is Number) {
+      @Suppress("UNCHECKED_CAST")
+      (target as MutableList<Any?>)[index.toInt()] = value
+      return None
+    }
+    return value
   }
 
   override fun visitNoneLiteral(node: NoneLiteral): Any = None

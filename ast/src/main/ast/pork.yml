@@ -59,13 +59,22 @@ types:
       type: Expression
     - name: typeSpec
       type: TypeSpec?
-  SetAssignment:
+  SymbolSetAssignment:
     parent: Expression
     values:
     - name: symbol
       type: Symbol
     - name: value
       type: Expression
+  IndexedSetAssignment:
+    parent: Expression
+    values:
+      - name: target
+        type: Expression
+      - name: index
+        type: Expression
+      - name: value
+        type: Expression
   InfixOperator:
     values:
     - name: token

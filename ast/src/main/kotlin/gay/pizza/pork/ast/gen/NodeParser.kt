@@ -38,6 +38,8 @@ interface NodeParser {
 
   fun parseIndexedBy(): IndexedBy
 
+  fun parseIndexedSetAssignment(): IndexedSetAssignment
+
   fun parseInfixOperation(): InfixOperation
 
   fun parseIntegerLiteral(): IntegerLiteral
@@ -62,8 +64,6 @@ interface NodeParser {
 
   fun parseReturn(): Return
 
-  fun parseSetAssignment(): SetAssignment
-
   fun parseStringLiteral(): StringLiteral
 
   fun parseSuffixOperation(): SuffixOperation
@@ -71,6 +71,8 @@ interface NodeParser {
   fun parseSymbol(): Symbol
 
   fun parseSymbolReference(): SymbolReference
+
+  fun parseSymbolSetAssignment(): SymbolSetAssignment
 
   fun parseTypeDefinition(): TypeDefinition
 

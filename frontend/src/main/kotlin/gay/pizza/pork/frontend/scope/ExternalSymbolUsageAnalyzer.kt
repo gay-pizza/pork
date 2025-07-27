@@ -2,6 +2,7 @@ package gay.pizza.pork.frontend.scope
 
 import gay.pizza.pork.ast.FunctionLevelVisitor
 import gay.pizza.pork.ast.gen.*
+import gay.pizza.pork.ast.gen.visit
 
 class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
   private val symbols = mutableSetOf<Symbol>()
@@ -116,8 +117,13 @@ class ExternalSymbolUsageAnalyzer : FunctionLevelVisitor<Unit>() {
     node.visitChildren(this)
   }
 
-  override fun visitSetAssignment(node: SetAssignment) {
-    node.value.visit(this)
+  override fun visitSymbolSetAssignment(node: SymbolSetAssignment) {
+    checkAndContribute(node.symbol)
+    node.visitChildren(this)
+  }
+
+  override fun visitIndexedSetAssignment(node: IndexedSetAssignment) {
+    node.visitChildren(this)
   }
 
   override fun visitStringLiteral(node: StringLiteral) {

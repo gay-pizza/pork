@@ -47,6 +47,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitIndexedBy(node: IndexedBy): Unit =
     handle(node)
 
+  override fun visitIndexedSetAssignment(node: IndexedSetAssignment): Unit =
+    handle(node)
+
   override fun visitInfixOperation(node: InfixOperation): Unit =
     handle(node)
 
@@ -83,9 +86,6 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
   override fun visitReturn(node: Return): Unit =
     handle(node)
 
-  override fun visitSetAssignment(node: SetAssignment): Unit =
-    handle(node)
-
   override fun visitStringLiteral(node: StringLiteral): Unit =
     handle(node)
 
@@ -96,6 +96,9 @@ class NodeCoalescer(val followChildren: Boolean = true, val handler: (Node) -> U
     handle(node)
 
   override fun visitSymbolReference(node: SymbolReference): Unit =
+    handle(node)
+
+  override fun visitSymbolSetAssignment(node: SymbolSetAssignment): Unit =
     handle(node)
 
   override fun visitTypeDefinition(node: TypeDefinition): Unit =

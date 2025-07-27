@@ -202,7 +202,7 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append(node.op.token)
   }
 
-  override fun visitSetAssignment(node: SetAssignment) {
+  override fun visitSymbolSetAssignment(node: SymbolSetAssignment) {
     visit(node.symbol)
     append(" = ")
     visit(node.value)
@@ -302,6 +302,15 @@ class Printer(buffer: StringBuilder) : NodeVisitor<Unit> {
     append("[")
     visit(node.index)
     append("]")
+  }
+
+  override fun visitIndexedSetAssignment(node: IndexedSetAssignment) {
+    visit(node.target)
+    append("[")
+    visit(node.index)
+    append("]")
+    append(" = ")
+    visit(node.value)
   }
 
   override fun visitCompilationUnit(node: CompilationUnit) {

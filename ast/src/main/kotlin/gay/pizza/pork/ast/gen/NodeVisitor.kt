@@ -32,6 +32,8 @@ interface NodeVisitor<T> {
 
   fun visitIndexedBy(node: IndexedBy): T
 
+  fun visitIndexedSetAssignment(node: IndexedSetAssignment): T
+
   fun visitInfixOperation(node: InfixOperation): T
 
   fun visitIntegerLiteral(node: IntegerLiteral): T
@@ -56,8 +58,6 @@ interface NodeVisitor<T> {
 
   fun visitReturn(node: Return): T
 
-  fun visitSetAssignment(node: SetAssignment): T
-
   fun visitStringLiteral(node: StringLiteral): T
 
   fun visitSuffixOperation(node: SuffixOperation): T
@@ -65,6 +65,8 @@ interface NodeVisitor<T> {
   fun visitSymbol(node: Symbol): T
 
   fun visitSymbolReference(node: SymbolReference): T
+
+  fun visitSymbolSetAssignment(node: SymbolSetAssignment): T
 
   fun visitTypeDefinition(node: TypeDefinition): T
 

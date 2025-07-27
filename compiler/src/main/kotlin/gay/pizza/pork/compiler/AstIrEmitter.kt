@@ -228,6 +228,12 @@ class AstIrEmitter(
     index = visit(node.index)
   )
 
+  override fun visitIndexedSetAssignment(node: IndexedSetAssignment): IrCodeElement = IrIndex(
+    data = visit(node.target),
+    index = visit(node.index),
+    value = visit(node.value),
+  )
+
   override fun visitInfixOperation(node: InfixOperation): IrCodeElement {
     val op = when (node.op) {
       InfixOperator.Plus -> IrInfixOp.Add
@@ -288,7 +294,7 @@ class AstIrEmitter(
   override fun visitReturn(node: Return): IrCodeElement =
     IrReturn(from = self, value = node.value.visit(this))
 
-  override fun visitSetAssignment(node: SetAssignment): IrCodeElement {
+  override fun visitSymbolSetAssignment(node: SymbolSetAssignment): IrCodeElement {
     val symbol = lookupLocalVariable(node.symbol) ?:
       throw CompileError("Unable to find local variable target '${node.symbol.id}'", node)
     return IrStore(symbol, node.value.visit(this))

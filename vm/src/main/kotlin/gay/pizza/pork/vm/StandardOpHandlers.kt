@@ -15,6 +15,7 @@ val StandardOpHandlers: List<OpHandler> = listOf(
   ListSizeOpHandler,
 
   IndexOpHandler,
+  IndexSetOpHandler,
 
   AndOpHandler,
   OrOpHandler,

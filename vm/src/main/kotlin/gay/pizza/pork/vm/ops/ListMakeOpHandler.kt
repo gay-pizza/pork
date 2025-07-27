@@ -13,6 +13,6 @@ object ListMakeOpHandler : OpHandler(Opcode.ListMake) {
       val item = machine.popAnyValue()
       list.add(item)
     }
-    machine.push(list.reversed())
+    machine.push(list.reversed().toMutableList())
   }
 }

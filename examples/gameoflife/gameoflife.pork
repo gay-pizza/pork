@@ -73,8 +73,8 @@ func setCell(cells, swap, x, y, state) {
     let mask = if swap { 2 } else { 1 }
     let idx = x + y * gridWidth
     let value = cells[idx]
-    if state { listSet(cells, idx, value | mask) }
-    else     { listSet(cells, idx, value & (~mask)) }
+    if state { cells[idx] = value | mask }
+    else     { cells[idx] = value & (~mask) }
   }
 }
 

@@ -1,4 +1,6 @@
 export func main() {
   let items = [["Hello"], ["Goodbye"]]
   println(items[0][0])
+  items[0][0] = "Goodbye"
+  println(items[0][0])
 }

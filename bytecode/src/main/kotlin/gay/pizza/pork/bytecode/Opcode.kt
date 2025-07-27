@@ -40,6 +40,7 @@ enum class Opcode(val id: UByte) {
   EuclideanModulo(37u),
   Remainder(38u),
   Index(39u),
+  IndexSet(44u),
   ScopeIn(40u),
   ScopeOut(41u),
   ReturnAddress(42u),
