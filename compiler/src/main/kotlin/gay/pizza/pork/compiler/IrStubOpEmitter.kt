@@ -18,6 +18,7 @@ class IrStubOpEmitter(val irDefinition: IrDefinition, val code: CodeBuilder) : I
 
   fun final() {
     if (code.lastOp()?.op?.code != Opcode.Return) {
+      code.emit(Opcode.None)
       code.emit(Opcode.Return)
     }
   }

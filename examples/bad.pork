@@ -1,5 +1,9 @@
 func depth(i: int32) {
+  if i <= 0 {
+    return None
+  }
   println("Depth: ", i)
+  depth(i - 1)
 }
 
 export func main() {
@@ -11,5 +15,19 @@ export func main() {
     true
   }
 
-  return println("uhm, bad")
+  if true {
+
+  } else {
+
+  }
+
+  if false {
+
+  } else {
+
+  }
+
+  depth(500)
+
+  println("uhm, bad")
 }
