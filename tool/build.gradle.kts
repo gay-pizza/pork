@@ -9,7 +9,7 @@ dependencies {
   api(project(":compiler"))
   api(project(":vm"))
   api("com.github.ajalt.clikt:clikt:5.0.3")
-  api("com.charleskorn.kaml:kaml:0.83.0")
+  api("com.charleskorn.kaml:kaml:0.85.0")
 
   implementation(project(":common"))
 }
