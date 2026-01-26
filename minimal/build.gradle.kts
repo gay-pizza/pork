@@ -1,7 +1,7 @@
 plugins {
   application
   id("gay.pizza.pork.module")
-  id("com.gradleup.shadow") version "8.3.8"
+  id("com.gradleup.shadow") version "9.3.1"
 }
 
 dependencies {
