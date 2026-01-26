@@ -1,15 +1,15 @@
 plugins {
   application
   id("gay.pizza.pork.module")
-  id("com.gradleup.shadow") version "8.3.8"
+  id("com.gradleup.shadow") version "9.3.1"
 }
 
 dependencies {
   api(project(":minimal"))
   api(project(":compiler"))
   api(project(":vm"))
-  api("com.github.ajalt.clikt:clikt:5.0.3")
-  api("com.charleskorn.kaml:kaml:0.83.0")
+  api("com.github.ajalt.clikt:clikt:5.1.0")
+  api("com.charleskorn.kaml:kaml:0.104.0")
 
   implementation(project(":common"))
 }
